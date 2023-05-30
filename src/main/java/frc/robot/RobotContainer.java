@@ -9,9 +9,6 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.commands.DefaultDriveCommand;
-import frc.robot.subsystems.DrivetrainSubsystem;
-
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -20,7 +17,6 @@ import frc.robot.subsystems.DrivetrainSubsystem;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
 
   private final Joystick m_jsDriver = new Joystick(0);
 
@@ -33,12 +29,12 @@ public class RobotContainer {
     // Left stick Y axis -> forward and backwards movement
     // Left stick X axis -> left and right movement
     // Right stick X axis -> rotation
-    m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
-            m_drivetrainSubsystem,
-            () -> -modifyAxis(m_jsDriver.getX()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(m_jsDriver.getY()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(m_jsDriver.getZ()) * Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
-    ));
+    // m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
+    //         m_drivetrainSubsystem,
+    //         () -> -modifyAxis(m_jsDriver.getX()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
+    //         () -> -modifyAxis(m_jsDriver.getY()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
+    //         () -> -modifyAxis(m_jsDriver.getZ()) * Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
+    // ));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -60,6 +56,12 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
     return new InstantCommand();
+  }
+
+  public static double Clamp(double input, double max, double min) {
+    if (input > max) {return max;}
+    else if (input < min) {return min;}
+    else {return input;}
   }
 
   private static double deadband(double value, double deadband) {
