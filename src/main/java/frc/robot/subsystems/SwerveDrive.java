@@ -51,12 +51,12 @@ public class SwerveDrive extends SubsystemBase {
   /** Creates a new SwerveDrive. */
   public SwerveDrive() {
 
-    inverseKinematics = new SwerveDriveInverseKinematics(kinematics, swerveModules, navxGyro);
-
     kinematics = new SwerveDriveKinematics(
       FrontLeftModule.getPosition(), FrontRightModule.getPosition(),
       BackLeftModule.getPosition(), BackRightModule.getPosition()
     );
+
+    inverseKinematics = new SwerveDriveInverseKinematics(kinematics, swerveModules, navxGyro);
   }
 
   @Override
