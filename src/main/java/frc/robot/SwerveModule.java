@@ -1,51 +1,37 @@
 package frc.robot;
 
-import com.ctre.phoenix.sensors.CANCoder;
-import com.revrobotics.CANSparkMax;
-
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import frc.robot.libraries.PIDController;
 
 public class SwerveModule {
 
-    public class SwerveMotors {
-        public CANSparkMax DriveMotor, TurnMotor;
-        public CANCoder TurnEncoder;
-
-        PIDController 
-            SpeedDriveController = new PIDController(0, 0.1, 0, 0), // TODO
-            PositionTurnController = new PIDController(0.1, 0, 0, 0); // TODO
-        
-
-        public SwerveMotors(CANSparkMax DriveMotor, CANSparkMax TurnMotor, CANCoder TurnEncoder) {
-            this.DriveMotor = DriveMotor;
-            this.TurnMotor = TurnMotor;
-            this.TurnEncoder = TurnEncoder;
-
-            SpeedDriveController.setTarget(0);
-
-            // TODO Configure turn encoder
-            
-        }
-    }
-
     final SwerveMotors kMotors;
+    final Translation2d kPosition;
+
+    /**
+     * @return The physical location of the swerve module relative to the center of the robot.
+     */
+    public Translation2d getPosition() {
+        return kPosition;
+    }
 
     /**
      * Construct a single swerve module
      * @param Motors Group of motors and encoder to use
      */
-    public SwerveModule(SwerveMotors Motors) {
+    public SwerveModule(SwerveMotors Motors, Translation2d Position) {
         this.kMotors = Motors;
+        this.kPosition = Position;
     }
 
     /**
      * Drive the current swerve module using optimization
      * @param State Un-Optimized state
      */
-    public void Drive(SwerveModuleState State) {
-        SwerveModuleState OptimizedState = OptimizeState(
+    public void drive(SwerveModuleState State) {
+        SwerveModuleState OptimizedState = optimizeState(
             State, 
             // Assume reading is degrees
             new Rotation2d(Math.toRadians(kMotors.TurnEncoder.getAbsolutePosition()))
@@ -82,9 +68,8 @@ public class SwerveModule {
      * @param CurrentRotation
      * @return
      */
-    public static SwerveModuleState OptimizeState(SwerveModuleState State, Rotation2d CurrentRotation) {
+    static SwerveModuleState optimizeState(SwerveModuleState State, Rotation2d CurrentRotation) {
         Rotation2d RotationDifference = State.angle.minus(CurrentRotation);
-
 
         SwerveModuleState OptimizedState = State;
 
@@ -94,5 +79,15 @@ public class SwerveModule {
         }
     
         return OptimizedState;
+    }
+
+    /**
+     * @return SwerveModulePosition containing turn encoder degrees and drive motor position
+     */
+    public SwerveModulePosition getEncoderPositions() {
+        return new SwerveModulePosition(
+            kMotors.DriveMotor.getEncoder().getPosition(), 
+            new Rotation2d(Math.toRadians(kMotors.TurnEncoder.getAbsolutePosition()))
+        );
     }
 }

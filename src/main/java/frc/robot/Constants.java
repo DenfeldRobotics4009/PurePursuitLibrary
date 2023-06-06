@@ -19,11 +19,28 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
  */
 public final class Constants {
     public static final class Swerve {
+        // Meters from wheel center to wheel center
         public static double TrackWidthMeters = 1;
         public static double TrackLengthMeters = 1;
 
         public static double MaxMetersPerSecond = 1;
 
         public static double DriveGearRatioFactor = 1;
+
+        public static int FrontLeftDriveMotor = 0;
+        public static int FrontLeftSteerMotor = 0;
+        public static int FrontLeftCANCoder = 0;
+
+        public static int FrontRightDriveMotor = 0;
+        public static int FrontRightSteerMotor = 0;
+        public static int FrontRightCANCoder = 0;
+
+        public static int BackLeftDriveMotor = 0;
+        public static int BackLeftSteerMotor = 0;
+        public static int BackLeftCANCoder = 0;
+
+        public static int BackRightDriveMotor = 0;
+        public static int BackRightSteerMotor = 0;
+        public static int BackRightCANCoder = 0;
     }
 }
