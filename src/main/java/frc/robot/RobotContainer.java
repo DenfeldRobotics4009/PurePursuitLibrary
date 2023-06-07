@@ -9,6 +9,9 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.commands.Drive;
+import frc.robot.subsystems.SwerveDrive;
+import frc.robot.subsystems.Swerve.DriveControls;
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -19,11 +22,19 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
   private final Joystick m_jsDriver = new Joystick(0);
+  private final Joystick m_jsDriverSteer = new Joystick(1);
+
+  private final SwerveDrive m_driveTrain = new SwerveDrive();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+
+    m_driveTrain.setDefaultCommand(
+      new Drive(m_driveTrain, new DriveControls(m_jsDriver, m_jsDriverSteer))
+    );
+
     // Set up the default command for the drivetrain.
     // The controls are for field-oriented driving:
     // Left stick Y axis -> forward and backwards movement
@@ -62,27 +73,5 @@ public class RobotContainer {
     if (input > max) {return max;}
     else if (input < min) {return min;}
     else {return input;}
-  }
-
-  private static double deadband(double value, double deadband) {
-    if (Math.abs(value) > deadband) {
-      if (value > 0.0) {
-        return (value - deadband) / (1.0 - deadband);
-      } else {
-        return (value + deadband) / (1.0 - deadband);
-      }
-    } else {
-      return 0.0;
-    }
-  }
-
-  private static double modifyAxis(double value) {
-    // Deadband
-    value = deadband(value, 0.05);
-
-    // Square the axis
-    value = Math.copySign(value * value, value);
-
-    return value;
   }
 }

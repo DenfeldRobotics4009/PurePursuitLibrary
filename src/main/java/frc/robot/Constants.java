@@ -18,6 +18,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+    public static int NEOMaxRPM = 5676;
+
     public static final class Swerve {
         // Meters from wheel center to wheel center
         public static double TrackWidthMeters = 1;
@@ -25,8 +27,6 @@ public final class Constants {
 
         public static double MaxMetersPerSecond = 1;
         public static double MaxRadPerSecond = 1;
-
-        public static double DriveGearRatioFactor = 1;
 
         public static int FrontLeftDriveMotor = 0;
         public static int FrontLeftSteerMotor = 0;

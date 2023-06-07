@@ -6,7 +6,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
-import frc.robot.Constants.Swerve;
 
 public class SwerveModule {
 
@@ -42,15 +41,17 @@ public class SwerveModule {
 
         // Set drive motor
 
-        double realSpeed = kMotors.DriveMotor.getEncoder().getVelocity();
-        double speedDifference = (OptimizedState.speedMetersPerSecond / Constants.Swerve.DriveGearRatioFactor) - realSpeed;
+        double realSpeed = kMotors.DriveMotor.getEncoder().getVelocity() / Constants.NEOMaxRPM; // Divide by max RPM to find scale from -1 to 1
+        double speedDifference = (
+            OptimizedState.speedMetersPerSecond / Constants.Swerve.MaxMetersPerSecond // Divide by max mps to find scale from -1 to 1
+        ) - realSpeed;
         // Give the input to the pid controller to allow for speed compensation
         kMotors.SpeedDriveController.setInput(speedDifference);
 
         kMotors.DriveMotor.set(
             // Clamp to avoid overload
             RobotContainer.Clamp(
-                (OptimizedState.speedMetersPerSecond / Constants.Swerve.DriveGearRatioFactor)
+                (OptimizedState.speedMetersPerSecond / Constants.Swerve.MaxMetersPerSecond)
                     // Add the PID output to the input
                     // TODO may need to be reversed
                     + kMotors.SpeedDriveController.calculate(1, -1),
@@ -76,7 +77,7 @@ public class SwerveModule {
 
         SwerveModuleState OptimizedState = State;
 
-        if (Math.abs(RotationDifference.getDegrees()) > 90) {
+        if (Math.abs(RotationDifference.getRadians()) > (Math.PI / 2)) {
             // Reverse wheel direction and reverse wheel speed
             OptimizedState = new SwerveModuleState(
                 -State.speedMetersPerSecond, 
