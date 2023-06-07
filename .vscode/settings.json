@@ -27,6 +27,8 @@
   ],
   "java.test.defaultConfig": "WPIlibUnitTests",
   "cSpell.words": [
-    "AHRS"
+    "AHRS",
+    "Brushless",
+    "deadband"
   ]
 }

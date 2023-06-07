@@ -11,11 +11,10 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import frc.robot.SwerveModule;
-import frc.robot.SwerveMotors;
 import frc.robot.Constants.Swerve;
 import frc.robot.Odometry.SwerveDriveInverseKinematics;
+import frc.robot.subsystems.Swerve.SwerveModule;
+import frc.robot.subsystems.Swerve.SwerveMotors;
 
 public class SwerveDrive extends SubsystemBase {
 
@@ -41,7 +40,7 @@ public class SwerveDrive extends SubsystemBase {
 
   SwerveDriveKinematics kinematics;
 
-  AHRS navxGyro = new AHRS();
+  public AHRS navxGyro = new AHRS();
 
   /**
    * Object to tract the robots position via inverse kinematics

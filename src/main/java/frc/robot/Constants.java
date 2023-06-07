@@ -24,6 +24,7 @@ public final class Constants {
         public static double TrackLengthMeters = 1;
 
         public static double MaxMetersPerSecond = 1;
+        public static double MaxRadPerSecond = 1;
 
         public static double DriveGearRatioFactor = 1;
 

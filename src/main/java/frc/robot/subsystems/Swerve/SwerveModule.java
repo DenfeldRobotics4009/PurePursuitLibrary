@@ -1,9 +1,12 @@
-package frc.robot;
+package frc.robot.subsystems.Swerve;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import frc.robot.Constants;
+import frc.robot.RobotContainer;
+import frc.robot.Constants.Swerve;
 
 public class SwerveModule {
 
@@ -75,7 +78,10 @@ public class SwerveModule {
 
         if (Math.abs(RotationDifference.getDegrees()) > 90) {
             // Reverse wheel direction and reverse wheel speed
-            OptimizedState = new SwerveModuleState(-State.speedMetersPerSecond, State.angle.plus(new Rotation2d(180)));
+            OptimizedState = new SwerveModuleState(
+                -State.speedMetersPerSecond, 
+                State.angle.plus(new Rotation2d(Math.PI))
+            );
         }
     
         return OptimizedState;
