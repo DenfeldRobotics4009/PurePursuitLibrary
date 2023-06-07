@@ -28,13 +28,8 @@ public class SwerveDriveInverseKinematics extends OdometrySource {
 
         m_odometry = new SwerveDriveOdometry(
             Kinematics, 
-            null,
-            new SwerveModulePosition[] {
-                swerveModules[0].getEncoderPositions(),
-                swerveModules[1].getEncoderPositions(),
-                swerveModules[2].getEncoderPositions(),
-                swerveModules[3].getEncoderPositions()
-            },
+            navxGryo.getRotation2d(),
+            getModulePositions(),
             null // TODO Starting pos must be grabbed from odometry handler
         );
     }

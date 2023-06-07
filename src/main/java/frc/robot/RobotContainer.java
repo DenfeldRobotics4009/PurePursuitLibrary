@@ -35,18 +35,6 @@ public class RobotContainer {
       new Drive(m_driveTrain, new DriveControls(m_jsDriver, m_jsDriverSteer))
     );
 
-    // Set up the default command for the drivetrain.
-    // The controls are for field-oriented driving:
-    // Left stick Y axis -> forward and backwards movement
-    // Left stick X axis -> left and right movement
-    // Right stick X axis -> rotation
-    // m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
-    //         m_drivetrainSubsystem,
-    //         () -> -modifyAxis(m_jsDriver.getX()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
-    //         () -> -modifyAxis(m_jsDriver.getY()) * Constants.MAX_VELOCITY_METERS_PER_SECOND,
-    //         () -> -modifyAxis(m_jsDriver.getZ()) * Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
-    // ));
-
     // Configure the button bindings
     configureButtonBindings();
   }

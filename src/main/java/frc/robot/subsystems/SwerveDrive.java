@@ -20,19 +20,39 @@ public class SwerveDrive extends SubsystemBase {
 
   SwerveModule 
     FrontLeftModule = new SwerveModule(
-        new SwerveMotors(Swerve.FrontLeftDriveMotor, Swerve.FrontLeftSteerMotor, Swerve.FrontLeftCANCoder),
+        new SwerveMotors(
+          Swerve.FrontLeftDriveMotor, 
+          Swerve.FrontLeftSteerMotor, 
+          Swerve.FrontLeftCANCoder,
+          Swerve.FrontLeftCANCoderOffset
+        ),
         new Translation2d(-Swerve.TrackWidthMeters/2, Swerve.TrackLengthMeters/2)
       ),
     FrontRightModule = new SwerveModule(
-        new SwerveMotors(Swerve.FrontRightDriveMotor, Swerve.FrontRightSteerMotor, Swerve.FrontRightCANCoder),
+        new SwerveMotors(
+          Swerve.FrontRightDriveMotor, 
+          Swerve.FrontRightSteerMotor, 
+          Swerve.FrontRightCANCoder,
+          Swerve.FrontRightCANCoderOffset
+        ),
         new Translation2d(Swerve.TrackWidthMeters/2, Swerve.TrackLengthMeters/2)
       ),
     BackLeftModule = new SwerveModule(
-        new SwerveMotors(Swerve.BackLeftDriveMotor, Swerve.BackLeftSteerMotor, Swerve.BackLeftCANCoder),
+        new SwerveMotors(
+          Swerve.BackLeftDriveMotor, 
+          Swerve.BackLeftSteerMotor, 
+          Swerve.BackLeftCANCoder,
+          Swerve.FrontRightCANCoderOffset
+        ),
         new Translation2d(-Swerve.TrackWidthMeters/2, -Swerve.TrackLengthMeters/2)
       ),
     BackRightModule = new SwerveModule(
-        new SwerveMotors(Swerve.BackRightDriveMotor, Swerve.BackRightSteerMotor, Swerve.BackRightCANCoder),
+        new SwerveMotors(
+          Swerve.BackRightDriveMotor, 
+          Swerve.BackRightSteerMotor, 
+          Swerve.BackRightCANCoder,
+          Swerve.FrontRightCANCoderOffset
+        ),
         new Translation2d(Swerve.TrackWidthMeters/2, -Swerve.TrackLengthMeters/2)
       );
   
