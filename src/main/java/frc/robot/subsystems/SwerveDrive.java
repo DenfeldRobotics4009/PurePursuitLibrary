@@ -28,7 +28,8 @@ public class SwerveDrive extends SubsystemBase {
 
   final PIDController 
     xController = new PIDController(0.05, 0, 0, 0), 
-    yController = new PIDController(0.05, 0, 0, 0);
+    yController = new PIDController(0.05, 0, 0, 0),
+    thetaController = new PIDController(0.05, 0, 0, 0);
 
   SwerveModule 
     FrontLeftModule = new SwerveModule(
@@ -84,6 +85,7 @@ public class SwerveDrive extends SubsystemBase {
   public void periodic() {
     gyroAngle.setDouble(navxGyro.getRotation2d().getDegrees());
 
+    // Update swerve module positions
     for (SwerveModule swerveModule : swerveModules) {
       swerveModule.updateCalibration();
     }
@@ -102,11 +104,24 @@ public class SwerveDrive extends SubsystemBase {
    * @return Units from destination
    */
   public double goTo(Pose2d Position) {
+
+
     xController.setTarget(Position.getX());
     yController.setTarget(Position.getY());
 
+    // Zero is being set for CalculateDistCorrection function
+    thetaController.setTarget(0);
+
     xController.setInput(inverseKinematics.getPosition().getX());
     yController.setInput(inverseKinematics.getPosition().getY());
+
+    thetaController.setInput(
+      // See function documentation
+      SwerveModule.CalculateDistCorrection(
+        Position.getRotation().getDegrees(), 
+        navxGyro.getRotation2d().getDegrees()
+      )
+    );
 
     Transform2d difference = Position.minus(inverseKinematics.getPosition());
 

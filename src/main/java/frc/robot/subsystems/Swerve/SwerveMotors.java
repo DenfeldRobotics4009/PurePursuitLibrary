@@ -23,7 +23,7 @@ public class SwerveMotors {
         TurnEncoder.configMagnetOffset(CANCoderOffset.getDegrees());
     }
 
-    public void configureCANSparkMaxs() {
+    public void configureCANSparkMAXs() {
         DriveMotor.setOpenLoopRampRate(0.2);
         TurnMotor.setOpenLoopRampRate(0.2);
     }

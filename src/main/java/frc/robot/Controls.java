@@ -13,7 +13,7 @@ public class Controls {
         drive = Drive;
         steer = Steer;
 
-        GotoZero = new JoystickButton(drive, 1);
+        GotoZero = new JoystickButton(drive, 2);
     }
 
 

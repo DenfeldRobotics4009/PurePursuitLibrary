@@ -21,9 +21,7 @@ public class SwerveModule {
     /**
      * @return The physical location of the swerve module relative to the center of the robot.
      */
-    public Translation2d getPosition() {
-        return kPosition;
-    }
+    public Translation2d getPosition() {return kPosition;}
 
     /**
      * Construct a single swerve module
@@ -55,21 +53,30 @@ public class SwerveModule {
         SwerveModuleState OptimizedState = optimizeState(
             State, 
             // Assume reading is degrees
-            new Rotation2d(Math.toRadians(kMotors.TurnEncoder.getAbsolutePosition()))
+            new Rotation2d(
+                Math.toRadians(kMotors.TurnEncoder.getAbsolutePosition())
+            )
         );
 
         // Set drive motor
 
-        kMotors.DriveMotor.set((OptimizedState.speedMetersPerSecond / Constants.Swerve.MaxMetersPerSecond));
+        kMotors.DriveMotor.set(
+            OptimizedState.speedMetersPerSecond / Constants.Swerve.MaxMetersPerSecond
+        );
 
         // Set turn motor
         kMotors.PositionTurnController.setTarget(0);
 
         kMotors.PositionTurnController.setInput(
-            calcDistCorrection(OptimizedState.angle.getDegrees(), kMotors.TurnEncoder.getAbsolutePosition())
+            CalculateDistCorrection(
+                OptimizedState.angle.getDegrees(), 
+                kMotors.TurnEncoder.getAbsolutePosition()
+            )
         );
 
-        kMotors.TurnMotor.set(-kMotors.PositionTurnController.calculate(1, -1));
+        kMotors.TurnMotor.set(
+            -kMotors.PositionTurnController.calculate(1, -1)
+        );
     }
 
     /**
@@ -95,17 +102,25 @@ public class SwerveModule {
     }
 
     /**
-     * Set PIDController goal to zero
+     * This function calculates the difference between the target and
+     * position on a circle, allowing a PID controller to travel over 
+     * the point where 0 degrees and 360 degrees meet.
      * @param target PID goal
      * @param pos PID input
      * @return target relative to pos on a circle
      */
-    double calcDistCorrection(double target, double pos) {
-        if (Math.abs(target + (360) - pos) < Math.abs(target - pos)) {
-        return target + (360) - pos;
-        } else if (Math.abs(target - (360) - pos) < Math.abs(target - pos)) {
-        return target - (360) - pos;
-        } else {return target - pos;}
+    public static double CalculateDistCorrection(double targetDegrees, double positionDegrees) {
+        if (Math.abs(targetDegrees + (360) - positionDegrees) 
+            < Math.abs(targetDegrees - positionDegrees)
+        ) {
+            return targetDegrees + (360) - positionDegrees;
+        } else if (Math.abs(targetDegrees - (360) - positionDegrees) 
+            < Math.abs(targetDegrees - positionDegrees)
+        ) {
+            return targetDegrees - (360) - positionDegrees;
+        } else {
+            return targetDegrees - positionDegrees;
+        }
     }
 
     /**

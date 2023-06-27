@@ -27,7 +27,7 @@ public class GoTo extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //drive.goTo(pos);
+    drive.goTo(pos);
   }
 
   // Called once the command ends or is interrupted.

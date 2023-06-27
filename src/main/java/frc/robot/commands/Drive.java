@@ -40,12 +40,6 @@ public class Drive extends CommandBase {
       SwerveDrive.navxGyro.getRotation2d().times(-1)
     );
 
-    // ChassisSpeeds speeds = new ChassisSpeeds(
-    //   m_controls.getForward() * Swerve.MaxMetersPerSecond, 
-    //   m_controls.getLateral() * Swerve.MaxMetersPerSecond, 
-    //   m_controls.getTurn() * Swerve.MaxRadPerSecond
-    // );
-
     m_drivetrain.drive(speeds);
   }
 
