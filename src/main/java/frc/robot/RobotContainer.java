@@ -4,14 +4,16 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.Drive;
+import frc.robot.commands.GoTo;
 import frc.robot.subsystems.SwerveDrive;
-import frc.robot.subsystems.Swerve.DriveControls;
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -24,6 +26,8 @@ public class RobotContainer {
   private final Joystick m_jsDriver = new Joystick(0);
   private final Joystick m_jsDriverSteer = new Joystick(1);
 
+  final Controls controls = new Controls(m_jsDriver, m_jsDriverSteer);
+
   private final SwerveDrive m_driveTrain = new SwerveDrive();
 
   /**
@@ -32,7 +36,7 @@ public class RobotContainer {
   public RobotContainer() {
 
     m_driveTrain.setDefaultCommand(
-      new Drive(m_driveTrain, new DriveControls(m_jsDriver, m_jsDriverSteer))
+      new Drive(m_driveTrain, controls)
     );
 
     // Configure the button bindings
@@ -45,7 +49,11 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {}
+  private void configureButtonBindings() {
+    controls.GotoZero.whileTrue(
+      new GoTo(m_driveTrain, new Pose2d(0, 0, new Rotation2d(0)))
+    );
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

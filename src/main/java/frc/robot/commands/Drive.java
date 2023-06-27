@@ -7,16 +7,16 @@ package frc.robot.commands;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Controls;
 import frc.robot.Constants.Swerve;
 import frc.robot.subsystems.SwerveDrive;
-import frc.robot.subsystems.Swerve.DriveControls;
 
 public class Drive extends CommandBase {
   SwerveDrive m_drivetrain;
-  DriveControls m_controls;
+  Controls m_controls;
 
   /** Creates a new Drive. */
-  public Drive(SwerveDrive Drivetrain, DriveControls Controls) {
+  public Drive(SwerveDrive Drivetrain, Controls Controls) {
     addRequirements(Drivetrain);
 
     m_drivetrain = Drivetrain;
@@ -37,8 +37,14 @@ public class Drive extends CommandBase {
         m_controls.getLateral() * Swerve.MaxMetersPerSecond, 
         m_controls.getTurn() * Swerve.MaxRadPerSecond
       ), 
-      m_drivetrain.navxGyro.getRotation2d()
+      SwerveDrive.navxGyro.getRotation2d().times(-1)
     );
+
+    // ChassisSpeeds speeds = new ChassisSpeeds(
+    //   m_controls.getForward() * Swerve.MaxMetersPerSecond, 
+    //   m_controls.getLateral() * Swerve.MaxMetersPerSecond, 
+    //   m_controls.getTurn() * Swerve.MaxRadPerSecond
+    // );
 
     m_drivetrain.drive(speeds);
   }

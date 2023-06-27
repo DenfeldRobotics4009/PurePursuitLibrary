@@ -22,6 +22,27 @@ public final class Constants {
     public static int NEOMaxRPM = 5676;
 
     public static final class Swerve {
+
+        public static class SwerveModuleConstants {
+            public final int DriveMotorID, SteerMotorID, CANCoderID;
+            public final Rotation2d DefaultOffset;
+            public final String Name;
+
+            public SwerveModuleConstants (
+                int DriveMotorID, 
+                int SteerMotorID, 
+                int CANCoderID, 
+                Rotation2d DefaultOffset,
+                String Name
+            ) {
+                this.DriveMotorID = DriveMotorID;
+                this.SteerMotorID = SteerMotorID;
+                this.CANCoderID = CANCoderID;
+                this.DefaultOffset = DefaultOffset;
+                this.Name = Name;
+            }
+        }
+
         // Meters from wheel center to wheel center
         public static double TrackWidthMeters = 0.57785;
         public static double TrackLengthMeters = 0.65405;
@@ -31,24 +52,20 @@ public final class Constants {
         public static double MaxRadPerSecond = MaxMetersPerSecond /
             Math.hypot(TrackWidthMeters / 2.0, TrackLengthMeters / 2.0);
 
-        public static int FrontLeftDriveMotor = 21;
-        public static int FrontLeftSteerMotor = 31;
-        public static int FrontLeftCANCoder = 0;
-        public static Rotation2d FrontLeftCANCoderOffset = new Rotation2d(Math.toRadians(-5));
+        public static SwerveModuleConstants FrontLeft = new SwerveModuleConstants(
+            21, 31, 0, new Rotation2d(Math.toRadians(45)), "FrontLeft"
+        );
 
-        public static int FrontRightDriveMotor = 23;
-        public static int FrontRightSteerMotor = 33;
-        public static int FrontRightCANCoder = 2;
-        public static final Rotation2d FrontRightCANCoderOffset = new Rotation2d(Math.toRadians(-120));
+        public static SwerveModuleConstants FrontRight = new SwerveModuleConstants(
+            23, 33, 2, new Rotation2d(Math.toRadians(150)), "FrontRight"
+        );
 
-        public static int BackLeftDriveMotor = 22;
-        public static int BackLeftSteerMotor = 32;
-        public static int BackLeftCANCoder = 1;
-        public static final Rotation2d BackLeftCANCoderOffset = new Rotation2d(Math.toRadians(109.5));
+        public static SwerveModuleConstants BackLeft = new SwerveModuleConstants(
+            22, 32, 1, new Rotation2d(Math.toRadians(109.5)), "BackLeft"
+        );
 
-        public static int BackRightDriveMotor = 24;
-        public static int BackRightSteerMotor = 34;
-        public static int BackRightCANCoder = 3;
-        public static final Rotation2d BackRightCANCoderOffset = new Rotation2d(Math.toRadians(-59));
+        public static SwerveModuleConstants BackRight = new SwerveModuleConstants(
+            24, 34, 3, new Rotation2d(Math.toRadians(-59)), "BackRight"
+        );
     }
 }

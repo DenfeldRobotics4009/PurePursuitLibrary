@@ -1,26 +1,32 @@
-package frc.robot.subsystems.Swerve;
+package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
-public class DriveControls {
+public class Controls {
 
     final Joystick drive, steer;
 
-    public DriveControls(Joystick Drive, Joystick Steer) {
+    public JoystickButton GotoZero;
+
+    public Controls(Joystick Drive, Joystick Steer) {
         drive = Drive;
         steer = Steer;
+
+        GotoZero = new JoystickButton(drive, 1);
     }
 
+
     public double getForward() {
-        return modifyAxis(-drive.getY(), 0.05);
+        return modifyAxis(-drive.getY(), 0.15);
     }
 
     public double getLateral() {
-        return modifyAxis(drive.getX(), 0.05);
+        return modifyAxis(drive.getX(), 0.15);
     }
 
     public double getTurn() {
-        return modifyAxis(drive.getZ(), 0.05);
+        return modifyAxis(drive.getZ(), 0.15);
     }
 
     public boolean getPrecisionMode() {

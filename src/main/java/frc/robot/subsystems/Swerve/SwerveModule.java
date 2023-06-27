@@ -1,9 +1,12 @@
 package frc.robot.subsystems.Swerve;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
@@ -11,6 +14,9 @@ public class SwerveModule {
 
     final SwerveMotors kMotors;
     final Translation2d kPosition;
+
+    final ShuffleboardTab kSwerveTab;
+    final GenericEntry calibrationAngle;
 
     /**
      * @return The physical location of the swerve module relative to the center of the robot.
@@ -23,9 +29,22 @@ public class SwerveModule {
      * Construct a single swerve module
      * @param Motors Group of motors and encoder to use
      */
-    public SwerveModule(SwerveMotors Motors, Translation2d Position) {
+    public SwerveModule(SwerveMotors Motors, Translation2d Position, ShuffleboardTab SwerveTab) {
+        this.kSwerveTab = SwerveTab;
+
         this.kMotors = Motors;
         this.kPosition = Position;
+
+        calibrationAngle = SwerveTab.addPersistent(
+            Motors.Name +  " Calibration Angle"
+            , 0
+        ).getEntry();
+    }
+
+    public void updateCalibration() {
+        kMotors.configureCANCoder(
+            new Rotation2d(Math.toRadians(calibrationAngle.getDouble(0)))
+        );
     }
 
     /**
@@ -41,29 +60,16 @@ public class SwerveModule {
 
         // Set drive motor
 
-        double realSpeed = kMotors.DriveMotor.getEncoder().getVelocity() / Constants.NEOMaxRPM; // Divide by max RPM to find scale from -1 to 1
-        double speedDifference = (
-            OptimizedState.speedMetersPerSecond / Constants.Swerve.MaxMetersPerSecond // Divide by max mps to find scale from -1 to 1
-        ) - realSpeed;
-        // Give the input to the pid controller to allow for speed compensation
-        kMotors.SpeedDriveController.setInput(speedDifference);
-
-        kMotors.DriveMotor.set(
-            // Clamp to avoid overload
-            RobotContainer.Clamp(
-                (OptimizedState.speedMetersPerSecond / Constants.Swerve.MaxMetersPerSecond)
-                    // Add the PID output to the input
-                    // TODO may need to be reversed
-                    + kMotors.SpeedDriveController.calculate(1, -1),
-                1, -1
-            )
-        );
+        kMotors.DriveMotor.set((OptimizedState.speedMetersPerSecond / Constants.Swerve.MaxMetersPerSecond));
 
         // Set turn motor
-        kMotors.PositionTurnController.setTarget(OptimizedState.angle.getDegrees());
-        kMotors.PositionTurnController.setInput(kMotors.TurnEncoder.getAbsolutePosition());
-        // TODO may need to be reversed
-        kMotors.TurnMotor.set(kMotors.PositionTurnController.calculate(1, -1));
+        kMotors.PositionTurnController.setTarget(0);
+
+        kMotors.PositionTurnController.setInput(
+            calcDistCorrection(OptimizedState.angle.getDegrees(), kMotors.TurnEncoder.getAbsolutePosition())
+        );
+
+        kMotors.TurnMotor.set(-kMotors.PositionTurnController.calculate(1, -1));
     }
 
     /**
@@ -86,6 +92,20 @@ public class SwerveModule {
         }
     
         return OptimizedState;
+    }
+
+    /**
+     * Set PIDController goal to zero
+     * @param target PID goal
+     * @param pos PID input
+     * @return target relative to pos on a circle
+     */
+    double calcDistCorrection(double target, double pos) {
+        if (Math.abs(target + (360) - pos) < Math.abs(target - pos)) {
+        return target + (360) - pos;
+        } else if (Math.abs(target - (360) - pos) < Math.abs(target - pos)) {
+        return target - (360) - pos;
+        } else {return target - pos;}
     }
 
     /**

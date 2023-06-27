@@ -5,13 +5,19 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.subsystems.Swerve.SwerveModule;
 
 public class SwerveDriveInverseKinematics extends OdometrySource {
 
+    final ShuffleboardTab swerveTab;
+
     final SwerveModule[] swerveModules;
 
     final SwerveDriveOdometry m_odometry;
+    final GenericEntry xPosition, yPosition;
 
     final AHRS navxGryo;
 
@@ -21,17 +27,22 @@ public class SwerveDriveInverseKinematics extends OdometrySource {
     public SwerveDriveInverseKinematics(
         SwerveDriveKinematics Kinematics, 
         SwerveModule[] SwerveModules, 
-        AHRS navxGyro
+        AHRS navxGyro,
+        ShuffleboardTab Tab
     ) {
         this.swerveModules = SwerveModules;
         this.navxGryo = navxGyro;
+        this.swerveTab = Tab;
 
         m_odometry = new SwerveDriveOdometry(
             Kinematics, 
-            navxGryo.getRotation2d(),
+            navxGryo.getRotation2d().times(-1),
             getModulePositions(),
-            null // TODO Starting pos must be grabbed from odometry handler
+            new Pose2d() // TODO Starting pos must be grabbed from odometry handler
         );
+
+        xPosition = Tab.add("XPosition", 0).getEntry();
+        yPosition = Tab.add("YPosition", 0).getEntry();
     }
 
     /**
@@ -53,13 +64,16 @@ public class SwerveDriveInverseKinematics extends OdometrySource {
      */
     public void Update() {
         m_odometry.update(
-            navxGryo.getRotation2d(), 
+            navxGryo.getRotation2d().times(-1), 
             getModulePositions()
         );
+
+        xPosition.setDouble(m_odometry.getPoseMeters().getX());
+        yPosition.setDouble(m_odometry.getPoseMeters().getY());
     }
 
     @Override
-    Pose2d getPosition() {
+    public Pose2d getPosition() {
         // TODO will need to be tested
         // update method automatically calculates period, so
         // this likely wont need to be ran periodically if the period
@@ -73,7 +87,7 @@ public class SwerveDriveInverseKinematics extends OdometrySource {
     }
 
     @Override
-    void setPosition(Pose2d Position) {
+    public void setPosition(Pose2d Position) {
         m_odometry.resetPosition(
             navxGryo.getRotation2d(), 
             getModulePositions(), 
@@ -86,12 +100,12 @@ public class SwerveDriveInverseKinematics extends OdometrySource {
      */
 
     @Override
-    Pose2d getVelocity() {
+    public Pose2d getVelocity() {
         return null;
     }
 
     @Override
-    Pose2d getAcceleration() {
+    public Pose2d getAcceleration() {
         return null;
     }
     
