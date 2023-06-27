@@ -28,7 +28,7 @@ public class RobotContainer {
 
   final Controls controls = new Controls(m_jsDriver, m_jsDriverSteer);
 
-  private final SwerveDrive m_driveTrain = new SwerveDrive();
+  private final SwerveDrive m_driveTrain = SwerveDrive.GetInstance();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.

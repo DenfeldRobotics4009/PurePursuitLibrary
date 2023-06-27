@@ -66,8 +66,17 @@ public class SwerveDrive extends SubsystemBase {
    */
   public static SwerveDriveInverseKinematics inverseKinematics;
 
+  static SwerveDrive Instance;
+
+  public static SwerveDrive GetInstance() {
+    if (Instance == null) {
+      Instance = new SwerveDrive();
+    }
+    return Instance;
+  }
+
   /** Creates a new SwerveDrive. */
-  public SwerveDrive() {
+  private SwerveDrive() {
 
     kinematics = new SwerveDriveKinematics(
       swerveModules[0].getPosition(), swerveModules[1].getPosition(),
