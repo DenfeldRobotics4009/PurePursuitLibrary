@@ -175,18 +175,14 @@ public class SwerveModule {
      */
     public SwerveTranslationFrame updateMovementVector() {
 
+        // TODO GYRO IS NOT TAKE INTO ACCOUNT 
+
         Translation2d movementVectorMeters = new Translation2d(
             rotationsToMeters(
                 kMotors.DriveMotor.getEncoder().getPosition() - lastAccumulatedDriveDistance
             ),
             kMotors.getRotation2d()
         );
-        // Handoff time to allow reset before return
-        double timeHandoff = periodTimer.get();
-        // End
-        lastAccumulatedDriveDistance = kMotors.DriveMotor.getEncoder().getPosition();
-
-        periodTimer.reset();
 
         // Update single module tracking
         AccumulatedRelativePositionMeters = new Pose2d(
@@ -195,6 +191,13 @@ public class SwerveModule {
             // Assign rotation to current value
             kMotors.getRotation2d()
         );
+
+        // Handoff time to allow reset before return
+        double timeHandoff = periodTimer.get();
+
+        lastAccumulatedDriveDistance = kMotors.DriveMotor.getEncoder().getPosition();
+
+        periodTimer.reset();
 
         // Construct frame
         return new SwerveTranslationFrame(movementVectorMeters, timeHandoff);
