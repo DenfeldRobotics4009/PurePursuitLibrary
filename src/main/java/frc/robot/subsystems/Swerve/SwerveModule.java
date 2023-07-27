@@ -2,7 +2,6 @@ package frc.robot.subsystems.Swerve;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -36,10 +35,20 @@ public class SwerveModule {
     public Translation2d getPosition() {return kPosition;}
 
     /**
+     * @return The physical location in meters of the swerve module relative
+     * to its starting location and rotation. Updated by calling updateMovementVector()
+     */
+    public Pose2d getFieldRelativePosition() {return AccumulatedRelativePositionMeters;}
+
+    /**
      * Construct a single swerve module
      * @param Motors Group of motors and encoder to use
      */
-    public SwerveModule(SwerveMotors Motors, Translation2d Position, ShuffleboardTab SwerveTab) {
+    public SwerveModule(
+        SwerveMotors Motors, 
+        Translation2d Position, 
+        ShuffleboardTab SwerveTab
+    ) {
         this.kSwerveTab = SwerveTab;
 
         this.kMotors = Motors;
@@ -80,7 +89,7 @@ public class SwerveModule {
         kMotors.PositionTurnController.setTarget(0);
 
         kMotors.PositionTurnController.setInput(
-            CalculateDistCorrection(
+            calculateDistanceCorrection(
                 OptimizedState.angle.getDegrees(), 
                 kMotors.TurnEncoder.getAbsolutePosition()
             )
@@ -125,7 +134,10 @@ public class SwerveModule {
      * @param pos PID input
      * @return target relative to pos on a circle
      */
-    public static double CalculateDistCorrection(double targetDegrees, double positionDegrees) {
+    public static double calculateDistanceCorrection(
+        double targetDegrees, 
+        double positionDegrees
+    ) {
         if (Math.abs(targetDegrees + (360) - positionDegrees) 
             < Math.abs(targetDegrees - positionDegrees)
         ) {

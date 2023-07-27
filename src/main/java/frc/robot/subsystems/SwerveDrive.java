@@ -128,7 +128,7 @@ public class SwerveDrive extends SubsystemBase {
 
     thetaController.setInput(
       // See function documentation
-      SwerveModule.CalculateDistCorrection(
+      SwerveModule.calculateDistanceCorrection(
         Position.getRotation().getDegrees(), 
         navxGyro.getRotation2d().getDegrees()
       )
