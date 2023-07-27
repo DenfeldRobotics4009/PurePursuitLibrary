@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems.Swerve;
 
-import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Translation2d;
 
 /**
