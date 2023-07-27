@@ -22,11 +22,11 @@ public class Controls {
     }
 
     public double getLateral() {
-        return modifyAxis(drive.getX(), 0.15);
+        return modifyAxis(-drive.getX(), 0.15);
     }
 
     public double getTurn() {
-        return modifyAxis(drive.getZ(), 0.15);
+        return modifyAxis(steer.getZ(), 0.15);
     }
 
     public boolean getPrecisionMode() {

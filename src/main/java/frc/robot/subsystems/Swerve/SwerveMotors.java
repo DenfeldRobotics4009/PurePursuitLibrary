@@ -16,7 +16,7 @@ public class SwerveMotors {
 
     PIDController 
         //SpeedDriveController = new PIDController(0, 0.5, 0, 0), // TODO
-        PositionTurnController = new PIDController(0.01, 0, 0, 0); // TODO
+        PositionTurnController = new PIDController(0.01, 0, 0.001, 0); // TODO
     
     // Configures default CANCOder settings for swerve
     public void configureCANCoder(Rotation2d CANCoderOffset) {
@@ -25,7 +25,7 @@ public class SwerveMotors {
 
     public void configureCANSparkMAXs() {
         DriveMotor.setOpenLoopRampRate(0.2);
-        TurnMotor.setOpenLoopRampRate(0.2);
+        TurnMotor.setOpenLoopRampRate(0.01);
     }
 
     public SwerveMotors(SwerveModuleConstants Constants) {
@@ -35,9 +35,16 @@ public class SwerveMotors {
         this.Name = Constants.Name;
 
         configureCANCoder(Constants.DefaultOffset);
+        configureCANSparkMAXs();
     }
 
-    public SwerveMotors(CANSparkMax DriveMotor, CANSparkMax TurnMotor, CANCoder TurnEncoder, Rotation2d CANCoderOffset, String Name) {
+    public SwerveMotors(
+        CANSparkMax DriveMotor, 
+        CANSparkMax TurnMotor, 
+        CANCoder TurnEncoder, 
+        Rotation2d CANCoderOffset, 
+        String Name
+    ) {
         this.DriveMotor = DriveMotor;
         this.TurnMotor = TurnMotor;
         this.TurnEncoder = TurnEncoder;
@@ -46,11 +53,16 @@ public class SwerveMotors {
         //SpeedDriveController.setTarget(0);
 
         configureCANCoder(CANCoderOffset);
-        
+        configureCANSparkMAXs();
     }
 
-    public SwerveMotors(int DriveMotorId, int TurnMotorId, int CANCoderId, Rotation2d CANCoderOffset, String Name) {
-
+    public SwerveMotors(
+        int DriveMotorId, 
+        int TurnMotorId, 
+        int CANCoderId, 
+        Rotation2d CANCoderOffset, 
+        String Name
+    ) {
         this.DriveMotor = new CANSparkMax(DriveMotorId, MotorType.kBrushless);
         this.TurnMotor = new CANSparkMax(TurnMotorId, MotorType.kBrushless);
         this.TurnEncoder = new CANCoder(CANCoderId);
@@ -58,5 +70,6 @@ public class SwerveMotors {
         //SpeedDriveController.setTarget(0);
 
         configureCANCoder(CANCoderOffset);
+        configureCANSparkMAXs();
     }
 }

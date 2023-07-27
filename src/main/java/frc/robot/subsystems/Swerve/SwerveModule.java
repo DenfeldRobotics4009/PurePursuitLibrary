@@ -1,14 +1,12 @@
 package frc.robot.subsystems.Swerve;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import frc.robot.Constants;
-import frc.robot.RobotContainer;
+import frc.robot.Constants.Swerve;
 
 public class SwerveModule {
 
@@ -17,6 +15,8 @@ public class SwerveModule {
 
     final ShuffleboardTab kSwerveTab;
     final GenericEntry calibrationAngle;
+
+    public SwerveModulePosition swerveModulePosition;
 
     /**
      * @return The physical location of the swerve module relative to the center of the robot.
@@ -61,7 +61,7 @@ public class SwerveModule {
         // Set drive motor
 
         kMotors.DriveMotor.set(
-            OptimizedState.speedMetersPerSecond / Constants.Swerve.MaxMetersPerSecond
+            OptimizedState.speedMetersPerSecond
         );
 
         // Set turn motor
@@ -101,6 +101,10 @@ public class SwerveModule {
         return OptimizedState;
     }
 
+    static double rotationsToMeters(double rotations) {
+        return rotations * Swerve.rotationsToMeters;
+    }
+
     /**
      * This function calculates the difference between the target and
      * position on a circle, allowing a PID controller to travel over 
@@ -126,10 +130,26 @@ public class SwerveModule {
     /**
      * @return SwerveModulePosition containing turn encoder degrees and drive motor position
      */
-    public SwerveModulePosition getEncoderPositions() {
-        return new SwerveModulePosition(
-            kMotors.DriveMotor.getEncoder().getPosition(), 
-            new Rotation2d(Math.toRadians(kMotors.TurnEncoder.getAbsolutePosition()))
+    public SwerveModulePosition getSwerveModulePosition() {
+        return swerveModulePosition = new SwerveModulePosition(
+            rotationsToMeters(
+                kMotors.DriveMotor.getEncoder().getPosition()
+            ), 
+            new Rotation2d(
+                Math.toRadians(kMotors.TurnEncoder.getAbsolutePosition())
+            )
+        );
+    }
+
+    /**
+     * @return Translation2d containing swerve module travel vector
+     */
+    public Translation2d getEncoderPositions() {
+        return new Translation2d(
+            kMotors.DriveMotor.getEncoder().getPosition(),
+            new Rotation2d(
+                Math.toRadians(kMotors.TurnEncoder.getAbsolutePosition())
+            )
         );
     }
 }

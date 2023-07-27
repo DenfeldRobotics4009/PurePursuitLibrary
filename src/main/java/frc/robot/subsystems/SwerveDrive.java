@@ -34,22 +34,22 @@ public class SwerveDrive extends SubsystemBase {
   SwerveModule 
     FrontLeftModule = new SwerveModule(
         new SwerveMotors(Swerve.FrontLeft),
-        new Translation2d(Swerve.TrackWidthMeters/2, -Swerve.TrackLengthMeters/2),
+        new Translation2d(Swerve.TrackWidthMeters/2, Swerve.TrackLengthMeters/2),
         SwerveTab
       ),
     FrontRightModule = new SwerveModule(
         new SwerveMotors((Swerve.FrontRight)),
-        new Translation2d(Swerve.TrackWidthMeters/2, Swerve.TrackLengthMeters/2),
+        new Translation2d(-Swerve.TrackWidthMeters/2, Swerve.TrackLengthMeters/2),
         SwerveTab
       ),
     BackLeftModule = new SwerveModule(
         new SwerveMotors(Swerve.BackLeft),
-        new Translation2d(-Swerve.TrackWidthMeters/2, -Swerve.TrackLengthMeters/2),
+        new Translation2d(Swerve.TrackWidthMeters/2, -Swerve.TrackLengthMeters/2),
         SwerveTab
       ),
     BackRightModule = new SwerveModule(
         new SwerveMotors(Swerve.BackRight),
-        new Translation2d(-Swerve.TrackWidthMeters/2, Swerve.TrackLengthMeters/2),
+        new Translation2d(-Swerve.TrackWidthMeters/2, -Swerve.TrackLengthMeters/2),
         SwerveTab
       );
   
@@ -62,7 +62,7 @@ public class SwerveDrive extends SubsystemBase {
   GenericEntry gyroAngle;
 
   /**
-   * Object to tract the robots position via inverse kinematics
+   * Object to track the robots position via inverse kinematics
    */
   public static SwerveDriveInverseKinematics inverseKinematics;
 
@@ -86,6 +86,8 @@ public class SwerveDrive extends SubsystemBase {
     inverseKinematics = new SwerveDriveInverseKinematics(
       kinematics, swerveModules, navxGyro, SwerveTab
     );
+
+    navxGyro.calibrate();
   
     gyroAngle = SwerveTab.add("Gyro Angle", 0).getEntry();
   }

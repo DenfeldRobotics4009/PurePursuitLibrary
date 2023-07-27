@@ -6,18 +6,30 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.subsystems.Swerve.SwerveModule;
 
 public class SwerveDriveInverseKinematics extends OdometrySource {
 
+    /**
+     * @see https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-odometry.html
+     * for further documentation on the SwerveDriveOdometry class.
+     * 
+     * Zero degrees on the gyroscope represents facing the opposite
+     * alliance driver station. As the robot turns left, the gyro
+     * scope value should increase.
+     * 
+     * @see https://docs.wpilib.org/en/stable/docs/software/advanced-controls/geometry/coordinate-systems.html#field-coordinate-system
+     * for further reading on the field coordinate system standard.
+     */
+
+    // Shuffleboard display
     final ShuffleboardTab swerveTab;
+    final GenericEntry xPosition, yPosition;
 
     final SwerveModule[] swerveModules;
 
     final SwerveDriveOdometry m_odometry;
-    final GenericEntry xPosition, yPosition;
 
     final AHRS navxGryo;
 
@@ -36,7 +48,7 @@ public class SwerveDriveInverseKinematics extends OdometrySource {
 
         m_odometry = new SwerveDriveOdometry(
             Kinematics, 
-            navxGryo.getRotation2d().times(-1),
+            navxGryo.getRotation2d().unaryMinus(),
             getModulePositions(),
             new Pose2d() // TODO Starting pos must be grabbed from odometry handler
         );
@@ -50,10 +62,10 @@ public class SwerveDriveInverseKinematics extends OdometrySource {
      */
     SwerveModulePosition[] getModulePositions() {
         return new SwerveModulePosition[] {
-            swerveModules[0].getEncoderPositions(),
-            swerveModules[1].getEncoderPositions(),
-            swerveModules[2].getEncoderPositions(),
-            swerveModules[3].getEncoderPositions()
+            swerveModules[0].getSwerveModulePosition(),
+            swerveModules[1].getSwerveModulePosition(),
+            swerveModules[2].getSwerveModulePosition(),
+            swerveModules[3].getSwerveModulePosition()
         };
     }
 
@@ -63,23 +75,28 @@ public class SwerveDriveInverseKinematics extends OdometrySource {
      * function.
      */
     public void Update() {
+
         m_odometry.update(
-            navxGryo.getRotation2d().times(-1), 
+            navxGryo.getRotation2d().unaryMinus(), 
             getModulePositions()
         );
 
-        xPosition.setDouble(m_odometry.getPoseMeters().getX());
-        yPosition.setDouble(m_odometry.getPoseMeters().getY());
+        xPosition.setDouble(
+            m_odometry.getPoseMeters().getX()
+        );
+
+        yPosition.setDouble(
+            m_odometry.getPoseMeters().getY()
+        );
     }
 
     @Override
     public Pose2d getPosition() {
-        // TODO will need to be tested
-        // update method automatically calculates period, so
-        // this likely wont need to be ran periodically if the period
-        // is calculated every frame
+        // update method automatically calculates period, this
+        // should be ran as fast as possible for more
+        // accurate position tracking
         m_odometry.update(
-            navxGryo.getRotation2d(), 
+            navxGryo.getRotation2d().unaryMinus(), 
             getModulePositions()
         );
 
@@ -89,7 +106,7 @@ public class SwerveDriveInverseKinematics extends OdometrySource {
     @Override
     public void setPosition(Pose2d Position) {
         m_odometry.resetPosition(
-            navxGryo.getRotation2d(), 
+            navxGryo.getRotation2d().unaryMinus(), 
             getModulePositions(), 
             Position
         );

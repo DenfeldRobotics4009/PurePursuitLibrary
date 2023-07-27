@@ -4,11 +4,7 @@
 
 package frc.robot;
 
-import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
-
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -51,6 +47,8 @@ public final class Constants {
 
         public static double MaxRadPerSecond = MaxMetersPerSecond /
             Math.hypot(TrackWidthMeters / 2.0, TrackLengthMeters / 2.0);
+
+        public static double rotationsToMeters = 1; // TODO
 
         public static SwerveModuleConstants FrontLeft = new SwerveModuleConstants(
             21, 31, 0, new Rotation2d(Math.toRadians(45)), "FrontLeft"
