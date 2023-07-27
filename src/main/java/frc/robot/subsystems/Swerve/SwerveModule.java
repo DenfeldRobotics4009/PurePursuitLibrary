@@ -1,10 +1,13 @@
 package frc.robot.subsystems.Swerve;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants.Swerve;
 
@@ -17,6 +20,15 @@ public class SwerveModule {
     final GenericEntry calibrationAngle;
 
     public SwerveModulePosition swerveModulePosition;
+
+    private Timer periodTimer = new Timer();
+    private double lastAccumulatedDriveDistance = 0;
+
+    /**
+     * Initially set by odometry source constructor,
+     * if not set, begin at zero
+     */
+    public Pose2d AccumulatedRelativePositionMeters = new Pose2d();
 
     /**
      * @return The physical location of the swerve module relative to the center of the robot.
@@ -142,14 +154,37 @@ public class SwerveModule {
     }
 
     /**
-     * @return Translation2d containing swerve module travel vector
+     * Updates and constructs the change in position this
+     * swerve module has traveled in the previous frame.
+     * This should be ran periodically, and as frequently
+     * as possible.
+     * @return SwerveTranslationFrame containing movement
+     * vector and framerate.
      */
-    public Translation2d getEncoderPositions() {
-        return new Translation2d(
-            kMotors.DriveMotor.getEncoder().getPosition(),
-            new Rotation2d(
-                Math.toRadians(kMotors.TurnEncoder.getAbsolutePosition())
-            )
+    public SwerveTranslationFrame updateMovementVector() {
+
+        Translation2d movementVectorMeters = new Translation2d(
+            rotationsToMeters(
+                kMotors.DriveMotor.getEncoder().getPosition() - lastAccumulatedDriveDistance
+            ),
+            kMotors.getRotation2d()
         );
+        // Handoff time to allow reset before return
+        double timeHandoff = periodTimer.get();
+        // End
+        lastAccumulatedDriveDistance = kMotors.DriveMotor.getEncoder().getPosition();
+
+        periodTimer.reset();
+
+        // Update single module tracking
+        AccumulatedRelativePositionMeters = new Pose2d(
+            // Add last vector and current vector
+            AccumulatedRelativePositionMeters.getTranslation().plus(movementVectorMeters),
+            // Assign rotation to current value
+            kMotors.getRotation2d()
+        );
+
+        // Construct frame
+        return new SwerveTranslationFrame(movementVectorMeters, timeHandoff);
     }
 }

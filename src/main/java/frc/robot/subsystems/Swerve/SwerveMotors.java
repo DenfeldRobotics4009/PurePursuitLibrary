@@ -72,4 +72,15 @@ public class SwerveMotors {
         configureCANCoder(CANCoderOffset);
         configureCANSparkMAXs();
     }
+
+    /**
+     * @return A Rotation2d of the swerve module direction.
+     */
+    public Rotation2d getRotation2d() {
+        return new Rotation2d(
+            Math.toRadians(
+                TurnEncoder.getPosition()
+            )
+        );
+    }
 }
