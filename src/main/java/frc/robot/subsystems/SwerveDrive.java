@@ -38,7 +38,7 @@ public class SwerveDrive extends SubsystemBase {
         SwerveTab, navxGyro
       ),
     FrontRightModule = new SwerveModule(
-        new SwerveMotors((Swerve.FrontRight)),
+        new SwerveMotors(Swerve.FrontRight),
         new Translation2d(-Swerve.TrackWidthMeters/2, Swerve.TrackLengthMeters/2),
         SwerveTab, navxGyro
       ),
@@ -84,7 +84,7 @@ public class SwerveDrive extends SubsystemBase {
     );
 
     inverseKinematics = new SwerveDriveInverseKinematics(
-      kinematics, swerveModules, navxGyro, SwerveTab
+      swerveModules, navxGyro, SwerveTab
     );
 
     navxGyro.calibrate();

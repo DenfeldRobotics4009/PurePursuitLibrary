@@ -11,7 +11,6 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants.Swerve;
-import frc.robot.subsystems.SwerveDrive;
 
 public class SwerveModule {
 
@@ -23,7 +22,6 @@ public class SwerveModule {
 
     public SwerveModulePosition swerveModulePosition;
 
-    private Timer periodTimer = new Timer();
     private double lastAccumulatedDriveDistance = 0;
 
     private final AHRS navxGyro;
@@ -32,7 +30,7 @@ public class SwerveModule {
      * Initially set by odometry source constructor,
      * if not set, begin at zero
      */
-    public Pose2d AccumulatedRelativePositionMeters = new Pose2d();
+    private Translation2d AccumulatedRelativePositionMeters = new Translation2d();
 
     /**
      * @return The physical location of the swerve module relative to the center of the robot.
@@ -43,7 +41,19 @@ public class SwerveModule {
      * @return The physical location in meters of the swerve module relative
      * to its starting location and rotation. Updated by calling updateMovementVector()
      */
-    public Pose2d getFieldRelativePosition() {return AccumulatedRelativePositionMeters;}
+    public Translation2d getFieldRelativePosition() {return AccumulatedRelativePositionMeters;}
+
+    /**
+     * 
+     * @param Position
+     */
+    public void setFieldRelativePosition(Translation2d Position) {AccumulatedRelativePositionMeters = Position;}
+
+
+    // public static SwerveModule getInstance(int instance) {
+
+    //     return null;
+    // }
 
     /**
      * Construct a single swerve module
@@ -174,14 +184,10 @@ public class SwerveModule {
     }
 
     /**
-     * Updates and constructs the change in position this
-     * swerve module has traveled in the previous frame.
-     * This should be ran periodically, and as frequently
-     * as possible.
-     * @return SwerveTranslationFrame containing movement
-     * vector and framerate.
+     * Updates and constructs the field position of this swerve module.
+     * This should be ran periodically, and as frequently as possible.
      */
-    public SwerveTranslationFrame updateMovementVector() {
+    public Translation2d updateFieldRelativePosition() {
 
         Translation2d movementVectorMeters = new Translation2d(
             rotationsToMeters(
@@ -191,23 +197,14 @@ public class SwerveModule {
             kMotors.getRotation2d().plus(navxGyro.getRotation2d())
         );
 
-        // Update single module tracking
-        AccumulatedRelativePositionMeters = new Pose2d(
-            // Add last vector and current vector
-            AccumulatedRelativePositionMeters.getTranslation().plus(movementVectorMeters),
-            // Assign rotation to current value
-            // All positions should be field relative
-            kMotors.getRotation2d().plus(navxGyro.getRotation2d())
-        );
-
-        // Handoff time to allow reset before return
-        double timeHandoff = periodTimer.get();
-
         lastAccumulatedDriveDistance = kMotors.DriveMotor.getEncoder().getPosition();
 
-        periodTimer.reset();
+        // Update single module tracking
+        // Add last vector and current vector
+        return AccumulatedRelativePositionMeters = AccumulatedRelativePositionMeters.plus(movementVectorMeters);
+    }
 
-        // Construct frame
-        return new SwerveTranslationFrame(movementVectorMeters, timeHandoff);
+    public void setFieldRelativePositionFromRobotPosition(Pose2d Position) {
+        AccumulatedRelativePositionMeters = Position.getTranslation().plus(getPosition());
     }
 }

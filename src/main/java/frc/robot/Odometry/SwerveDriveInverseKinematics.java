@@ -2,6 +2,8 @@ package frc.robot.Odometry;
 
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -30,15 +32,14 @@ public class SwerveDriveInverseKinematics extends OdometrySource {
 
     final SwerveModule[] swerveModules;
 
-    final SwerveDriveOdometry m_odometry;
-
     final AHRS navxGyro;
+
+    Pose2d currentPose;
 
     /**
      * @param SwerveModules 4 Swerve modules to calculate position from
      */
     public SwerveDriveInverseKinematics(
-        SwerveDriveKinematics Kinematics, 
         SwerveModule[] SwerveModules, 
         AHRS navxGyro,
         ShuffleboardTab Tab
@@ -47,36 +48,8 @@ public class SwerveDriveInverseKinematics extends OdometrySource {
         this.navxGyro = navxGyro;
         this.swerveTab = Tab;
 
-        m_odometry = new SwerveDriveOdometry(
-            Kinematics, 
-            navxGyro.getRotation2d().unaryMinus(),
-            getModulePositions(),
-            new Pose2d() // TODO Starting pos must be grabbed from odometry handler
-        );
-
         xPosition = Tab.add("XPosition", 0).getEntry();
         yPosition = Tab.add("YPosition", 0).getEntry();
-    }
-
-    /**
-     * @return Array of all swerve modules positions
-     */
-    SwerveModulePosition[] getModulePositions() {
-        return new SwerveModulePosition[] {
-            swerveModules[0].getSwerveModulePosition(),
-            swerveModules[1].getSwerveModulePosition(),
-            swerveModules[2].getSwerveModulePosition(),
-            swerveModules[3].getSwerveModulePosition()
-        };
-    }
-
-    SwerveTranslationFrame[] updateSwerveTranslationFrames() {
-        return new SwerveTranslationFrame[] {
-            swerveModules[0].updateMovementVector(),
-            swerveModules[1].updateMovementVector(),
-            swerveModules[2].updateMovementVector(),
-            swerveModules[3].updateMovementVector()
-        };
     }
  
     /**
@@ -85,41 +58,32 @@ public class SwerveDriveInverseKinematics extends OdometrySource {
      * function.
      */
     public void Update() {
+        for (SwerveModule swerveModule : swerveModules) {
+            swerveModule.updateFieldRelativePosition();
+        }
 
-        m_odometry.update(
-            navxGyro.getRotation2d().unaryMinus(), 
-            getModulePositions()
-        );
+        Translation2d wheelPosSum = new Translation2d();
 
-        xPosition.setDouble(
-            m_odometry.getPoseMeters().getX()
-        );
+        for (SwerveModule swerveModule : swerveModules) {
+            wheelPosSum = wheelPosSum.plus(swerveModule.getFieldRelativePosition());
+        }
 
-        yPosition.setDouble(
-            m_odometry.getPoseMeters().getY()
+        currentPose =  new Pose2d (
+            wheelPosSum.div(swerveModules.length), 
+            navxGyro.getRotation2d()
         );
     }
 
     @Override
     public Pose2d getPosition() {
-        // update method automatically calculates period, this
-        // should be ran as fast as possible for more
-        // accurate position tracking
-        m_odometry.update(
-            navxGyro.getRotation2d().unaryMinus(), 
-            getModulePositions()
-        );
-
-        return m_odometry.getPoseMeters();
+        return currentPose;
     }
 
     @Override
     public void setPosition(Pose2d Position) {
-        m_odometry.resetPosition(
-            navxGyro.getRotation2d().unaryMinus(), 
-            getModulePositions(), 
-            Position
-        );
+        for (SwerveModule swerveModule : swerveModules) {
+            swerveModule.setFieldRelativePositionFromRobotPosition(Position);
+        }
     }
 
     /**

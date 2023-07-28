@@ -14,9 +14,7 @@ public class SwerveMotors {
     CANCoder TurnEncoder;
     final String Name;
 
-    PIDController 
-        //SpeedDriveController = new PIDController(0, 0.5, 0, 0), // TODO
-        PositionTurnController = new PIDController(0.01, 0, 0.001, 0); // TODO
+    PIDController PositionTurnController = new PIDController(0.01, 0, 0.001, 0); // TODO
     
     // Configures default CANCOder settings for swerve
     public void configureCANCoder(Rotation2d CANCoderOffset) {
