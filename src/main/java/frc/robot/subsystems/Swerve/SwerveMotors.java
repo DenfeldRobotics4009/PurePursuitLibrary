@@ -21,6 +21,9 @@ public class SwerveMotors {
     // Configures default CANCOder settings for swerve
     public void configureCANCoder(Rotation2d CANCoderOffset) {
         TurnEncoder.configMagnetOffset(CANCoderOffset.getDegrees());
+
+        // CCW Standard
+        TurnEncoder.configSensorDirection(false); 
     }
 
     public void configureCANSparkMAXs() {

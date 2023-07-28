@@ -31,26 +31,26 @@ public class SwerveDrive extends SubsystemBase {
     yController = new PIDController(0.05, 0, 0, 0),
     thetaController = new PIDController(0.05, 0, 0, 0);
 
-  SwerveModule 
+  final SwerveModule 
     FrontLeftModule = new SwerveModule(
         new SwerveMotors(Swerve.FrontLeft),
         new Translation2d(Swerve.TrackWidthMeters/2, Swerve.TrackLengthMeters/2),
-        SwerveTab
+        SwerveTab, navxGyro
       ),
     FrontRightModule = new SwerveModule(
         new SwerveMotors((Swerve.FrontRight)),
         new Translation2d(-Swerve.TrackWidthMeters/2, Swerve.TrackLengthMeters/2),
-        SwerveTab
+        SwerveTab, navxGyro
       ),
     BackLeftModule = new SwerveModule(
         new SwerveMotors(Swerve.BackLeft),
         new Translation2d(Swerve.TrackWidthMeters/2, -Swerve.TrackLengthMeters/2),
-        SwerveTab
+        SwerveTab, navxGyro
       ),
     BackRightModule = new SwerveModule(
         new SwerveMotors(Swerve.BackRight),
         new Translation2d(-Swerve.TrackWidthMeters/2, -Swerve.TrackLengthMeters/2),
-        SwerveTab
+        SwerveTab, navxGyro
       );
   
   final SwerveModule[] swerveModules = {FrontLeftModule, FrontRightModule, BackLeftModule, BackRightModule};

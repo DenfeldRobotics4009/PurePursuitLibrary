@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Swerve;
 
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -9,6 +11,7 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants.Swerve;
+import frc.robot.subsystems.SwerveDrive;
 
 public class SwerveModule {
 
@@ -22,6 +25,8 @@ public class SwerveModule {
 
     private Timer periodTimer = new Timer();
     private double lastAccumulatedDriveDistance = 0;
+
+    private final AHRS navxGyro;
 
     /**
      * Initially set by odometry source constructor,
@@ -47,12 +52,15 @@ public class SwerveModule {
     public SwerveModule(
         SwerveMotors Motors, 
         Translation2d Position, 
-        ShuffleboardTab SwerveTab
+        ShuffleboardTab SwerveTab,
+        AHRS NAVXGyro
     ) {
         this.kSwerveTab = SwerveTab;
 
         this.kMotors = Motors;
         this.kPosition = Position;
+
+        this.navxGyro = NAVXGyro;
 
         calibrationAngle = SwerveTab.addPersistent(
             Motors.Name +  " Calibration Angle"
@@ -175,13 +183,12 @@ public class SwerveModule {
      */
     public SwerveTranslationFrame updateMovementVector() {
 
-        // TODO GYRO IS NOT TAKE INTO ACCOUNT 
-
         Translation2d movementVectorMeters = new Translation2d(
             rotationsToMeters(
                 kMotors.DriveMotor.getEncoder().getPosition() - lastAccumulatedDriveDistance
             ),
-            kMotors.getRotation2d()
+            // Sum is bounded by -pi to pi
+            kMotors.getRotation2d().plus(navxGyro.getRotation2d())
         );
 
         // Update single module tracking
@@ -189,7 +196,8 @@ public class SwerveModule {
             // Add last vector and current vector
             AccumulatedRelativePositionMeters.getTranslation().plus(movementVectorMeters),
             // Assign rotation to current value
-            kMotors.getRotation2d()
+            // All positions should be field relative
+            kMotors.getRotation2d().plus(navxGyro.getRotation2d())
         );
 
         // Handoff time to allow reset before return
