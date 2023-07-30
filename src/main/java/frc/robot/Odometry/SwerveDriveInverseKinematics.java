@@ -1,11 +1,11 @@
-package frc.robot.Odometry;
+package frc.robot.odometry;
 
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import frc.robot.subsystems.Swerve.SwerveModule;
+import frc.robot.subsystems.swerve.SwerveModule;
 
 public class SwerveDriveInverseKinematics extends OdometrySource {
 
@@ -25,8 +25,6 @@ public class SwerveDriveInverseKinematics extends OdometrySource {
     final ShuffleboardTab swerveTab;
     final GenericEntry xPosition, yPosition;
 
-    final SwerveModule[] swerveModules;
-
     final AHRS navxGyro;
 
     Pose2d currentPose;
@@ -35,15 +33,14 @@ public class SwerveDriveInverseKinematics extends OdometrySource {
      * @param SwerveModules 4 Swerve modules to calculate position from
      */
     public SwerveDriveInverseKinematics(
-        SwerveModule[] SwerveModules, 
         AHRS navxGyro,
         ShuffleboardTab Tab
     ) {
-        this.swerveModules = SwerveModules;
         this.navxGyro = navxGyro;
         this.swerveTab = Tab;
 
         xPosition = Tab.add("XPosition", 0).getEntry();
+
         yPosition = Tab.add("YPosition", 0).getEntry();
     }
  
@@ -53,18 +50,20 @@ public class SwerveDriveInverseKinematics extends OdometrySource {
      * function.
      */
     public void Update() {
-        for (SwerveModule swerveModule : swerveModules) {
-            swerveModule.updateFieldRelativePosition();
-        }
 
         Translation2d wheelPosSum = new Translation2d();
+        
+        for (SwerveModule swerveModule : SwerveModule.getInstances()) {
 
-        for (SwerveModule swerveModule : swerveModules) {
+            swerveModule.updateFieldRelativePosition();
+
             wheelPosSum = wheelPosSum.plus(swerveModule.getFieldRelativePosition());
         }
 
         currentPose =  new Pose2d (
-            wheelPosSum.div(swerveModules.length), 
+            wheelPosSum.div(
+                SwerveModule.getInstances().length
+            ), 
             navxGyro.getRotation2d()
         );
     }
@@ -76,7 +75,7 @@ public class SwerveDriveInverseKinematics extends OdometrySource {
 
     @Override
     public void setPosition(Pose2d Position) {
-        for (SwerveModule swerveModule : swerveModules) {
+        for (SwerveModule swerveModule : SwerveModule.getInstances()) {
             swerveModule.setFieldRelativePositionFromRobotPosition(Position);
         }
     }

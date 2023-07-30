@@ -1,4 +1,4 @@
-package frc.robot.Odometry;
+package frc.robot.odometry;
 
 import edu.wpi.first.math.geometry.Pose2d;
 

@@ -1,10 +1,11 @@
-package frc.robot.subsystems.Swerve;
+package frc.robot.subsystems.swerve;
 
 import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.robot.Constants.Swerve;
 import frc.robot.Constants.Swerve.SwerveModuleConstants;
 import frc.robot.libraries.PIDController;
 
@@ -16,6 +17,10 @@ public class SwerveMotors {
 
     PIDController PositionTurnController = new PIDController(0.01, 0, 0.001, 0); // TODO
     
+    public static double rotationsToMeters(double rotations) {
+        return rotations * Swerve.rotationsToMeters;
+    }
+
     // Configures default CANCOder settings for swerve
     public void configureCANCoder(Rotation2d CANCoderOffset) {
         TurnEncoder.configMagnetOffset(CANCoderOffset.getDegrees());
@@ -82,6 +87,15 @@ public class SwerveMotors {
             Math.toRadians(
                 TurnEncoder.getPosition()
             )
+        );
+    }
+
+    /**
+     * @return A double of the total drive distance in meters
+     */
+    public double getDriveDistanceMeters() {
+        return rotationsToMeters(
+            DriveMotor.getEncoder().getPosition()
         );
     }
 }

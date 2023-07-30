@@ -11,16 +11,19 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Swerve;
-import frc.robot.Odometry.SwerveDriveInverseKinematics;
 import frc.robot.libraries.PIDController;
-import frc.robot.subsystems.Swerve.SwerveModule;
-import frc.robot.subsystems.Swerve.SwerveMotors;
+import frc.robot.odometry.SwerveDriveInverseKinematics;
+import frc.robot.subsystems.swerve.SwerveModule;
+import frc.robot.subsystems.swerve.SwerveModuleInstance;
+import frc.robot.subsystems.swerve.SwerveMotors;
+
 
 public class SwerveDrive extends SubsystemBase {
 
@@ -31,29 +34,40 @@ public class SwerveDrive extends SubsystemBase {
     yController = new PIDController(0.05, 0, 0, 0),
     thetaController = new PIDController(0.05, 0, 0, 0);
 
+  // Construct swerve modules
   final SwerveModule 
-    FrontLeftModule = new SwerveModule(
+
+    FrontLeftModule = SwerveModule.getInstance(
+        SwerveModuleInstance.FrontLeft,
         new SwerveMotors(Swerve.FrontLeft),
         new Translation2d(Swerve.TrackWidthMeters/2, Swerve.TrackLengthMeters/2),
-        SwerveTab, navxGyro
+        SwerveTab, 
+        navxGyro
       ),
-    FrontRightModule = new SwerveModule(
+
+    FrontRightModule = SwerveModule.getInstance(
+        SwerveModuleInstance.FrontRight,
         new SwerveMotors(Swerve.FrontRight),
         new Translation2d(-Swerve.TrackWidthMeters/2, Swerve.TrackLengthMeters/2),
-        SwerveTab, navxGyro
+        SwerveTab, 
+        navxGyro
       ),
-    BackLeftModule = new SwerveModule(
+
+    BackLeftModule = SwerveModule.getInstance(
+        SwerveModuleInstance.BackLeft,
         new SwerveMotors(Swerve.BackLeft),
         new Translation2d(Swerve.TrackWidthMeters/2, -Swerve.TrackLengthMeters/2),
-        SwerveTab, navxGyro
+        SwerveTab, 
+        navxGyro
       ),
-    BackRightModule = new SwerveModule(
+
+    BackRightModule = SwerveModule.getInstance(
+        SwerveModuleInstance.BackRight,
         new SwerveMotors(Swerve.BackRight),
         new Translation2d(-Swerve.TrackWidthMeters/2, -Swerve.TrackLengthMeters/2),
-        SwerveTab, navxGyro
+        SwerveTab, 
+        navxGyro
       );
-  
-  final SwerveModule[] swerveModules = {FrontLeftModule, FrontRightModule, BackLeftModule, BackRightModule};
 
   SwerveDriveKinematics kinematics;
 
@@ -78,14 +92,14 @@ public class SwerveDrive extends SubsystemBase {
   /** Creates a new SwerveDrive. */
   private SwerveDrive() {
 
+    // Initialize during constructor to avoid building kinematics
+    // object with uninitialized swerve modules.
     kinematics = new SwerveDriveKinematics(
-      swerveModules[0].getPosition(), swerveModules[1].getPosition(),
-      swerveModules[2].getPosition(), swerveModules[3].getPosition()
+      // Parse through initialized hash map values
+      SwerveModule.getRobotRelativePositions()
     );
 
-    inverseKinematics = new SwerveDriveInverseKinematics(
-      swerveModules, navxGyro, SwerveTab
-    );
+    inverseKinematics = new SwerveDriveInverseKinematics(navxGyro, SwerveTab);
 
     navxGyro.calibrate();
   
@@ -96,17 +110,21 @@ public class SwerveDrive extends SubsystemBase {
   public void periodic() {
     gyroAngle.setDouble(navxGyro.getRotation2d().getDegrees());
 
-    // Update swerve module positions
-    for (SwerveModule swerveModule : swerveModules) {
-      swerveModule.updateCalibration();
-    }
+    // Update swerve module calibration from shuffleboard
+    SwerveModule.forEach(
+      (instance, swerveModule) -> {
+        swerveModule.updateCalibration();
+      }
+    );
 
     inverseKinematics.Update();
   }
 
   public void drive(ChassisSpeeds Speeds) {
     SwerveModuleState[] states = kinematics.toSwerveModuleStates(Speeds);
-    for (int i = 0; i < 4; i++) {swerveModules[i].drive(states[i]);}
+    for (int i = 0; i < 4; i++) {
+      SwerveModule.getInstances()[i].drive(states[i]);
+    }
   }
 
   /**
