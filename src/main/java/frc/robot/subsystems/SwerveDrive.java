@@ -11,7 +11,6 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -112,6 +111,7 @@ public class SwerveDrive extends SubsystemBase {
 
     // Update swerve module calibration from shuffleboard
     SwerveModule.forEach(
+      // Lambda boundary
       (instance, swerveModule) -> {
         swerveModule.updateCalibration();
       }
