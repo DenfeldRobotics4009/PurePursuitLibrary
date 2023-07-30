@@ -29,10 +29,22 @@ public class SwerveDriveInverseKinematics extends OdometrySource {
 
     Pose2d currentPose;
 
+    private static SwerveDriveInverseKinematics Instance;
+
+    public static SwerveDriveInverseKinematics getInstance(
+        AHRS navxGyro, ShuffleboardTab Tab
+    ) {
+        if (Instance == null) {
+            Instance = new SwerveDriveInverseKinematics(navxGyro, Tab);
+        }
+
+        return Instance;
+    }
+
     /**
      * @param SwerveModules 4 Swerve modules to calculate position from
      */
-    public SwerveDriveInverseKinematics(
+    private SwerveDriveInverseKinematics(
         AHRS navxGyro,
         ShuffleboardTab Tab
     ) {

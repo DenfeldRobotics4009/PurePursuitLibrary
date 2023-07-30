@@ -99,7 +99,7 @@ public class SwerveDrive extends SubsystemBase {
       SwerveModule.getRobotRelativePositions()
     );
 
-    inverseKinematics = new SwerveDriveInverseKinematics(navxGyro, SwerveTab);
+    inverseKinematics = SwerveDriveInverseKinematics.getInstance(navxGyro, SwerveTab);
 
     navxGyro.calibrate();
   
