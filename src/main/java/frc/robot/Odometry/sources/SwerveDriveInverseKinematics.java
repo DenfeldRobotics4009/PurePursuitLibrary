@@ -12,6 +12,9 @@ import frc.robot.subsystems.swerve.SwerveModuleInstance;
 public class SwerveDriveInverseKinematics extends OdometrySource {
 
     /**
+     * @see https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-odometry.html
+     * for further documentation on the SwerveDriveOdometry class.
+     * 
      * Zero degrees on the gyroscope represents facing the opposite
      * alliance driver station. As the robot turns left, the gyro
      * scope value should increase.

@@ -80,7 +80,6 @@ public class SwerveDrive extends SubsystemBase {
 
     // Update swerve module calibration from shuffleboard
     SwerveModule.forEach(
-      // Lambda boundary
       (instance, swerveModule) -> {
         swerveModule.updateCalibration();
       }
