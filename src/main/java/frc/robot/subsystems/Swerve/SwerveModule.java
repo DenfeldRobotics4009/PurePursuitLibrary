@@ -18,8 +18,9 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 public class SwerveModule {
 
+    final SwerveModuleInstance Instance;
+
     final SwerveMotors kMotors;
-    final Translation2d kPosition;
 
     final ShuffleboardTab kSwerveTab;
     final GenericEntry calibrationAngle;
@@ -49,7 +50,7 @@ public class SwerveModule {
     /**
      * @return Robot relative position of swerve module
      */
-    public Translation2d getRobotRelativePosition() {return kPosition;}
+    public Translation2d getRobotRelativePosition() {return Instance.getPosition();}
 
     // public static SwerveModule getInstance(int instance) {
 
@@ -79,8 +80,6 @@ public class SwerveModule {
         SwerveModuleInstance ModulePosition,
         // Params for initialization, allow
         // no default construction
-        SwerveMotors Motors, 
-        Translation2d Position, 
         ShuffleboardTab SwerveTab,
         AHRS NAVXGyro
     ) {
@@ -88,7 +87,7 @@ public class SwerveModule {
 
         if (!Instances.containsKey(ModulePosition)) {
             // Construct new module if not present
-            swerveModule = new SwerveModule(Motors, Position, SwerveTab, NAVXGyro);
+            swerveModule = new SwerveModule(ModulePosition, SwerveTab, NAVXGyro);
 
             // Insert into hash map
             Instances.put(ModulePosition, swerveModule);
@@ -99,6 +98,17 @@ public class SwerveModule {
         }
 
         return swerveModule;
+    }
+
+    /**
+     * Returns an already constructed swerve module instance.
+     * This will error if the instance has not been initialized.
+     * 
+     * @param ModulePosition SwerveModuleInstance enum item
+     * @return Instance
+     */
+    public static SwerveModule getInstance(SwerveModuleInstance ModulePosition) {
+        return Instances.get(ModulePosition);
     }
 
     /**
@@ -155,20 +165,19 @@ public class SwerveModule {
      * Private constructor for multiton
      */
     private SwerveModule(
-        SwerveMotors Motors, 
-        Translation2d Position, 
+        SwerveModuleInstance ModulePosition, 
         ShuffleboardTab SwerveTab,
         AHRS NAVXGyro
     ) {
         this.kSwerveTab = SwerveTab;
 
-        this.kMotors = Motors;
-        this.kPosition = Position;
+        this.kMotors = ModulePosition.getMotors();
+        this.Instance = ModulePosition;
 
         this.navxGyro = NAVXGyro;
 
         calibrationAngle = SwerveTab.addPersistent(
-            Motors.Name +  " Calibration Angle"
+            kMotors.Name +  " Calibration Angle"
             , 0
         ).getEntry();
     }
@@ -280,6 +289,6 @@ public class SwerveModule {
     }
 
     public void setFieldRelativePositionFromRobotPosition(Pose2d Position) {
-        AccumulatedRelativePositionMeters = Position.getTranslation().plus(kPosition);
+        AccumulatedRelativePositionMeters = Position.getTranslation().plus(Instance.getPosition());
     }
 }
