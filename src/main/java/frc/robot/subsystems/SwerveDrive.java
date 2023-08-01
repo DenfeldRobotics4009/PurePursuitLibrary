@@ -8,7 +8,6 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -18,11 +17,9 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Swerve;
 import frc.robot.libraries.PIDController;
-import frc.robot.odometry.SwerveDriveInverseKinematics;
+import frc.robot.odometry.sources.SwerveDriveInverseKinematics;
 import frc.robot.subsystems.swerve.SwerveModule;
 import frc.robot.subsystems.swerve.SwerveModuleInstance;
-import frc.robot.subsystems.swerve.SwerveMotors;
-
 
 public class SwerveDrive extends SubsystemBase {
 
@@ -35,38 +32,10 @@ public class SwerveDrive extends SubsystemBase {
 
   // Construct swerve modules
   final SwerveModule 
-
-    FrontLeftModule = SwerveModule.getInstance(
-        SwerveModuleInstance.FrontLeft,
-        new SwerveMotors(Swerve.FrontLeft),
-        new Translation2d(Swerve.TrackWidthMeters/2, Swerve.TrackLengthMeters/2),
-        SwerveTab, 
-        navxGyro
-      ),
-
-    FrontRightModule = SwerveModule.getInstance(
-        SwerveModuleInstance.FrontRight,
-        new SwerveMotors(Swerve.FrontRight),
-        new Translation2d(-Swerve.TrackWidthMeters/2, Swerve.TrackLengthMeters/2),
-        SwerveTab, 
-        navxGyro
-      ),
-
-    BackLeftModule = SwerveModule.getInstance(
-        SwerveModuleInstance.BackLeft,
-        new SwerveMotors(Swerve.BackLeft),
-        new Translation2d(Swerve.TrackWidthMeters/2, -Swerve.TrackLengthMeters/2),
-        SwerveTab, 
-        navxGyro
-      ),
-
-    BackRightModule = SwerveModule.getInstance(
-        SwerveModuleInstance.BackRight,
-        new SwerveMotors(Swerve.BackRight),
-        new Translation2d(-Swerve.TrackWidthMeters/2, -Swerve.TrackLengthMeters/2),
-        SwerveTab, 
-        navxGyro
-      );
+    FrontLeftModule = SwerveModule.getInstance(SwerveModuleInstance.FRONT_LEFT, SwerveTab, navxGyro),
+    FrontRightModule = SwerveModule.getInstance(SwerveModuleInstance.FRONT_RIGHT, SwerveTab, navxGyro),
+    BackLeftModule = SwerveModule.getInstance(SwerveModuleInstance.BACK_LEFT, SwerveTab, navxGyro),
+    BackRightModule = SwerveModule.getInstance(SwerveModuleInstance.BACK_RIGHT, SwerveTab, navxGyro);
 
   SwerveDriveKinematics kinematics;
 
