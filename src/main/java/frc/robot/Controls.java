@@ -18,7 +18,7 @@ public class Controls {
 
 
     public double getForward() {
-        return modifyAxis(-drive.getY(), 0.15);
+        return modifyAxis(drive.getY(), 0.15);
     }
 
     public double getLateral() {
@@ -26,7 +26,7 @@ public class Controls {
     }
 
     public double getTurn() {
-        return modifyAxis(steer.getZ(), 0.15);
+        return modifyAxis(drive.getZ(), 0.15);
     }
 
     public boolean getPrecisionMode() {

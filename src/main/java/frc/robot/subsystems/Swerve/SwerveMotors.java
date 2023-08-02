@@ -15,7 +15,7 @@ public class SwerveMotors {
     CANCoder TurnEncoder;
     final String Name;
 
-    PIDController PositionTurnController = new PIDController(0.01, 0, 0.001, 0); // TODO
+    PIDController PositionTurnController = new PIDController(0.01, 0, 0, 0); // TODO
     
     public static double rotationsToMeters(double rotations) {
         return rotations * Swerve.rotationsToMeters;
@@ -31,7 +31,7 @@ public class SwerveMotors {
 
     public void configureCANSparkMAXs() {
         DriveMotor.setOpenLoopRampRate(0.2);
-        TurnMotor.setOpenLoopRampRate(0.01);
+        TurnMotor.setOpenLoopRampRate(0);
     }
 
     public SwerveMotors(SwerveModuleConstants Constants) {
@@ -85,7 +85,7 @@ public class SwerveMotors {
     public Rotation2d getRotation2d() {
         return new Rotation2d(
             Math.toRadians(
-                TurnEncoder.getPosition()
+                TurnEncoder.getAbsolutePosition()
             )
         );
     }

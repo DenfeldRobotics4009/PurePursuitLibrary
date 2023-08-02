@@ -24,6 +24,9 @@ public class SwerveModule {
 
     final ShuffleboardTab kSwerveTab;
     final GenericEntry calibrationAngle;
+    final GenericEntry xPos;
+    final GenericEntry yPos;
+    final GenericEntry theta;
 
     private double lastAccumulatedDriveDistance = 0;
 
@@ -180,6 +183,18 @@ public class SwerveModule {
             kMotors.Name +  " Calibration Angle"
             , 0
         ).getEntry();
+
+        xPos = SwerveTab.add(
+            kMotors.Name + " PosX", 0
+        ).getEntry();
+
+        yPos = SwerveTab.add(
+            kMotors.Name + " PosY", 0
+        ).getEntry();
+
+        theta = SwerveTab.add(
+            kMotors.Name + " theta", 0
+        ).getEntry();
     }
 
     public void updateCalibration() {
@@ -218,7 +233,7 @@ public class SwerveModule {
         );
 
         kMotors.TurnMotor.set(
-            -kMotors.PositionTurnController.calculate(1, -1)
+            kMotors.PositionTurnController.calculate(1, -1)
         );
     }
 
@@ -282,6 +297,12 @@ public class SwerveModule {
         );
 
         lastAccumulatedDriveDistance = kMotors.getDriveDistanceMeters();
+
+        xPos.setDouble(AccumulatedRelativePositionMeters.getX());
+        yPos.setDouble(AccumulatedRelativePositionMeters.getY());
+        theta.setDouble(
+            kMotors.getRotation2d().plus(navxGyro.getRotation2d()).getDegrees()
+        );
 
         // Update single module tracking
         // Add last vector and current vector

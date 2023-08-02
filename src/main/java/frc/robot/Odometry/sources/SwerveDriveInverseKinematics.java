@@ -80,6 +80,10 @@ public class SwerveDriveInverseKinematics extends OdometrySource {
             ), 
             navxGyro.getRotation2d()
         );
+
+        xPosition.setDouble(currentPose.getX());
+
+        yPosition.setDouble(currentPose.getY());
     }
 
     @Override

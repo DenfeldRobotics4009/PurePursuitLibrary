@@ -35,7 +35,7 @@ public class Drive extends CommandBase {
         m_controls.getForward(), 
         m_controls.getTurn()
       ), 
-      SwerveDrive.navxGyro.getRotation2d().unaryMinus()
+      SwerveDrive.navxGyro.getRotation2d()
     );
     m_drivetrain.drive(speeds);
   }
