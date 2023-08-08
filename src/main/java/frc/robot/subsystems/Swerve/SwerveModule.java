@@ -23,10 +23,7 @@ public class SwerveModule {
     final SwerveMotors kMotors;
 
     final ShuffleboardTab kSwerveTab;
-    final GenericEntry calibrationAngle;
-    final GenericEntry xPos;
-    final GenericEntry yPos;
-    final GenericEntry theta;
+    final GenericEntry calibrationAngle, xPos, yPos, theta;
 
     private double lastAccumulatedDriveDistance = 0;
 
@@ -54,11 +51,6 @@ public class SwerveModule {
      * @return Robot relative position of swerve module
      */
     public Translation2d getRobotRelativePosition() {return Instance.getPosition();}
-
-    // public static SwerveModule getInstance(int instance) {
-
-    //     return null;
-    // }
 
     /**
      * Multiton instances
@@ -287,17 +279,34 @@ public class SwerveModule {
     /**
      * Updates and constructs the field position of this swerve module.
      * This should be ran periodically, and as frequently as possible.
+     * 
+     * @return AccumulatedRelativePositionMeters
      */
     public Translation2d updateFieldRelativePosition() {
 
+        // Handoff previous value and update
+        double lastAccumulatedDriveDistance_h = lastAccumulatedDriveDistance;
+        lastAccumulatedDriveDistance = kMotors.getDriveDistanceMeters();
+        // This velocity is not for an accurate velocity reading, rather to catch a large
+        // jump in drive distance. Grabbing velocity from drive motor will not catch this
+        // error.
+        double velocityFromDriveDistance = lastAccumulatedDriveDistance - lastAccumulatedDriveDistance_h;
+        // For an accurate velocity reading, kMotors.DriveMotor.getEncoder().getVelocity()
+
+        /*
+         * TODO Check velocityFromDriveDistance for an impossible value.
+         * 
+         * Assume polling rate of 0.2 seconds, and max rpm of 5676
+         */
+
+        // Calculate delta to add to last accumulated position
         Translation2d movementVectorMeters = new Translation2d(
-            kMotors.getDriveDistanceMeters() - lastAccumulatedDriveDistance,
+            velocityFromDriveDistance, // Delta of drive distance
             // Sum is bounded by -pi to pi
             kMotors.getRotation2d().plus(navxGyro.getRotation2d())
         );
 
-        lastAccumulatedDriveDistance = kMotors.getDriveDistanceMeters();
-
+        // Update shuffleboard entries.
         xPos.setDouble(AccumulatedRelativePositionMeters.getX());
         yPos.setDouble(AccumulatedRelativePositionMeters.getY());
         theta.setDouble(
@@ -309,6 +318,11 @@ public class SwerveModule {
         return AccumulatedRelativePositionMeters = AccumulatedRelativePositionMeters.plus(movementVectorMeters);
     }
 
+    /**
+     * Updates position of swerve module from position of robot
+     * 
+     * @param Position Field relative position of robot.
+     */
     public void setFieldRelativePositionFromRobotPosition(Pose2d Position) {
         AccumulatedRelativePositionMeters = Position.getTranslation().plus(Instance.getPosition());
     }

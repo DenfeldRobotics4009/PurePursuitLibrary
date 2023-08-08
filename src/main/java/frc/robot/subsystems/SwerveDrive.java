@@ -123,10 +123,13 @@ public class SwerveDrive extends SubsystemBase {
     Transform2d difference = Position.minus(inverseKinematics.getPosition());
 
     drive(
-      new ChassisSpeeds(
-        xController.calculate(1, -1) * Swerve.MaxMetersPerSecond, 
-        yController.calculate(1, -1) * Swerve.MaxMetersPerSecond,
-        0
+      ChassisSpeeds.fromFieldRelativeSpeeds(
+        new ChassisSpeeds(
+          xController.calculate(1, -1),
+          yController.calculate(1, -1),
+          0
+        ), 
+        SwerveDrive.navxGyro.getRotation2d()
       )
     );
 
