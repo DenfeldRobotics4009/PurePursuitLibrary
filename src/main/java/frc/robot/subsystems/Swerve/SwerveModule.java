@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import frc.robot.Constants.Swerve;
 
 
 public class SwerveModule {
@@ -37,9 +38,18 @@ public class SwerveModule {
 
     /**
      * @return The physical location in meters of the swerve module relative
-     * to its starting location and rotation. Updated by calling updateMovementVector()
+     * to its starting location. Updated by calling updateMovementVector()
      */
     public Translation2d getFieldRelativePosition() {return AccumulatedRelativePositionMeters;}
+
+    /**
+     * @return The assumed physical location in meters of the robot relative to
+     * its starting location calculated from the field relative position of this
+     * individual swerve module.
+     */
+    public Translation2d getAssumedRobotFieldRelativePosition() {
+        return AccumulatedRelativePositionMeters.minus(getRobotRelativePosition());
+    }
 
     /**
      * 
@@ -283,7 +293,6 @@ public class SwerveModule {
      * @return AccumulatedRelativePositionMeters
      */
     public Translation2d updateFieldRelativePosition() {
-
         // Handoff previous value and update
         double lastAccumulatedDriveDistance_h = lastAccumulatedDriveDistance;
         lastAccumulatedDriveDistance = kMotors.getDriveDistanceMeters();
@@ -292,27 +301,34 @@ public class SwerveModule {
         // error.
         double velocityFromDriveDistance = lastAccumulatedDriveDistance - lastAccumulatedDriveDistance_h;
         // For an accurate velocity reading, kMotors.DriveMotor.getEncoder().getVelocity()
+        // Update shuffleboard entries.
+        xPos.setDouble(AccumulatedRelativePositionMeters.getX());
+        yPos.setDouble(AccumulatedRelativePositionMeters.getY());
+        theta.setDouble(kMotors.getRotation2d().plus(navxGyro.getRotation2d()).getDegrees());
 
-        /*
-         * TODO Check velocityFromDriveDistance for an impossible value.
-         * 
-         * Assume polling rate of 0.2 seconds, and max rpm of 5676
-         */
-
+        // TODO Make sure this error does not exist! DIsplay on shuffleboard if it occurs.
+        // Catch velocity error, and reset position with current robot pos
+        // Assume a polling rate of 0.2 seconds.
+        if (SwerveMotors.metersToRotations(velocityFromDriveDistance * 0.2) > Swerve.MaxRotationsPerSecond) {
+            // If this is ran, the swerve module needs to be reset
+            // Calculate position from all swerve module instances.
+            Translation2d posSum = new Translation2d();
+            for (SwerveModule swerveModule : getInstances()) {
+                posSum = posSum.plus(
+                    swerveModule.getAssumedRobotFieldRelativePosition()
+                );
+            }
+            // Return corrected position.
+            return AccumulatedRelativePositionMeters = posSum.div(Instances.size());
+            // End function
+        }
+        // Else no velocity error
         // Calculate delta to add to last accumulated position
         Translation2d movementVectorMeters = new Translation2d(
             velocityFromDriveDistance, // Delta of drive distance
             // Sum is bounded by -pi to pi
             kMotors.getRotation2d().plus(navxGyro.getRotation2d())
         );
-
-        // Update shuffleboard entries.
-        xPos.setDouble(AccumulatedRelativePositionMeters.getX());
-        yPos.setDouble(AccumulatedRelativePositionMeters.getY());
-        theta.setDouble(
-            kMotors.getRotation2d().plus(navxGyro.getRotation2d()).getDegrees()
-        );
-
         // Update single module tracking
         // Add last vector and current vector
         return AccumulatedRelativePositionMeters = AccumulatedRelativePositionMeters.plus(movementVectorMeters);

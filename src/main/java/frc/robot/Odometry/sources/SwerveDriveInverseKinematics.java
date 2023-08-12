@@ -116,13 +116,21 @@ public class SwerveDriveInverseKinematics extends OdometrySource {
 	public Quadrilateral getPositionBoundary() {
 
 		return new Quadrilateral(
-            SwerveModule.getInstance(SwerveModuleInstance.FRONT_LEFT).getFieldRelativePosition(), 
+            SwerveModule.getInstance(
+                SwerveModuleInstance.FRONT_LEFT
+            ).getAssumedRobotFieldRelativePosition(),
 
-            SwerveModule.getInstance(SwerveModuleInstance.FRONT_RIGHT).getFieldRelativePosition(), 
+            SwerveModule.getInstance(
+                SwerveModuleInstance.FRONT_RIGHT
+            ).getAssumedRobotFieldRelativePosition(),
 
-            SwerveModule.getInstance(SwerveModuleInstance.BACK_LEFT).getFieldRelativePosition(), 
+            SwerveModule.getInstance(
+                SwerveModuleInstance.BACK_LEFT
+            ).getAssumedRobotFieldRelativePosition(),
 
-            SwerveModule.getInstance(SwerveModuleInstance.BACK_RIGHT).getFieldRelativePosition()
+            SwerveModule.getInstance(
+                SwerveModuleInstance.BACK_RIGHT
+            ).getAssumedRobotFieldRelativePosition()
         );
 	}
     

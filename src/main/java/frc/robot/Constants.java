@@ -50,6 +50,10 @@ public final class Constants {
 
         public static double rotationsToMeters = 1; // TODO
 
+        public static double MaxRotationsPerSecond = 5676;
+
+        public static double MaxAccelerationMetersPerSecondPerSecond = 1; // TODO
+
         public static SwerveModuleConstants FrontLeft = new SwerveModuleConstants(
             21, 31, 0, new Rotation2d(Math.toRadians(45)), "FrontLeft"
         );

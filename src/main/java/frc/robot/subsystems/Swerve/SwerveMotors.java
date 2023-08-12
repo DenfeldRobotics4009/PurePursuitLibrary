@@ -20,6 +20,10 @@ public class SwerveMotors {
     public static double rotationsToMeters(double rotations) {
         return rotations * Swerve.rotationsToMeters;
     }
+    
+    public static double metersToRotations(double meters) {
+        return meters / Swerve.rotationsToMeters;
+    }
 
     // Configures default CANCOder settings for swerve
     public void configureCANCoder(Rotation2d CANCoderOffset) {
