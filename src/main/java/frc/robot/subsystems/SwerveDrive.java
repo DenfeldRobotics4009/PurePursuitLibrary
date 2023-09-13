@@ -15,8 +15,6 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.Swerve;
-import frc.robot.libraries.PIDController;
 import frc.robot.odometry.sources.SwerveDriveInverseKinematics;
 import frc.robot.subsystems.swerve.SwerveModule;
 import frc.robot.subsystems.swerve.SwerveModuleInstance;
@@ -24,14 +22,10 @@ import frc.robot.subsystems.swerve.SwerveModuleInstance;
 public class SwerveDrive extends SubsystemBase {
 
   final ShuffleboardTab SwerveTab = Shuffleboard.getTab("Swerve");
-
-  final PIDController 
-    xController = new PIDController(0.05, 0, 0, 0), 
-    yController = new PIDController(0.05, 0, 0, 0),
-    thetaController = new PIDController(0.05, 0, 0, 0);
+  GenericEntry gyroAngle;
 
   // Construct swerve modules
-  final SwerveModule 
+  final SwerveModule
     FrontLeftModule = SwerveModule.getInstance(SwerveModuleInstance.FRONT_LEFT, SwerveTab, navxGyro),
     FrontRightModule = SwerveModule.getInstance(SwerveModuleInstance.FRONT_RIGHT, SwerveTab, navxGyro),
     BackLeftModule = SwerveModule.getInstance(SwerveModuleInstance.BACK_LEFT, SwerveTab, navxGyro),
@@ -40,8 +34,6 @@ public class SwerveDrive extends SubsystemBase {
   SwerveDriveKinematics kinematics;
 
   public static AHRS navxGyro = new AHRS();
-
-  GenericEntry gyroAngle;
 
   /**
    * Object to track the robots position via inverse kinematics
@@ -93,46 +85,5 @@ public class SwerveDrive extends SubsystemBase {
     for (int i = 0; i < 4; i++) {
       SwerveModule.getInstances()[i].drive(states[i]);
     }
-  }
-
-  /**
-   * Drives the robot to the given position via PControllers
-   * @param Position goal position
-   * @return Units from destination
-   */
-  public double goTo(Pose2d Position) {
-
-
-    xController.setTarget(Position.getX());
-    yController.setTarget(Position.getY());
-
-    // Zero is being set for CalculateDistCorrection function
-    thetaController.setTarget(0);
-
-    xController.setInput(inverseKinematics.getPosition().getX());
-    yController.setInput(inverseKinematics.getPosition().getY());
-
-    thetaController.setInput(
-      // See function documentation
-      SwerveModule.calculateDistanceCorrection(
-        Position.getRotation().getDegrees(), 
-        navxGyro.getRotation2d().getDegrees()
-      )
-    );
-
-    Transform2d difference = Position.minus(inverseKinematics.getPosition());
-
-    drive(
-      ChassisSpeeds.fromFieldRelativeSpeeds(
-        new ChassisSpeeds(
-          xController.calculate(1, -1),
-          yController.calculate(1, -1),
-          0
-        ), 
-        SwerveDrive.navxGyro.getRotation2d()
-      )
-    );
-
-    return Math.hypot(difference.getX(), difference.getY());
   }
 }

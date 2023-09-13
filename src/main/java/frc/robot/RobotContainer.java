@@ -39,7 +39,7 @@ public class RobotContainer {
       new Drive(m_driveTrain, controls)
     );
 
-    // Configure the button bindings
+    // Configure the button bindingsw
     configureButtonBindings();
   }
 
@@ -65,9 +65,18 @@ public class RobotContainer {
     return new InstantCommand();
   }
 
+  /**
+   * 
+   * @param input
+   * @param max return max if input > max
+   * @param min return min is input < min
+   * @return clamped input
+   */
   public static double Clamp(double input, double max, double min) {
     if (input > max) {return max;}
     else if (input < min) {return min;}
     else {return input;}
   }
+
+  
 }

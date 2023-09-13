@@ -322,6 +322,7 @@ public class SwerveModule {
             return AccumulatedRelativePositionMeters = posSum.div(Instances.size());
             // End function
         }
+        
         // Else no velocity error
         // Calculate delta to add to last accumulated position
         Translation2d movementVectorMeters = new Translation2d(

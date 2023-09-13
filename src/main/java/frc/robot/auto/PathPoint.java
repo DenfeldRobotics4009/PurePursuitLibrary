@@ -77,12 +77,4 @@ public class PathPoint {
     ) {
         return (Final - Initial) / Distance;
     }
-
-    // public static double getDistanceBetweenPoints(
-    //     PathPoint Initial, PathPoint Final
-    // ) {
-    //     return Initial.getPosMeters().getDistance(
-    //         Final.getPosMeters()
-    //     );
-    // }
 } 
