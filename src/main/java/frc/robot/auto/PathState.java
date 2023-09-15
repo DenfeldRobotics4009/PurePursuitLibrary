@@ -4,17 +4,15 @@
 
 package frc.robot.auto;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
 // final struct format
 
 public final class PathState {
-
-    // Position the robot should attempt to drive to
-    public final Translation2d gotoPosMeters;
-    // Orientation the robot should attempt to face
-    public final Rotation2d orientation;
+    // The position and orientation the robot should attempt to drive to.
+    public final Pose2d goalPose;
     // The speed in which the robot should attempt to drive to its goal point
     public final double speedMetersPerSecond;
     
@@ -29,8 +27,7 @@ public final class PathState {
         Rotation2d orientation,
         double speedMetersPerSecond
     ) {
-        this.gotoPosMeters = gotoPosMeters;
-        this.orientation = orientation;
+        goalPose = new Pose2d(gotoPosMeters, orientation);
         this.speedMetersPerSecond = speedMetersPerSecond;
     }
 }

@@ -35,7 +35,7 @@ public class PathFollower {
      * @param robotPosition current position of robot in meters
      * @return State for robot to travel to from grabbed position along path.
      */
-    PathState getPathState(Pose2d robotPosition) {
+    public PathState getPathState(Pose2d robotPosition) {
         PathPoint lastPoint = path.points.get(lastCrossedPointIndex);
         PathPoint nextPoint; // Avoid init, though declare access
         // Catch index out of bounds, thus we know its the end of the path.

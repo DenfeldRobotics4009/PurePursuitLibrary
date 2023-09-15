@@ -80,10 +80,19 @@ public class SwerveDrive extends SubsystemBase {
     inverseKinematics.Update();
   }
 
+  /**
+   * Drives the robot in a robot oriented manner, if field oriented is
+   * desired, inputs must be rotated by calling function accordingly.
+   * @param Speeds Robot relative chassis speeds on a scale from 0 to 1.
+   */
   public void drive(ChassisSpeeds Speeds) {
     SwerveModuleState[] states = kinematics.toSwerveModuleStates(Speeds);
     for (int i = 0; i < 4; i++) {
       SwerveModule.getInstances()[i].drive(states[i]);
     }
+  }
+
+  public Pose2d getPosition() {
+    return inverseKinematics.getPosition();
   }
 }

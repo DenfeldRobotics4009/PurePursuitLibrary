@@ -206,7 +206,8 @@ public class SwerveModule {
     }
 
     /**
-     * Drive the current swerve module using optimization
+     * Drive the current swerve module using optimization.
+     * Inputs are assumed to be on a scale from 0 to 1
      * @param State Un-Optimized state
      */
     public void drive(SwerveModuleState State) {
