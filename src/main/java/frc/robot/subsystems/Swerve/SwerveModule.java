@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants.Swerve;
 
@@ -182,21 +183,11 @@ public class SwerveModule {
         this.navxGyro = NAVXGyro;
 
         calibrationAngle = SwerveTab.addPersistent(
-            kMotors.Name +  " Calibration Angle"
-            , 0
-        ).getEntry();
+            kMotors.Name +  " Calibration Angle", 0).getEntry();
 
-        xPos = SwerveTab.add(
-            kMotors.Name + " PosX", 0
-        ).getEntry();
-
-        yPos = SwerveTab.add(
-            kMotors.Name + " PosY", 0
-        ).getEntry();
-
-        theta = SwerveTab.add(
-            kMotors.Name + " theta", 0
-        ).getEntry();
+        xPos =  SwerveTab.add(kMotors.Name + " PosX", 0)    .getEntry();
+        yPos =  SwerveTab.add(kMotors.Name + " PosY", 0)    .getEntry();
+        theta = SwerveTab.add(kMotors.Name + " theta", 0)   .getEntry();
     }
 
     public void updateCalibration() {
@@ -307,10 +298,15 @@ public class SwerveModule {
         yPos.setDouble(AccumulatedRelativePositionMeters.getY());
         theta.setDouble(kMotors.getRotation2d().plus(navxGyro.getRotation2d()).getDegrees());
 
-        // TODO Make sure this error does not exist! DIsplay on shuffleboard if it occurs.
+        // Make sure this error does not exist!
         // Catch velocity error, and reset position with current robot pos
         // Assume a polling rate of 0.2 seconds.
         if (SwerveMotors.metersToRotations(velocityFromDriveDistance * 0.2) > Swerve.MaxRotationsPerSecond) {
+            // notify on driver station
+            DriverStation.reportError(
+                "Swerve module " + Instance.name() + " has encountered a drive motor encoder failure. " +
+                "Attempting recalibration from sibling modules", false
+            );
             // If this is ran, the swerve module needs to be reset
             // Calculate position from all swerve module instances.
             Translation2d posSum = new Translation2d();

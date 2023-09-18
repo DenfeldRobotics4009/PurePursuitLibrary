@@ -15,7 +15,7 @@ public class SwerveMotors {
     CANCoder TurnEncoder;
     final String Name;
 
-    PIDController PositionTurnController = new PIDController(0.01, 0, 0, 0); // TODO
+    PIDController PositionTurnController = new PIDController(0.01, 0, 0, 0); // TODO Tune kP
     
     public static double rotationsToMeters(double rotations) {
         return rotations * Swerve.rotationsToMeters;

@@ -7,13 +7,14 @@ package frc.robot.auto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import frc.robot.RobotContainer;
 import frc.robot.libraries.geometry.Line2d;
 
 public class PathFollower {
 
     final Path path;
     
-    int lastCrossedPointIndex;
+    int lastCrossedPointIndex = 0;
 
     double lookAheadMeters; // Calculate-able?
 
@@ -31,7 +32,7 @@ public class PathFollower {
 
     /**
      * Calculates a PathState indicating where the robot should
-     * drive to, and how fast it should be travelling to that point.
+     * drive to, and how fast it should be traveling to that point.
      * @param robotPosition current position of robot in meters
      * @return State for robot to travel to from grabbed position along path.
      */
@@ -42,8 +43,11 @@ public class PathFollower {
         try {
             nextPoint = path.points.get(lastCrossedPointIndex + 1);
         } catch (IndexOutOfBoundsException e) {
-            // TODO Handle end of path case
-            return null; // For now, end
+            e.printStackTrace();
+            // lastCrossedPointIndex should never reach
+            // this, if it does, decrement index and recurse            
+            lastCrossedPointIndex --;
+            return getPathState(robotPosition);
         }
         
         Translation2d lastPointPos = lastPoint.getPosMeters(), nextPointPos = nextPoint.getPosMeters();
@@ -63,14 +67,26 @@ public class PathFollower {
         double lookAheadDistanceAlongLineMeters = robotDistanceAlongLineMeters + lookAheadMeters;
 
         // Lines of a length of 0 are invalid
+        // Normalize meters values
         double percentFromLastPoint = robotDistanceAlongLineMeters / lineFromOrigin.getLength();
         double lookAheadPercentFromLastPoint = lookAheadDistanceAlongLineMeters / lineFromOrigin.getLength();
 
         // Check if lookahead is past this line
-        if (lookAheadPercentFromLastPoint >= 1) {
+        if (
+            lookAheadPercentFromLastPoint >= 1 &&               // If lookahead has passed the next point
+            lastCrossedPointIndex < (path.points.size() - 1)    // If the point after exists
+        ) {
             // update last point, and continue driving along next line
             lastCrossedPointIndex ++;
         }
+
+        /**
+         * If the robot passes its goal point, its interpolated speed may reach the negatives,
+         * and the drive direction is reversed by the goto function. The if the robot passes its goal
+         * point it may speed up while driving away from the point.
+         * 
+         * This can be solved by clamping the speed of the robot to the speed boundaries of both points.
+         */
 
         // Construct path state from calculations
         return new PathState(
@@ -91,11 +107,22 @@ public class PathFollower {
                 )
             ), 
 
+            // TODO DO FUNNY INTERPOLATION
             // Travel Speed
             PathPoint.getAtLinearInterpolation(
+
                 lastPoint.speedMetersPerSecond, nextPoint.speedMetersPerSecond, 
+
                 percentFromLastPoint
             )
         );
+    }
+
+    /**
+     * Clamps the input between A and B, it does not matter wether A is the min or max
+     */
+    public static double nonSpecificClamp(double input, double boundA, double boundB) {
+        if (boundA > boundB) return RobotContainer.Clamp(input, boundA, boundB);
+        else return RobotContainer.Clamp(input, boundB, boundA);
     }
 }

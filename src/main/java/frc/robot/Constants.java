@@ -48,11 +48,11 @@ public final class Constants {
         public static double MaxRadPerSecond = MaxMetersPerSecond /
             Math.hypot(TrackWidthMeters / 2.0, TrackLengthMeters / 2.0);
 
-        public static double rotationsToMeters = 1; // TODO
+        public static double rotationsToMeters = 1; // TODO Calculate
 
         public static double MaxRotationsPerSecond = 5676;
 
-        public static double MaxAccelerationMetersPerSecondPerSecond = 1; // TODO
+        public static double MaxAccelerationMetersPerSecondPerSecond = 1; // TODO Calculate
 
         public static SwerveModuleConstants FrontLeft = new SwerveModuleConstants(
             21, 31, 0, new Rotation2d(Math.toRadians(45)), "FrontLeft"
