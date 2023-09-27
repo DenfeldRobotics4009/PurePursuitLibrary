@@ -8,7 +8,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 
-/** Add your docs here. */
+/**
+ * A point along a Path
+ */
 public class PathPoint {
 
     final Translation2d posMeters;
@@ -20,6 +22,15 @@ public class PathPoint {
 
     final Command triggeredCommand;
 
+    /**
+     * Constructs a new PathPoint with the given statistics. The
+     * order of PathPoints constructed will define the order they
+     * are driven by the robot.
+     * @param PosMeters Position of point on the field in meters
+     * @param Orientation The goal orientation of the robot when it reaches this point
+     * @param SpeedMetersPerSecond The speed the robot should travel THROUGH this point
+     * @param TriggeredCommand A command that should be triggered as the robot passes this point
+     */
     public PathPoint(
         Translation2d PosMeters,
         Rotation2d Orientation,
@@ -37,20 +48,6 @@ public class PathPoint {
     public void defineDistanceAlongPath(double distanceAlongPath) {
         this.distanceAlongPath = distanceAlongPath;
     }
-
-    public Translation2d getPosMeters() {return posMeters;}
-
-    public double getDistanceAlongPathMeters() {return distanceAlongPath;}
-
-    public void setOrientation(Rotation2d orientation) {this.orientation = orientation;}
-
-    public Rotation2d getOrientation() {return orientation;}
-
-    public double getSpeedMetersPerSecond() {return speedMetersPerSecond;}
-
-    public void setSpeedMetersPerSecond(double SpeedMetersPerSecond) {speedMetersPerSecond = SpeedMetersPerSecond;}
-
-    //public void setAccelerationDistance(double AccelerationDistance) {accelerationDistance = AccelerationDistance;}
 
     /**
      * 
@@ -111,6 +108,6 @@ public class PathPoint {
     }
 
     public double getDistance(PathPoint Point) {
-        return posMeters.getDistance(Point.getPosMeters());
+        return posMeters.getDistance(Point.posMeters);
     }
 } 

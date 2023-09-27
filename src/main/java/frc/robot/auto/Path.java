@@ -34,17 +34,17 @@ public class Path {
             PathPoint lastPoint = points.get(i-1);
             // Calculate distance from last point
             point.defineDistanceAlongPath( // Set to Z
-                point.getPosMeters().getDistance(
-                    lastPoint.getPosMeters()
+                point.posMeters.getDistance(
+                    lastPoint.posMeters
                     // Add last value
-                ) + lastPoint.getDistanceAlongPathMeters()
+                ) + lastPoint.distanceAlongPath
             );
         }
 
         // Correct or implement orientation for each point.
         // Handle first point
-        if (firstPoint.getOrientation() == null) {
-            firstPoint.setOrientation(new Rotation2d());
+        if (firstPoint.orientation == null) {
+            firstPoint.orientation = new Rotation2d();
         }
         // Define others
         for (int i = 1; i < points.size(); i++) {
@@ -52,9 +52,9 @@ public class Path {
             PathPoint lastPoint = points.get(i-1);
 
             // If no orientation was initialized
-            if (point.getOrientation() == null) {
+            if (point.orientation == null) {
                 // Set to last
-                point.setOrientation(lastPoint.getOrientation());
+                point.orientation = lastPoint.orientation;
             }
         }
 
@@ -65,17 +65,17 @@ public class Path {
             PathPoint previousPoint = points.get(i-1); // Next in processing
 
             double distanceBetween = 
-                point.getDistanceAlongPathMeters() - previousPoint.getDistanceAlongPathMeters();
+                point.distanceAlongPath - previousPoint.distanceAlongPath;
 
             double validSpeed = distanceBetween * Swerve.MaxAccelerationMetersPerSecondPerSecond;
 
             // handle next point from current point
             if (
                 // Test if robot will be decelerating too fast
-                validSpeed < previousPoint.getSpeedMetersPerSecond()
+                validSpeed < previousPoint.speedMetersPerSecond
             ) { // Slope is too steep
                 // Set speed of previous point
-                previousPoint.setSpeedMetersPerSecond(validSpeed);
+                previousPoint.speedMetersPerSecond = validSpeed;
             }
         }
     }

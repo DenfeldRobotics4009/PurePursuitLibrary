@@ -48,9 +48,9 @@ public class PathFollower {
         // Calculate perpendicularIntersection between both points
         Translation2d[] perpendicularIntersection = {
             PathPoint.findPerpendicularIntersection(
-                relevantPoints[0].getPosMeters(), relevantPoints[1].getPosMeters(), robotTranslation),
+                relevantPoints[0].posMeters, relevantPoints[1].posMeters, robotTranslation),
             PathPoint.findPerpendicularIntersection(
-                relevantPoints[0].getPosMeters(), relevantPoints[1].getPosMeters(), robotTranslation)
+                relevantPoints[0].posMeters, relevantPoints[1].posMeters, robotTranslation)
         };
 
         // Find the distance from both intersections
@@ -88,8 +88,8 @@ public class PathFollower {
 
         PathState state = new PathState(
             // Interpolate goto position from lookahead distance
-            relevantPoints[lMRPI].getPosMeters().interpolate(
-                relevantPoints[lMRPI+1].getPosMeters(), lookaheadDistanceFromMRP / distancesBetween[mRPI]
+            relevantPoints[lMRPI].posMeters.interpolate(
+                relevantPoints[lMRPI+1].posMeters, lookaheadDistanceFromMRP / distancesBetween[mRPI]
             ),
             // Interpolate orientation
             new Rotation2d(
