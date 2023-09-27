@@ -105,6 +105,10 @@ public class PathFollower {
             )
         );
 
+        calculationTimer.stop();
+        System.out.println("Calculated PathState in " + calculationTimer.get() + " seconds");
+        calculationTimer.reset();
+
         return state;
     }
 
