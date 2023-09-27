@@ -7,16 +7,17 @@ package frc.robot.auto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import frc.robot.RobotContainer;
-import frc.robot.libraries.geometry.Line2d;
+import edu.wpi.first.wpilibj.Timer;
 
 public class PathFollower {
 
     final Path path;
     
-    int lastCrossedPointIndex = 0;
+    public int lastCrossedPointIndex = 0;
 
     double lookAheadMeters; // Calculate-able?
+
+    Timer calculationTimer = new Timer();
 
     /**
      * 
@@ -28,101 +29,100 @@ public class PathFollower {
 
     public void setLookAheadDistance(double distanceMeters) {
         lookAheadMeters = distanceMeters;
-    }
+    } 
 
-    /**
-     * Calculates a PathState indicating where the robot should
-     * drive to, and how fast it should be traveling to that point.
-     * @param robotPosition current position of robot in meters
-     * @return State for robot to travel to from grabbed position along path.
-     */
     public PathState getPathState(Pose2d robotPosition) {
-        PathPoint lastPoint = path.points.get(lastCrossedPointIndex);
-        PathPoint nextPoint; // Avoid init, though declare access
-        // Catch index out of bounds, thus we know its the end of the path.
-        try {
-            nextPoint = path.points.get(lastCrossedPointIndex + 1);
-        } catch (IndexOutOfBoundsException e) {
-            e.printStackTrace();
-            // lastCrossedPointIndex should never reach
-            // this, if it does, decrement index and recurse            
-            lastCrossedPointIndex --;
-            return getPathState(robotPosition);
+        calculationTimer.start();
+        // Store 3 points, the first point is the one most recently
+        // passed by the robots closest perpendicular intersection (pI)
+        PathPoint relevantPoints[] = packageRelevantPoints();
+        // grab robot position
+        Translation2d robotTranslation = robotPosition.getTranslation();
+
+        // Calculate point distances
+        double[] distancesBetween = {
+            relevantPoints[0].getDistance(relevantPoints[1]),
+            relevantPoints[1].getDistance(relevantPoints[2])
+        };
+
+        // Calculate perpendicularIntersection between both points
+        Translation2d[] perpendicularIntersection = {
+            PathPoint.findPerpendicularIntersection(
+                relevantPoints[0].getPosMeters(), relevantPoints[1].getPosMeters(), robotTranslation),
+            PathPoint.findPerpendicularIntersection(
+                relevantPoints[0].getPosMeters(), relevantPoints[1].getPosMeters(), robotTranslation)
+        };
+
+        // Find the distance from both intersections
+        double distanceToAB = perpendicularIntersection[0].getDistance(robotTranslation);
+        double distanceToBC = perpendicularIntersection[1].getDistance(robotTranslation);
+
+        int mRPI = 0; // Most Relevant Point Index, abbreviated for neatness
+        // Grab closest intersection, and proceed with interpolation
+        if (distanceToAB > distanceToBC) {
+            mRPI = 1; // Look at BC, else look at AB
         }
-        
-        Translation2d lastPointPos = lastPoint.getPosMeters(), nextPointPos = nextPoint.getPosMeters();
-        // Line class to allow for the math to be outsourced, just making this code cleaner.
-        Line2d pathLine = new Line2d(lastPointPos, nextPointPos); // Line in original path coords
-        Line2d lineFromOrigin = pathLine.adjustToOrigin(); // Line adjusted to origin
+        // Find distance from most relevant point
+        double distanceFromMRP = relevantPoints[mRPI].posMeters.getDistance(perpendicularIntersection[mRPI]);
 
-    
-        // Calculates the coordinates of the closest point upon the path to the robot
-        Translation2d robotPathIntersection = lineFromOrigin.findPerpendicularIntersection(
-            // Adjust robot position according to line adjustment
-            robotPosition.getTranslation().minus(lastPointPos)
-        );
+        // grab mRPI for lookahead
+        int lMRPI = mRPI;
+        double lookaheadDistanceFromMRP = distanceFromMRP + lookAheadMeters;
+        if (lookaheadDistanceFromMRP > distancesBetween[mRPI]) {
+            lMRPI = mRPI + 1; // Look at line beyond current
+        }
 
-        // Construct distance and percent variables for both position, and lookahead
-        double robotDistanceAlongLineMeters = robotPathIntersection.getNorm();
-        double lookAheadDistanceAlongLineMeters = robotDistanceAlongLineMeters + lookAheadMeters;
-
-        // Lines of a length of 0 are invalid
-        // Normalize meters values
-        double percentFromLastPoint = robotDistanceAlongLineMeters / lineFromOrigin.getLength();
-        double lookAheadPercentFromLastPoint = lookAheadDistanceAlongLineMeters / lineFromOrigin.getLength();
-
-        // Check if lookahead is past this line
-        if (
-            lookAheadPercentFromLastPoint >= 1 &&               // If lookahead has passed the next point
-            lastCrossedPointIndex < (path.points.size() - 1)    // If the point after exists
-        ) {
-            // update last point, and continue driving along next line
+        if (lMRPI > 1) {
+            // Test if the next point exists by catching an indexOutOfBoundsException
+            try {
+                path.points.get(lastCrossedPointIndex + 4);
+            } catch (IndexOutOfBoundsException e) {
+                // If the point does not exist, move lookahead to distancesBetween[mRPI]
+                lMRPI = mRPI;
+                lookaheadDistanceFromMRP = distancesBetween[mRPI];
+            }
+            // no exception, increment and recurse
             lastCrossedPointIndex ++;
-        }
+            getPathState(robotPosition);
+        } // Else continue
 
-        /**
-         * If the robot passes its goal point, its interpolated speed may reach the negatives,
-         * and the drive direction is reversed by the goto function. The if the robot passes its goal
-         * point it may speed up while driving away from the point.
-         * 
-         * This can be solved by clamping the speed of the robot to the speed boundaries of both points.
-         */
-
-        // Construct path state from calculations
-        return new PathState(
-            // Goto position
-            new Translation2d(
-                // Calculate X from lookahead
-                pathLine.getAtLinearInterpolationOfX(lookAheadPercentFromLastPoint),
-
-                // Calculate Y from lookahead
-                pathLine.getAtLinearInterpolationOfY(lookAheadPercentFromLastPoint)
+        PathState state = new PathState(
+            // Interpolate goto position from lookahead distance
+            relevantPoints[lMRPI].getPosMeters().interpolate(
+                relevantPoints[lMRPI+1].getPosMeters(), lookaheadDistanceFromMRP / distancesBetween[mRPI]
             ),
-
-            // Rotation goal
+            // Interpolate orientation
             new Rotation2d(
                 PathPoint.getAtLinearInterpolation(
-                    lastPoint.orientation.getRadians(), nextPoint.orientation.getRadians(), 
-                    percentFromLastPoint
+                    relevantPoints[mRPI].orientation.getRadians(), relevantPoints[mRPI+1].orientation.getRadians(), 
+                    distancesBetween[mRPI], distanceFromMRP
                 )
-            ), 
-
-            // TODO DO FUNNY INTERPOLATION
-            // Travel Speed
+            ),
+            // Interpolate speed, TODO the funny
             PathPoint.getAtLinearInterpolation(
-
-                lastPoint.speedMetersPerSecond, nextPoint.speedMetersPerSecond, 
-
-                percentFromLastPoint
+                relevantPoints[mRPI].orientation.getRadians(), relevantPoints[mRPI+1].orientation.getRadians(), 
+                distancesBetween[mRPI], distanceFromMRP
             )
         );
+
+        return state;
     }
 
     /**
-     * Clamps the input between A and B, it does not matter wether A is the min or max
+     * Construct and return group of 3 relevant points
+     * @return Array of PathPoints with length 3
      */
-    public static double nonSpecificClamp(double input, double boundA, double boundB) {
-        if (boundA > boundB) return RobotContainer.Clamp(input, boundA, boundB);
-        else return RobotContainer.Clamp(input, boundB, boundA);
+    PathPoint[] packageRelevantPoints() {
+        try {
+            return new PathPoint[] {
+                path.points.get(lastCrossedPointIndex),
+                path.points.get(lastCrossedPointIndex + 1),
+                path.points.get(lastCrossedPointIndex + 2)
+            };
+        } catch (IndexOutOfBoundsException e) {
+            // Decrement and recurse
+            lastCrossedPointIndex --;
+            return packageRelevantPoints();
+        }
     }
 }
