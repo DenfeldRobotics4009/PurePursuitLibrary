@@ -311,12 +311,16 @@ public class SwerveModule {
             // Calculate position from all swerve module instances.
             Translation2d posSum = new Translation2d();
             for (SwerveModule swerveModule : getInstances()) {
-                posSum = posSum.plus(
-                    swerveModule.getAssumedRobotFieldRelativePosition()
-                );
+                // Average from all other 3
+                if (swerveModule.Instance != Instance) {
+
+                    posSum = posSum.plus(
+                        swerveModule.getAssumedRobotFieldRelativePosition()
+                    );
+                }
             }
             // Return corrected position.
-            return AccumulatedRelativePositionMeters = posSum.div(Instances.size());
+            return AccumulatedRelativePositionMeters = posSum.div(Instances.size() - 1);
             // End function
         }
         
