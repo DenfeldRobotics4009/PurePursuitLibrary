@@ -23,6 +23,7 @@ public class FollowPath extends CommandBase {
   PathFollower m_pathFollower;
 
   // TODO Tune kP
+  // TODO Calculate distance correction
   PController rotationController = new PController(0.01, -1, 1);
 
   /** Creates a new FollowPath. */
@@ -52,7 +53,7 @@ public class FollowPath extends CommandBase {
     rotationController.setTarget(state.goalPose.getRotation().getRadians());
 
     // The target relative to the robots current position
-    Transform2d deltaLocation = robotPose.minus(state.goalPose);
+    Transform2d deltaLocation = state.goalPose.minus(robotPose);
     // Scale to goal speed. Speed input is in meters per second, while drive accepts normal values.
     Transform2d axisSpeeds = deltaLocation.times(state.speedMetersPerSecond / Swerve.MaxMetersPerSecond);
 

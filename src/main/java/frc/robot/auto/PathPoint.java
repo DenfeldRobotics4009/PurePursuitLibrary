@@ -92,18 +92,18 @@ public class PathPoint {
      */
     public static Translation2d findPerpendicularIntersection(Translation2d PointA, Translation2d PointB, Translation2d Source) {
 
-        double distance = PointB.getX() - PointA.getX();
-        double hight = PointB.getY() - PointA.getY();
+        double deltaX = PointB.getX() - PointA.getX();
+        double deltaY = PointB.getY() - PointA.getY();
 
-        double Slope = distance / hight; 
+        double Slope = deltaY / deltaX;
 
-        Translation2d adjustedSource = Source.minus(PointA);
-
-        double numerator = Slope * adjustedSource.getY() + adjustedSource.getX();
-        double intersectionX = numerator / (1 + Slope * Slope);
-
+        // iS( x - source.x ) + source.y = S(x), solve for x
+        double xAdjustedIntercept = (
+            (Source.getY() + (Source.getX() / Slope)) / ( 1 / Slope - Slope)
+        );
+        
         return new Translation2d(
-            intersectionX, getAtLinearInterpolation(0, hight, intersectionX / Math.abs(distance))
+            xAdjustedIntercept, getAtLinearInterpolation(0, deltaY, xAdjustedIntercept / Math.abs(deltaX))
         ).plus(PointA);
     }
 

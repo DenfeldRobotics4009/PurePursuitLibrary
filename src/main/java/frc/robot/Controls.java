@@ -33,6 +33,10 @@ public class Controls {
         return drive.getTrigger();
     }
 
+    public JoystickButton getDriverButton(int id) {
+        return new JoystickButton(drive, id);
+    }
+
     private static double deadband(double value, double deadband) {
         if (Math.abs(value) > deadband) {
             if (value > 0.0) {

@@ -4,9 +4,12 @@
 
 package frc.robot.auto;
 
+import java.util.ArrayList;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 
 public class PathFollower {
@@ -33,75 +36,85 @@ public class PathFollower {
 
     public PathState getPathState(Pose2d robotPosition) {
         calculationTimer.start();
-        // Store 3 points, the first point is the one most recently
-        // passed by the robots closest perpendicular intersection (pI)
-        PathPoint relevantPoints[] = packageRelevantPoints();
-        // grab robot position
+
         Translation2d robotTranslation = robotPosition.getTranslation();
 
-        // Calculate point distances
-        double[] distancesBetween = {
-            relevantPoints[0].getDistance(relevantPoints[1]),
-            relevantPoints[1].getDistance(relevantPoints[2])
-        };
+        // Store 3 points, the first point is the one most recently
+        // passed by the robots closest perpendicular intersection (pI)
+        ArrayList<PathPoint> relevantPoints = packageRelevantPoints();
 
-        // Calculate perpendicularIntersection between both points
-        Translation2d[] perpendicularIntersection = {
-            PathPoint.findPerpendicularIntersection(
-                relevantPoints[0].posMeters, relevantPoints[1].posMeters, robotTranslation),
-            PathPoint.findPerpendicularIntersection(
-                relevantPoints[0].posMeters, relevantPoints[1].posMeters, robotTranslation)
-        };
+        // Assume at least 2 are grabbed
+        double lengthAB = relevantPoints.get(0).getDistance(relevantPoints.get(1));
+        // grab perpendicular intersection
+        Translation2d perpendicularIntersectionAB = PathPoint.findPerpendicularIntersection(
+            relevantPoints.get(0).posMeters, relevantPoints.get(1).posMeters, robotTranslation
+        );
+        
+        // Calculate position along line AB
+        double distanceMetersAlongAB = Math.copySign(
+            relevantPoints.get(0).posMeters.getDistance(perpendicularIntersectionAB), 
+            perpendicularIntersectionAB.getX() - relevantPoints.get(0).posMeters.getX() 
+        );
 
-        // Find the distance from both intersections
-        double distanceToAB = perpendicularIntersection[0].getDistance(robotTranslation);
-        double distanceToBC = perpendicularIntersection[1].getDistance(robotTranslation);
+        // Calculate look ahead distance from ab, if its over the length, look to BC
+        double lookAheadDistanceMetersAlongAB = distanceMetersAlongAB + lookAheadMeters;
 
-        int mRPI = 0; // Most Relevant Point Index, abbreviated for neatness
-        // Grab closest intersection, and proceed with interpolation
-        if (distanceToAB > distanceToBC) {
-            mRPI = 1; // Look at BC, else look at AB
-        }
-        // Find distance from most relevant point
-        double distanceFromMRP = relevantPoints[mRPI].posMeters.getDistance(perpendicularIntersection[mRPI]);
+        // Look on AB, correct after if cases allow
+        Translation2d gotoGoal = relevantPoints.get(0).posMeters.interpolate(
+            relevantPoints.get(1).posMeters,
+            lookAheadDistanceMetersAlongAB / lengthAB   
+        );;
 
-        // grab mRPI for lookahead
-        int lMRPI = mRPI;
-        double lookaheadDistanceFromMRP = distanceFromMRP + lookAheadMeters;
-        if (lookaheadDistanceFromMRP > distancesBetween[mRPI]) {
-            lMRPI = mRPI + 1; // Look at line beyond current
-        }
+        // If our scope is a standard size, check to increment from path
+        if (relevantPoints.size() == 3) {
+            // Calculates distance from both lines
+            double distanceToLineAB = perpendicularIntersectionAB.getDistance(robotTranslation);
 
-        if (lMRPI > 1) {
-            // Test if the next point exists by catching an indexOutOfBoundsException
-            try {
-                path.points.get(lastCrossedPointIndex + 4);
-            } catch (IndexOutOfBoundsException e) {
-                // If the point does not exist, move lookahead to distancesBetween[mRPI]
-                lMRPI = mRPI;
-                lookaheadDistanceFromMRP = distancesBetween[mRPI];
+            double distanceToLineBC = PathPoint.findPerpendicularIntersection(
+                relevantPoints.get(1).posMeters, relevantPoints.get(2).posMeters, robotTranslation
+            ).getDistance(robotTranslation);
+
+            // increment index if distance to BC is less 
+            if (distanceToLineBC < distanceToLineAB) {lastCrossedPointIndex ++;}
+
+            // TODO
+            // Handle looking past line AB if line BC exists
+            if (lookAheadDistanceMetersAlongAB > lengthAB) {
+
+                double lookAheadDistanceMetersAlongBC = lookAheadDistanceMetersAlongAB - lengthAB;
+                double lengthBC = relevantPoints.get(1).getDistance(relevantPoints.get(2));
+
+                // Look upon next line
+                gotoGoal = relevantPoints.get(1).posMeters.interpolate(
+                    relevantPoints.get(2).posMeters,
+                    lookAheadDistanceMetersAlongBC / lengthBC    
+                );
             }
-            // no exception, increment and recurse
-            lastCrossedPointIndex ++;
-            getPathState(robotPosition);
-        } // Else continue
+        } else {
+            // TODO
+            // Handle looking past line AB if line BC does not exist
+            // Look to point B
+            if (lookAheadDistanceMetersAlongAB > lengthAB) {
+                gotoGoal = relevantPoints.get(1).posMeters;
+            }
+        }
 
+        // Construct state
         PathState state = new PathState(
-            // Interpolate goto position from lookahead distance
-            relevantPoints[lMRPI].posMeters.interpolate(
-                relevantPoints[lMRPI+1].posMeters, lookaheadDistanceFromMRP / distancesBetween[mRPI]
-            ),
-            // Interpolate orientation
+            gotoGoal, 
             new Rotation2d(
                 PathPoint.getAtLinearInterpolation(
-                    relevantPoints[mRPI].orientation.getRadians(), relevantPoints[mRPI+1].orientation.getRadians(), 
-                    distancesBetween[mRPI], distanceFromMRP
+                    relevantPoints.get(0).orientation.getRadians(), 
+                    relevantPoints.get(1).orientation.getRadians(), 
+                    distanceMetersAlongAB / lengthAB
                 )
-            ),
-            // Interpolate speed, TODO the funny
+            ), 
+            
+            // TODO, do properly
             PathPoint.getAtLinearInterpolation(
-                relevantPoints[mRPI].orientation.getRadians(), relevantPoints[mRPI+1].orientation.getRadians(), 
-                distancesBetween[mRPI], distanceFromMRP
+                relevantPoints.get(0).speedMetersPerSecond, 
+                relevantPoints.get(1).speedMetersPerSecond, 
+                distanceMetersAlongAB / lengthAB
             )
         );
 
@@ -116,17 +129,29 @@ public class PathFollower {
      * Construct and return group of 3 relevant points
      * @return Array of PathPoints with length 3
      */
-    PathPoint[] packageRelevantPoints() {
-        try {
-            return new PathPoint[] {
-                path.points.get(lastCrossedPointIndex),
-                path.points.get(lastCrossedPointIndex + 1),
-                path.points.get(lastCrossedPointIndex + 2)
-            };
-        } catch (IndexOutOfBoundsException e) {
-            // Decrement and recurse
+    ArrayList<PathPoint> packageRelevantPoints() {
+        ArrayList<PathPoint> packagedPoints = new ArrayList<PathPoint>();
+        // Try to grab 3 points
+        for (int i = 0; i < 3; i++) {
+            try {
+                packagedPoints.add(
+                    path.points.get(lastCrossedPointIndex + i)
+                );
+            } catch (IndexOutOfBoundsException e) {
+                DriverStation.reportWarning("Could not grab point at index " + i, e.getStackTrace());
+            }
+        }
+
+        // If we couldn't grab 2 points, decrement.
+        if (packagedPoints.size() < 2) {
             lastCrossedPointIndex --;
             return packageRelevantPoints();
         }
+
+        // if our lastCrossPoint index is below zero,
+        // our path doesn't contain enough points to fit the definition of a path.
+        if (lastCrossedPointIndex < 0) {throw new IndexOutOfBoundsException();}
+
+        return packagedPoints;
     }
 }

@@ -35,7 +35,7 @@ public class PController {
      * @return (feedBackward - target) * kP , Clamped to boundaries
      */
     public double calculate(double feedBackward) {
-        double deltaProportion = (feedBackward - target) * kP;
+        double deltaProportion = (target - feedBackward) * kP;
         return clamp(deltaProportion, max, min);
     }
 

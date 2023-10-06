@@ -165,6 +165,8 @@ public class SwerveModule {
     }
 
     /**
+     * TODO Move to top of class
+     * 
      * Construct a single swerve module
      * @param Motors Group of motors and encoder to use
      * 
