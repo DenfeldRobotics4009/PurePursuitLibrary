@@ -56,6 +56,13 @@ public class PathFollower {
             perpendicularIntersectionAB.getX() - relevantPoints.get(0).posMeters.getX() 
         );
 
+        // Clamp distance along AB
+        if (distanceMetersAlongAB > lengthAB) {
+            distanceMetersAlongAB = lengthAB;
+        } else if (distanceMetersAlongAB < 0) {
+            distanceMetersAlongAB = 0;
+        }
+
         // Calculate look ahead distance from ab, if its over the length, look to BC
         double lookAheadDistanceMetersAlongAB = distanceMetersAlongAB + lookAheadMeters;
 
