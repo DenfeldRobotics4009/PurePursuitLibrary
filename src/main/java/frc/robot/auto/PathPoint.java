@@ -13,14 +13,14 @@ import edu.wpi.first.wpilibj2.command.Command;
  */
 public class PathPoint {
 
-    final Translation2d posMeters;
+    public final Translation2d posMeters;
     double distanceAlongPath; // Handled by path constructor
     Rotation2d orientation; // Implemented by path constructor
 
     double speedMetersPerSecond; // Corrected by path constructor
     //double accelerationDistance; // For deceleration
 
-    final Command triggeredCommand;
+    public final Command triggeredCommand;
 
     /**
      * Constructs a new PathPoint with the given statistics. The
@@ -95,19 +95,88 @@ public class PathPoint {
         double deltaX = PointB.getX() - PointA.getX();
         double deltaY = PointB.getY() - PointA.getY();
 
-        double Slope = deltaY / deltaX;
+        Translation2d intersection;
 
-        // iS( x - source.x ) + source.y = S(x), solve for x
-        double xAdjustedIntercept = (
-            (Source.getY() + (Source.getX() / Slope)) / ( 1 / Slope - Slope)
-        );
+        // Check for edge cases, deltaX being 0 or deltaY being 0
+
+        if (deltaY == 0) {
+            System.out.println("Calculating perpendicular intersection from horizontal line");
+
+            intersection = clamp(
+                PointA, PointB, 
+                new Translation2d(
+                    getAtLinearInterpolation(PointA.getX(), PointB.getX(), Source.getX() / deltaX), PointA.getY()
+                )
+            );
+
+        } else if (deltaX == 0) {
+            System.out.println("Calculating perpendicular intersection from vertical line");
+
+            intersection = clamp(
+                PointA, PointB, 
+                new Translation2d(
+                    PointA.getX(), getAtLinearInterpolation(PointA.getY(), PointB.getY(), Source.getY() / deltaY)
+                )
+            );
+
+        } else {
+
+            System.out.println("Calculating perpendicular intersection from sloped line");
+
+            double Slope = deltaY / deltaX;
+
+            // iS( x - source.x ) + source.y = S(x), solve for x
+            double xAdjustedIntercept = (
+                (Source.getY() + (Source.getX() / Slope)) / ( 1 / Slope - Slope)
+            );
+
+            intersection = clamp(
+                PointA, 
+                PointB, 
+                new Translation2d(
+                    xAdjustedIntercept, getAtLinearInterpolation(0, deltaY, xAdjustedIntercept / Math.abs(deltaX))
+                ).plus(PointA)
+            );
+        }
         
-        return new Translation2d(
-            xAdjustedIntercept, getAtLinearInterpolation(0, deltaY, xAdjustedIntercept / Math.abs(deltaX))
-        ).plus(PointA);
+        return intersection;
     }
 
     public double getDistance(PathPoint Point) {
         return posMeters.getDistance(Point.posMeters);
+    }
+
+    /**
+     * Clamps an input translation2d into the boundaries specified by the corners
+     * @param cornerA
+     * @param cornerB
+     * @param Input
+     * @return Translation2d within boundaries of corner A and B
+     */
+    public static Translation2d clamp(Translation2d cornerA, Translation2d cornerB, Translation2d Input) {
+        return new Translation2d(
+            nonSpecifiedClamp(cornerA.getX(), cornerB.getX(), Input.getX()),
+            nonSpecifiedClamp(cornerA.getY(), cornerB.getY(), Input.getY())
+        );
+    }
+
+    /**
+     * Clamps a given double input within the boundaries of a and b, without
+     * caring if a or b is the maximum or minimum.
+     * @param a
+     * @param b
+     * @param input
+     * @return input clamped within a and b
+     */
+    public static double nonSpecifiedClamp(double a, double b, double input) {
+        if (a > b) { // a is maximum
+            if (input > a) {return a;}
+            else if (input < b) {return b;}
+        } else { // b is maximum
+            if (input > b) {return b;}
+            else if (input < a) {return a;}
+        }
+
+        return input;
     }
 } 

@@ -11,7 +11,7 @@ import frc.robot.Constants.Swerve;
 
 public class Path {
 
-    final ArrayList<PathPoint> points;
+    public final ArrayList<PathPoint> points;
 
     /**
      * Constructs a path from multiple points

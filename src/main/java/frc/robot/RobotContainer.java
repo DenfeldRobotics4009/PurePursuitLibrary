@@ -9,8 +9,12 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.auto.Autos;
 import frc.robot.commands.Drive;
 import frc.robot.subsystems.SwerveDrive;
 /**
@@ -29,6 +33,8 @@ public class RobotContainer {
 
   private final SwerveDrive m_driveTrain = SwerveDrive.GetInstance();
 
+  SendableChooser<SequentialCommandGroup> autoChooser = new SendableChooser<>();
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -38,7 +44,15 @@ public class RobotContainer {
       new Drive(m_driveTrain, controls)
     );
 
-    // Configure the button bindingsw
+    // Iterate through enum of autos
+    for (Autos autoEnum : Autos.values()) {
+      // Add all enum objects to autoChooser, with name given by enum type
+      autoChooser.addOption(autoEnum.toString(), Autos.TEST.getSequence());
+    }
+
+    SmartDashboard.putData("Autonomous", autoChooser);
+
+    // Configure the button bindings
     configureButtonBindings();
   }
 
@@ -58,8 +72,8 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return new InstantCommand();
+    // Schedule chosen command
+    return autoChooser.getSelected();
   }
 
   /**

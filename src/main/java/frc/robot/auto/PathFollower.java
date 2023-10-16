@@ -26,8 +26,9 @@ public class PathFollower {
      * 
      * @param FollowedPath
      */
-    public PathFollower(Path FollowedPath) {
+    public PathFollower(Path FollowedPath, double lookAheadMeters) {
         path = FollowedPath;
+        this.lookAheadMeters = lookAheadMeters;
     }
 
     public void setLookAheadDistance(double distanceMeters) {
@@ -36,76 +37,95 @@ public class PathFollower {
 
     public PathState getPathState(Pose2d robotPosition) {
         calculationTimer.start();
+        System.out.println("Began pathState calculation timer");
+
+        // TODO split logic blocks into function
 
         Translation2d robotTranslation = robotPosition.getTranslation();
 
-        // Store 3 points, the first point is the one most recently
-        // passed by the robots closest perpendicular intersection (pI)
+        // Store 2 points
         ArrayList<PathPoint> relevantPoints = packageRelevantPoints();
 
         // Assume at least 2 are grabbed
         double lengthAB = relevantPoints.get(0).getDistance(relevantPoints.get(1));
+        System.out.println("Length of current line = " + lengthAB);
+
         // grab perpendicular intersection
         Translation2d perpendicularIntersectionAB = PathPoint.findPerpendicularIntersection(
             relevantPoints.get(0).posMeters, relevantPoints.get(1).posMeters, robotTranslation
         );
-        
+        System.out.println("Found perpendicular intersection at " + perpendicularIntersectionAB);
+
         // Calculate position along line AB
         double distanceMetersAlongAB = Math.copySign(
             relevantPoints.get(0).posMeters.getDistance(perpendicularIntersectionAB), 
             perpendicularIntersectionAB.getX() - relevantPoints.get(0).posMeters.getX() 
         );
 
+        System.out.println("Robot is " + distanceMetersAlongAB + " meters along current line");
+
         // Clamp distance along AB
         if (distanceMetersAlongAB > lengthAB) {
+
+            System.out.println("Clamping distance along line");
             distanceMetersAlongAB = lengthAB;
+            
         } else if (distanceMetersAlongAB < 0) {
             distanceMetersAlongAB = 0;
         }
 
         // Calculate look ahead distance from ab, if its over the length, look to BC
-        double lookAheadDistanceMetersAlongAB = distanceMetersAlongAB + lookAheadMeters;
+        double lookAheadDistanceMetersAlongPoints = distanceMetersAlongAB + lookAheadMeters;
+        System.out.println("Looking " + lookAheadDistanceMetersAlongPoints + " meters along line");
 
-        // Look on AB, correct after if cases allow
-        Translation2d gotoGoal = relevantPoints.get(0).posMeters.interpolate(
-            relevantPoints.get(1).posMeters,
-            lookAheadDistanceMetersAlongAB / lengthAB   
-        );;
+        Translation2d gotoGoal;
 
-        // If our scope is a standard size, check to increment from path
-        if (relevantPoints.size() == 3) {
-            // Calculates distance from both lines
-            double distanceToLineAB = perpendicularIntersectionAB.getDistance(robotTranslation);
+        // double lookedLineLength = 0;
+        int pointsLookingAhead = 0;
+        double distanceAlongLookaheadPoints = lookAheadDistanceMetersAlongPoints;
 
-            double distanceToLineBC = PathPoint.findPerpendicularIntersection(
-                relevantPoints.get(1).posMeters, relevantPoints.get(2).posMeters, robotTranslation
-            ).getDistance(robotTranslation);
+        // Parse lookahead
+        System.out.println("Calculating lookAhead point");
+        while (true) {
+            System.out.println("Looking " + distanceAlongLookaheadPoints + " meters from last seen point");
+            // Check to make sure points are accessible
+            if (lastCrossedPointIndex + pointsLookingAhead + 1 > path.points.size()) {
+                System.out.print("Looking towards end of path at point ");
+                // We are looking to the end of path
+                gotoGoal = path.points.get(path.points.size()).posMeters;
+                System.out.println(gotoGoal);
+                break;
+            }
+            
+            System.out.println("Looking " + pointsLookingAhead + " points ahead of last crossed point");
+            // Grab 2 points, and grab the length between them
+            PathPoint lookAheadPointA = path.points.get(lastCrossedPointIndex + pointsLookingAhead);
+            PathPoint lookAheadPointB = path.points.get(lastCrossedPointIndex + pointsLookingAhead + 1);
 
-            // increment index if distance to BC is less 
-            if (distanceToLineBC < distanceToLineAB) {lastCrossedPointIndex ++;}
+            double lookAheadLineLength = lookAheadPointA.getDistance(lookAheadPointB);
+            System.out.println("Length of observed line is " + lookAheadLineLength + " meters");
 
-            // TODO
-            // Handle looking past line AB if line BC exists
-            if (lookAheadDistanceMetersAlongAB > lengthAB) {
-
-                double lookAheadDistanceMetersAlongBC = lookAheadDistanceMetersAlongAB - lengthAB;
-                double lengthBC = relevantPoints.get(1).getDistance(relevantPoints.get(2));
-
-                // Look upon next line
-                gotoGoal = relevantPoints.get(1).posMeters.interpolate(
-                    relevantPoints.get(2).posMeters,
-                    lookAheadDistanceMetersAlongBC / lengthBC    
+            if (distanceAlongLookaheadPoints < lookAheadLineLength) {
+                System.out.println("Proper observed line found");
+                System.out.println("Interpolating on line looking " + pointsLookingAhead + " points ahead");
+                System.out.print("Looking towards path at point ");
+                // Stop looping, interpolate goto
+                gotoGoal = lookAheadPointA.posMeters.interpolate(
+                    lookAheadPointB.posMeters, 
+                    distanceAlongLookaheadPoints / lookAheadLineLength // Normalized
                 );
+                System.out.println(gotoGoal);
+                break;
             }
-        } else {
-            // TODO
-            // Handle looking past line AB if line BC does not exist
-            // Look to point B
-            if (lookAheadDistanceMetersAlongAB > lengthAB) {
-                gotoGoal = relevantPoints.get(1).posMeters;
-            }
+
+            distanceAlongLookaheadPoints -= lookAheadLineLength;
+            System.out.println("Valid line not found, looking further ... ");
+            // Look 1 line ahead, and subtract length of last line
+            pointsLookingAhead ++;
+            // Continue
         }
 
+        System.out.println("Constructing path state");
         // Construct state
         PathState state = new PathState(
             gotoGoal, 
@@ -125,27 +145,82 @@ public class PathFollower {
             )
         );
 
+        System.out.println("Checking distance to next line");
+        // Check to increment index
+        if (compareWithNextLine(perpendicularIntersectionAB, robotTranslation)) {
+            // Schedule associated command
+            System.out.println("Scheduling command associated with point " + lastCrossedPointIndex);
+            relevantPoints.get(0).triggeredCommand.schedule();
+            lastCrossedPointIndex ++;
+            System.out.println("Increment last crossed point index to " + lastCrossedPointIndex);
+        }
+
         calculationTimer.stop();
-        System.out.println("Calculated PathState in " + calculationTimer.get() + " seconds");
+        System.out.println(" --- --- --- Calculated PathState in " + calculationTimer.get() + " seconds --- --- ---");
         calculationTimer.reset();
 
         return state;
     }
 
+    public PathPoint getLastPoint() {
+        return path.points.get(path.points.size() - 1);
+    }
+
     /**
-     * Construct and return group of 3 relevant points
-     * @return Array of PathPoints with length 3
+     * Returns true if the robot is closer to the next line
+     * @param positionAlongLine
+     * @param robotTranslation
+     * @return false if robot is closer to current line, or next line doesn't exist
+     */
+    boolean compareWithNextLine(Translation2d positionAlongLine, Translation2d robotTranslation) {
+        // Calculate the perpendicularIntersection of the next line in path, if it exists
+        // Check if the line exists first
+        if (lastCrossedPointIndex + 2 < path.points.size()) {
+            System.out.println("Next line found");
+            // if the line exists, grab points
+            PathPoint pointB = path.points.get(lastCrossedPointIndex + 1);
+            PathPoint pointC = path.points.get(lastCrossedPointIndex + 2);
+            // grab perpendicular intersection
+            Translation2d perpendicularIntersectionBC = PathPoint.findPerpendicularIntersection(
+                pointB.posMeters, pointC.posMeters, robotTranslation
+            );
+
+            System.out.println("Found perpendicular intersection at " + perpendicularIntersectionBC);
+            
+            // Find distance from lines
+            double distanceToAB = positionAlongLine.getDistance(robotTranslation);
+            double distanceToBC = perpendicularIntersectionBC.getDistance(robotTranslation);
+
+            // Compare distances to each intersection
+            if (distanceToAB > distanceToBC) {
+                System.out.println("Distance to line AB is greater than distance to BC");
+                return true;
+            }
+        } else {
+            System.out.println("Next line not found");
+        }
+
+        return false;
+    }
+
+    /**
+     * Construct and return group of 2 relevant points
+     * @return Array of PathPoints with length 2
      */
     ArrayList<PathPoint> packageRelevantPoints() {
+        // if our lastCrossPoint index is below zero,
+        // our path doesn't contain enough points to fit the definition of a path.
+        if (lastCrossedPointIndex < 0) {throw new IndexOutOfBoundsException();}
+
         ArrayList<PathPoint> packagedPoints = new ArrayList<PathPoint>();
-        // Try to grab 3 points
-        for (int i = 0; i < 3; i++) {
+        // Try to grab 2 points
+        for (int i = 0; i < 2; i++) {
             try {
                 packagedPoints.add(
                     path.points.get(lastCrossedPointIndex + i)
                 );
             } catch (IndexOutOfBoundsException e) {
-                DriverStation.reportWarning("Could not grab point at index " + i, e.getStackTrace());
+                DriverStation.reportWarning("Could not grab point at index " + lastCrossedPointIndex + i, e.getStackTrace());
             }
         }
 
@@ -154,10 +229,6 @@ public class PathFollower {
             lastCrossedPointIndex --;
             return packageRelevantPoints();
         }
-
-        // if our lastCrossPoint index is below zero,
-        // our path doesn't contain enough points to fit the definition of a path.
-        if (lastCrossedPointIndex < 0) {throw new IndexOutOfBoundsException();}
 
         return packagedPoints;
     }
