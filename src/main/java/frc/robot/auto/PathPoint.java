@@ -125,10 +125,13 @@ public class PathPoint {
 
             double Slope = deltaY / deltaX;
 
+            Translation2d adjustedB = PointB.minus(PointA);
+            Translation2d adjustedSource = Source.minus(PointA);
+
             // iS( x - source.x ) + source.y = S(x), solve for x
             double xAdjustedIntercept = (
-                (Source.getY() + (Source.getX() / Slope)) / ( 1 / Slope - Slope)
-            );
+                Slope*adjustedB.getX() - adjustedSource.getX()/Slope + adjustedSource.getY() - adjustedB.getY()
+            ) / (Slope - 1/Slope);
 
             intersection = clamp(
                 PointA, 

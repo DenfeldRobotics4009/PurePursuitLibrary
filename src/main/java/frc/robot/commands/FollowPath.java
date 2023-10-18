@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.Swerve;
@@ -36,7 +37,7 @@ public class FollowPath extends CommandBase {
     path = Path;
 
     // Construct pathFollower from provided path
-    m_pathFollower = new PathFollower(path, 0.5);
+    m_pathFollower = new PathFollower(path, 2);
 
     // Assign target to PController
     rotationController.setTarget(0);
@@ -45,12 +46,12 @@ public class FollowPath extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.println("--- Following path of points: ---");
+    PathFollower.println("--- Following path of points: ---");
     for (PathPoint point : path.points) {
-      System.out.print(point.posMeters);
-      System.out.println();
+      PathFollower.print(point.posMeters);
+      PathFollower.println(" ");
     }
-    System.out.println("--- --- --- -- --- -- --- --- ---");
+    PathFollower.println("--- --- --- -- --- -- --- --- ---");
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -58,16 +59,17 @@ public class FollowPath extends CommandBase {
   public void execute() {
 
     Pose2d robotPose = m_drivetrain.getPosition();
-    System.out.println("Grabbing path state from position " + robotPose);
+    PathFollower.println("Grabbing path state from position " + robotPose);
     PathState state = m_pathFollower.getPathState(robotPose);
-    System.out.println(" ");
+    PathFollower.println("State speed is " + state.speedMetersPerSecond + " m/s");
 
     // The target relative to the robots current position
     Transform2d deltaLocation = state.goalPose.minus(robotPose);
-    System.out.println("Distance from goal position is " + deltaLocation + " meters");
+    PathFollower.println("Distance from goal position is " + deltaLocation + " meters");
     // Scale to goal speed. Speed input is in meters per second, while drive accepts normal values.
-    Transform2d axisSpeeds = deltaLocation.times(state.speedMetersPerSecond / Swerve.MaxMetersPerSecond);
-    System.out.println("Traveling to goal position at " + axisSpeeds + " m/s");
+    Translation2d axisSpeeds = deltaLocation.getTranslation().times(
+      state.speedMetersPerSecond / Swerve.MaxMetersPerSecond);
+    PathFollower.println("Traveling to goal position at " + axisSpeeds + " m/s");
 
     // Construct chassis speeds from state values
     // Convert field oriented to robot oriented
@@ -86,15 +88,17 @@ public class FollowPath extends CommandBase {
       SwerveDrive.navxGyro.getRotation2d()
     );
     // Drive
+    PathFollower.println("Driving with robot relative speed of " + speeds + " m/s");
     m_drivetrain.drive(speeds);
 
     // Recurse until called to end
-    System.out.println(" ");
+    PathFollower.println(" ");
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    PathFollower.println("End of path reached");
     // Schedule last command in path.
     m_pathFollower.getLastPoint().triggeredCommand.schedule();
   }

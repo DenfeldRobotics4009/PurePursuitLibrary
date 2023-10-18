@@ -55,19 +55,18 @@ public final class Constants {
         public static double MaxAccelerationMetersPerSecondPerSecond = 1; // TODO Calculate
 
         public static SwerveModuleConstants FrontLeft = new SwerveModuleConstants(
-            21, 31, 0, new Rotation2d(Math.toRadians(45)), "FrontLeft"
+            21, 31, 1, new Rotation2d(Math.toRadians(45)), "FrontLeft"
         );
 
         public static SwerveModuleConstants FrontRight = new SwerveModuleConstants(
             23, 33, 2, new Rotation2d(Math.toRadians(150)), "FrontRight"
         );
-
-        public static SwerveModuleConstants BackLeft = new SwerveModuleConstants(
-            22, 32, 1, new Rotation2d(Math.toRadians(109.5)), "BackLeft"
+       public static SwerveModuleConstants BackLeft = new SwerveModuleConstants(
+          22, 32, 3, new Rotation2d(Math.toRadians(109.5)), "BackLeft"
         );
 
         public static SwerveModuleConstants BackRight = new SwerveModuleConstants(
-            24, 34, 3, new Rotation2d(Math.toRadians(-59)), "BackRight"
+            24, 34, 0, new Rotation2d(Math.toRadians(-59)), "BackRight"
         );
     }
 }

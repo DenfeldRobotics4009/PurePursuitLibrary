@@ -47,7 +47,7 @@ public class RobotContainer {
     // Iterate through enum of autos
     for (Autos autoEnum : Autos.values()) {
       // Add all enum objects to autoChooser, with name given by enum type
-      autoChooser.addOption(autoEnum.toString(), Autos.TEST.getSequence());
+      autoChooser.addOption(autoEnum.toString(), autoEnum.getSequence());
     }
 
     SmartDashboard.putData("Autonomous", autoChooser);
@@ -87,6 +87,24 @@ public class RobotContainer {
     if (input > max) {return max;}
     else if (input < min) {return min;}
     else {return input;}
+  }
+
+  /**
+   * Returns a string of <depth> number of stack
+   * trace elements for debugging and logging.
+   * @param depth number of elements to parse back from last
+   * @return String of trace, ignoring this function
+   */
+  public static String trace(int depth) {
+    StackTraceElement[] traceArr = Thread.currentThread().getStackTrace();
+    String traceStr = "";
+
+    // Subtract 2 to ignore the first
+    for (int i = (traceArr.length -2); i >= 0; i--) {
+      traceStr += traceArr[i];
+    }
+
+    return traceStr;
   }
 
   
