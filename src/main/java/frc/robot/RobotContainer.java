@@ -100,7 +100,7 @@ public class RobotContainer {
     String traceStr = "";
 
     // Subtract 2 to ignore the first
-    for (int i = (traceArr.length -2); i >= 0; i--) {
+    for (int i = (traceArr.length -2); i >= (traceArr.length - (depth+1) ); i--) {
       traceStr += traceArr[i];
     }
 
