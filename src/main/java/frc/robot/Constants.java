@@ -43,7 +43,7 @@ public final class Constants {
         public static double TrackWidthMeters = 0.57785;
         public static double TrackLengthMeters = 0.65405;
 
-        public static double MaxMetersPerSecond = 3.6576;
+        public static double MaxMetersPerSecond = 3.6576; // TODO not accurate bozo
 
         public static double MaxRadPerSecond = MaxMetersPerSecond /
             Math.hypot(TrackWidthMeters / 2.0, TrackLengthMeters / 2.0);

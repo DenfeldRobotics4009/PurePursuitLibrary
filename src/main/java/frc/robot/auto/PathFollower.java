@@ -237,20 +237,6 @@ public class PathFollower {
     }
 
     /**
-     * Scales the given translation 2d so that its highest value is 1,
-     * and the other is scaled accordingly
-     * @param x
-     * @return
-     */
-    public static Translation2d normalize(Translation2d x) {
-        if (x.getX() > x.getY()) {
-            return x.times(1 / x.getX());
-        } else {
-            return x.times(1 / x.getY());
-        }
-    }
-
-    /**
      * Disable-able print function
      * @param x
      */
