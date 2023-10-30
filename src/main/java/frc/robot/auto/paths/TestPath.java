@@ -28,13 +28,13 @@ public class TestPath extends Path {
                     new PathPoint(
                         new Translation2d(0, 0), 
                         new Rotation2d(0), 
-                        1, 
+                        0.1, 
                         new InstantCommand()
                     ),
 
                     // Point B
                     new PathPoint(
-                        new Translation2d(8, 0), 
+                        new Translation2d(-1, 0), 
                         new Rotation2d(0), 
                         // Last point should have a speed of 0, unless you know what you're doing
                         0,

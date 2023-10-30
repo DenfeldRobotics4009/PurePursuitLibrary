@@ -59,21 +59,24 @@ public class PathFollower {
         );
         println("Found perpendicular intersection at " + perpendicularIntersectionAB);
 
-        // Calculate position along line AB
-        double distanceMetersAlongAB = Math.copySign(
-            relevantPoints.get(0).posMeters.getDistance(perpendicularIntersectionAB), 
-            perpendicularIntersectionAB.getX() - relevantPoints.get(0).posMeters.getX() 
-        );
+
+        /**
+         * Known bug with this method of finding distance along line AB, there is no
+         * indication whether the robot has PASSED AB or not, thus 1 meter from point B
+         * is recognized the same as 1 meter passed point B. However, this should
+         * never pose a problem, as the perpendicular intersection is clamped to the
+         * boundaries of AB.
+         * 
+         * So theres really no bug at all :)
+         */
+
+        // Calculate position along line AB via finding difference between line length, and distance to B
+        double distanceMetersAlongAB = lengthAB - relevantPoints.get(1).posMeters.getDistance(perpendicularIntersectionAB);
 
         println("Robot is " + distanceMetersAlongAB + " meters along current line");
 
         // Clamp distance along AB
-        if (distanceMetersAlongAB > lengthAB) {
-
-            println("Clamping distance along line");
-            distanceMetersAlongAB = lengthAB;
-            
-        } else if (distanceMetersAlongAB < 0) {
+        if (distanceMetersAlongAB < 0) {
             distanceMetersAlongAB = 0;
         }
 
@@ -242,7 +245,7 @@ public class PathFollower {
      */
     public static void print(Object x) {
         if (debug) {
-            System.out.print(" > " + RobotContainer.trace(2) + " > " + x);
+            System.out.print(" > " + x);
         }
     }
 

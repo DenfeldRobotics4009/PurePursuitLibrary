@@ -31,8 +31,8 @@ public class Drive extends CommandBase {
 
     ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
       new ChassisSpeeds(
+        m_controls.getForward(),
         m_controls.getLateral(),
-        m_controls.getForward(), 
         m_controls.getTurn()
       ), 
       SwerveDrive.navxGyro.getRotation2d()

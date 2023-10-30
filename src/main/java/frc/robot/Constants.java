@@ -48,25 +48,27 @@ public final class Constants {
         public static double MaxRadPerSecond = MaxMetersPerSecond /
             Math.hypot(TrackWidthMeters / 2.0, TrackLengthMeters / 2.0);
 
-        public static double rotationsToMeters = 1; // TODO Calculate
+        public static double wheelDiameterMeters = 0.10308;
+        public static double swerveGearRatio = 1 / 6.2; // Rotations of motor per rotations of wheel
+        public static double rotationsToMeters = (Math.PI * wheelDiameterMeters * swerveGearRatio); 
 
         public static double MaxRotationsPerSecond = 5676;
 
         public static double MaxAccelerationMetersPerSecondPerSecond = 1; // TODO Calculate
 
         public static SwerveModuleConstants FrontLeft = new SwerveModuleConstants(
-            21, 31, 1, new Rotation2d(Math.toRadians(45)), "FrontLeft"
+            21, 31, 1, new Rotation2d(Math.toRadians(48)), "FrontLeft"
         );
 
         public static SwerveModuleConstants FrontRight = new SwerveModuleConstants(
-            23, 33, 2, new Rotation2d(Math.toRadians(150)), "FrontRight"
+            23, 33, 2, new Rotation2d(Math.toRadians(200)), "FrontRight"
         );
        public static SwerveModuleConstants BackLeft = new SwerveModuleConstants(
-          22, 32, 3, new Rotation2d(Math.toRadians(109.5)), "BackLeft"
+          22, 32, 3, new Rotation2d(Math.toRadians(4)), "BackLeft"
         );
 
         public static SwerveModuleConstants BackRight = new SwerveModuleConstants(
-            24, 34, 0, new Rotation2d(Math.toRadians(-59)), "BackRight"
+            24, 34, 0, new Rotation2d(Math.toRadians(54)), "BackRight"
         );
     }
 }

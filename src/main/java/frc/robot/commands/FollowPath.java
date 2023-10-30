@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -37,7 +38,7 @@ public class FollowPath extends CommandBase {
     path = Path;
 
     // Construct pathFollower from provided path
-    m_pathFollower = new PathFollower(path, 2);
+    m_pathFollower = new PathFollower(path, 0.5);
 
     // Assign target to PController
     rotationController.setTarget(0);
@@ -67,8 +68,7 @@ public class FollowPath extends CommandBase {
     Transform2d deltaLocation = state.goalPose.minus(robotPose);
     PathFollower.println("Distance from goal position is " + deltaLocation + " meters");
     // Scale to goal speed. Speed input is in meters per second, while drive accepts normal values.
-    Translation2d axisSpeeds = deltaLocation.getTranslation().times(
-      state.speedMetersPerSecond / Swerve.MaxMetersPerSecond);
+    Translation2d axisSpeeds = new Translation2d(state.speedMetersPerSecond, deltaLocation.getRotation());
     PathFollower.println("Traveling to goal position at " + axisSpeeds + " m/s");
 
     // Construct chassis speeds from state values
@@ -115,8 +115,8 @@ public class FollowPath extends CommandBase {
     return (
       // If we have passed the second to last point
       m_pathFollower.lastCrossedPointIndex >= (path.points.size() - 2) && 
-      // And are within half a meter
-      distanceToLastPointMeters < 0.2
+      
+      distanceToLastPointMeters < 0.05
     );
   }
 }
