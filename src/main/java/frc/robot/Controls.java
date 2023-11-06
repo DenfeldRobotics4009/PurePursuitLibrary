@@ -18,15 +18,15 @@ public class Controls {
 
 
     public double getForward() {
-        return modifyAxis(drive.getY() * 0.5, 0.15);
+        return modifyAxis(-drive.getY(), 0.15);
     }
 
     public double getLateral() {
-        return modifyAxis(-drive.getX() * 0.5, 0.15);
+        return modifyAxis(-drive.getX(), 0.15);
     }
 
     public double getTurn() {
-        return modifyAxis(steer.getZ() * 0.5, 0.15);
+        return modifyAxis(steer.getZ(), 0.15);
     }
 
     public boolean getPrecisionMode() {

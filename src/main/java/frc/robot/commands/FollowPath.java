@@ -5,12 +5,10 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants.Swerve;
 import frc.robot.auto.Path;
 import frc.robot.auto.PathFollower;
 import frc.robot.auto.PathPoint;
@@ -30,11 +28,11 @@ public class FollowPath extends CommandBase {
   PController rotationController = new PController(0.01, -1, 1);
 
   /** Creates a new FollowPath. */
-  public FollowPath(SwerveDrive DriveTrain, Path Path) {
+  public FollowPath(Path Path) {
     // Assume drive control when path following
-    addRequirements(DriveTrain);
+    m_drivetrain = SwerveDrive.GetInstance();
+    addRequirements(m_drivetrain);
 
-    m_drivetrain = DriveTrain;
     path = Path;
 
     // Construct pathFollower from provided path
@@ -60,15 +58,20 @@ public class FollowPath extends CommandBase {
   public void execute() {
 
     Pose2d robotPose = m_drivetrain.getPosition();
-    PathFollower.println("Grabbing path state from position " + robotPose);
+    
     PathState state = m_pathFollower.getPathState(robotPose);
+
+    PathFollower.println("Current pos is " + robotPose.getTranslation());
+    PathFollower.println("Goal pos is " + state.goalPose.getTranslation());
+    
     PathFollower.println("State speed is " + state.speedMetersPerSecond + " m/s");
 
     // The target relative to the robots current position
-    Transform2d deltaLocation = state.goalPose.minus(robotPose);
+    Translation2d deltaLocation = state.goalPose.getTranslation().minus(robotPose.getTranslation());
     PathFollower.println("Distance from goal position is " + deltaLocation + " meters");
     // Scale to goal speed. Speed input is in meters per second, while drive accepts normal values.
-    Translation2d axisSpeeds = new Translation2d(state.speedMetersPerSecond, deltaLocation.getRotation());
+    Translation2d axisSpeeds = new Translation2d(state.speedMetersPerSecond, deltaLocation.getAngle())
+    ;
     PathFollower.println("Traveling to goal position at " + axisSpeeds + " m/s");
 
     // Construct chassis speeds from state values
@@ -115,7 +118,6 @@ public class FollowPath extends CommandBase {
     return (
       // If we have passed the second to last point
       m_pathFollower.lastCrossedPointIndex >= (path.points.size() - 2) && 
-      
       distanceToLastPointMeters < 0.05
     );
   }

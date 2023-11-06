@@ -40,7 +40,7 @@ public class PathFollower {
 
     public PathState getPathState(Pose2d robotPosition) {
         calculationTimer.start();
-        println("Began pathState calculation timer");
+        println("Observing line " + lastCrossedPointIndex + " to " + (lastCrossedPointIndex + 1));
 
         // TODO split logic blocks into function
 
@@ -57,8 +57,6 @@ public class PathFollower {
         Translation2d perpendicularIntersectionAB = PathPoint.findPerpendicularIntersection(
             relevantPoints.get(0).posMeters, relevantPoints.get(1).posMeters, robotTranslation
         );
-        println("Found perpendicular intersection at " + perpendicularIntersectionAB);
-
 
         /**
          * Known bug with this method of finding distance along line AB, there is no
@@ -73,8 +71,6 @@ public class PathFollower {
         // Calculate position along line AB via finding difference between line length, and distance to B
         double distanceMetersAlongAB = lengthAB - relevantPoints.get(1).posMeters.getDistance(perpendicularIntersectionAB);
 
-        println("Robot is " + distanceMetersAlongAB + " meters along current line");
-
         // Clamp distance along AB
         if (distanceMetersAlongAB < 0) {
             distanceMetersAlongAB = 0;
@@ -82,7 +78,6 @@ public class PathFollower {
 
         // Calculate look ahead distance from ab, if its over the length, look to BC
         double lookAheadDistanceMetersAlongPoints = distanceMetersAlongAB + lookAheadMeters;
-        println("Looking " + lookAheadDistanceMetersAlongPoints + " meters along line");
 
         Translation2d gotoGoal;
 
@@ -91,9 +86,7 @@ public class PathFollower {
         double distanceAlongLookaheadPoints = lookAheadDistanceMetersAlongPoints;
 
         // Parse lookahead
-        println("Calculating lookAhead point");
         while (true) {
-            println("Looking " + distanceAlongLookaheadPoints + " meters from last seen point");
             // Check to make sure points are accessible
             if (lastCrossedPointIndex + pointsLookingAhead + 1 >= path.points.size()) {
                 print("Looking towards end of path at point ");
@@ -103,18 +96,13 @@ public class PathFollower {
                 break;
             }
             
-            println("Looking " + pointsLookingAhead + " points ahead of last crossed point");
             // Grab 2 points, and grab the length between them
             PathPoint lookAheadPointA = path.points.get(lastCrossedPointIndex + pointsLookingAhead);
             PathPoint lookAheadPointB = path.points.get(lastCrossedPointIndex + pointsLookingAhead + 1);
 
             double lookAheadLineLength = lookAheadPointA.getDistance(lookAheadPointB);
-            println("Length of observed line is " + lookAheadLineLength + " meters");
 
             if (distanceAlongLookaheadPoints < lookAheadLineLength) {
-                println("Proper observed line found");
-                println("Interpolating on line looking " + pointsLookingAhead + " points ahead");
-                print("Looking towards path at point ");
                 // Stop looping, interpolate goto
                 gotoGoal = lookAheadPointA.posMeters.interpolate(
                     lookAheadPointB.posMeters, 
@@ -125,7 +113,6 @@ public class PathFollower {
             }
 
             distanceAlongLookaheadPoints -= lookAheadLineLength;
-            println("Valid line not found, looking further ... ");
             // Look 1 line ahead, and subtract length of last line
             pointsLookingAhead ++;
             // Continue
@@ -151,18 +138,16 @@ public class PathFollower {
             )
         );
 
-        println("Checking distance to next line");
         // Check to increment index
         if (compareWithNextLine(perpendicularIntersectionAB, robotTranslation)) {
             // Schedule associated command
-            println("Scheduling command associated with point " + lastCrossedPointIndex);
             relevantPoints.get(0).triggeredCommand.schedule();
             lastCrossedPointIndex ++;
             println("Increment last crossed point index to " + lastCrossedPointIndex);
         }
 
         calculationTimer.stop();
-        println(" --- --- --- Calculated PathState in " + calculationTimer.get() + " seconds --- --- ---");
+        println("Calculated PathState in " + calculationTimer.get() + " seconds");
         calculationTimer.reset();
 
         return state;

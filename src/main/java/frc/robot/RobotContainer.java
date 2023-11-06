@@ -88,24 +88,5 @@ public class RobotContainer {
     else if (input < min) {return min;}
     else {return input;}
   }
-
-  /**
-   * Returns a string of <depth> number of stack
-   * trace elements for debugging and logging.
-   * @param depth number of elements to parse back from last
-   * @return String of trace, ignoring this function
-   */
-  public static String trace(int depth) {
-    StackTraceElement[] traceArr = Thread.currentThread().getStackTrace();
-    String traceStr = "";
-
-    // Subtract 2 to ignore the first
-    for (int i = (traceArr.length -2); i >= (traceArr.length - (depth+1) ); i--) {
-      traceStr += traceArr[i];
-    }
-
-    return traceStr;
-  }
-
   
 }

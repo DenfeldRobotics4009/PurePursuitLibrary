@@ -19,7 +19,7 @@ public enum Autos {
     NONE(new SequentialCommandGroup()),
 
     TEST(new SequentialCommandGroup(
-        new FollowPath(SwerveDrive.GetInstance(), new TestPath())
+        new FollowPath(new TestPath())
     ));
 
 

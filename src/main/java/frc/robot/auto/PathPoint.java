@@ -95,6 +95,12 @@ public class PathPoint {
         double deltaX = PointB.getX() - PointA.getX();
         double deltaY = PointB.getY() - PointA.getY();
 
+        PathFollower.println("PI Source: " + Source);
+        PathFollower.println("PI A: " + PointA);
+        PathFollower.println("PI B: " + PointB);
+        PathFollower.println("DeltaX: " + deltaX);
+        PathFollower.println("DeltaY: " + deltaY);
+
         Translation2d intersection;
 
         // Check for edge cases, deltaX being 0 or deltaY being 0
@@ -102,21 +108,15 @@ public class PathPoint {
         if (deltaY == 0) {
             PathFollower.println("Calculating perpendicular intersection from horizontal line");
 
-            intersection = clamp(
-                PointA, PointB, 
-                new Translation2d(
-                    getAtLinearInterpolation(PointA.getX(), PointB.getX(), Source.getX() / deltaX), PointA.getY()
-                )
+            intersection = new Translation2d(
+                nonSpecifiedClamp(PointA.getX(), PointB.getX(), Source.getX()), PointA.getY()
             );
 
         } else if (deltaX == 0) {
             PathFollower.println("Calculating perpendicular intersection from vertical line");
 
-            intersection = clamp(
-                PointA, PointB, 
-                new Translation2d(
-                    PointA.getX(), getAtLinearInterpolation(PointA.getY(), PointB.getY(), Source.getY() / deltaY)
-                )
+            intersection = new Translation2d(
+                PointA.getX(), nonSpecifiedClamp(PointA.getY(), PointB.getY(), Source.getY())
             );
 
         } else {
@@ -142,6 +142,7 @@ public class PathPoint {
             );
         }
         
+        PathFollower.println("Found perpendicular intersection at " + intersection);
         return intersection;
     }
 
