@@ -95,12 +95,6 @@ public class PathPoint {
         double deltaX = PointB.getX() - PointA.getX();
         double deltaY = PointB.getY() - PointA.getY();
 
-        PathFollower.println("PI Source: " + Source);
-        PathFollower.println("PI A: " + PointA);
-        PathFollower.println("PI B: " + PointB);
-        PathFollower.println("DeltaX: " + deltaX);
-        PathFollower.println("DeltaY: " + deltaY);
-
         Translation2d intersection;
 
         // Check for edge cases, deltaX being 0 or deltaY being 0
@@ -125,20 +119,16 @@ public class PathPoint {
 
             double Slope = deltaY / deltaX;
 
-            Translation2d adjustedB = PointB.minus(PointA);
-            Translation2d adjustedSource = Source.minus(PointA);
+            double xIntercept = (
+                    (Source.getX() / (Slope*Slope)) 
+                    + (Source.getY() / (Slope)) 
+                    - (PointA.getY() / (Slope))
+                    + (PointA.getX())
+                ) / (1 + 1/(Slope*Slope));
 
-            // iS( x - source.x ) + source.y = S(x), solve for x
-            double xAdjustedIntercept = (
-                Slope*adjustedB.getX() - adjustedSource.getX()/Slope + adjustedSource.getY() - adjustedB.getY()
-            ) / (Slope - 1/Slope);
-
-            intersection = clamp(
-                PointA, 
-                PointB, 
-                new Translation2d(
-                    xAdjustedIntercept, getAtLinearInterpolation(0, deltaY, xAdjustedIntercept / Math.abs(deltaX))
-                ).plus(PointA)
+            intersection = new Translation2d(
+                xIntercept, 
+                Slope*(xIntercept-PointA.getX()) + PointA.getY()
             );
         }
         

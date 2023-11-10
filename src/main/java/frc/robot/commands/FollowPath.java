@@ -5,7 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
-
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -13,9 +13,7 @@ import frc.robot.auto.Path;
 import frc.robot.auto.PathFollower;
 import frc.robot.auto.PathPoint;
 import frc.robot.auto.PathState;
-import frc.robot.libraries.PController;
 import frc.robot.subsystems.SwerveDrive;
-import frc.robot.subsystems.swerve.SwerveModule;
 
 public class FollowPath extends CommandBase {
 
@@ -23,9 +21,6 @@ public class FollowPath extends CommandBase {
 
   Path path;
   PathFollower m_pathFollower;
-
-  // TODO Tune kP
-  PController rotationController = new PController(0.01, -1, 1);
 
   /** Creates a new FollowPath. */
   public FollowPath(Path Path) {
@@ -37,9 +32,6 @@ public class FollowPath extends CommandBase {
 
     // Construct pathFollower from provided path
     m_pathFollower = new PathFollower(path, 0.5);
-
-    // Assign target to PController
-    rotationController.setTarget(0);
   }
 
   // Called when the command is initially scheduled.
@@ -70,9 +62,11 @@ public class FollowPath extends CommandBase {
     Translation2d deltaLocation = state.goalPose.getTranslation().minus(robotPose.getTranslation());
     PathFollower.println("Distance from goal position is " + deltaLocation + " meters");
     // Scale to goal speed. Speed input is in meters per second, while drive accepts normal values.
-    Translation2d axisSpeeds = new Translation2d(state.speedMetersPerSecond, deltaLocation.getAngle())
-    ;
+    Translation2d axisSpeeds = new Translation2d(state.speedMetersPerSecond, deltaLocation.getAngle());
+    
     PathFollower.println("Traveling to goal position at " + axisSpeeds + " m/s");
+
+    PathFollower.println("Rotation Goal = " + state.goalPose.getRotation());
 
     // Construct chassis speeds from state values
     // Convert field oriented to robot oriented
@@ -81,12 +75,8 @@ public class FollowPath extends CommandBase {
       new ChassisSpeeds(
         axisSpeeds.getX(),
         axisSpeeds.getY(),
-        rotationController.calculate(
-          SwerveModule.calculateDistanceCorrection(
-            state.goalPose.getRotation().getRadians(), 
-            robotPose.getRotation().getDegrees()
-          )
-        ) / 360 // Measure in rotations, 360 degrees is 1 rotation
+        // TODO ROTATE
+        robotPose.getRotation().minus(state.goalPose.getRotation()).getRadians()
       ), 
       SwerveDrive.navxGyro.getRotation2d()
     );
@@ -97,7 +87,7 @@ public class FollowPath extends CommandBase {
     // Recurse until called to end
     PathFollower.println(" ");
   }
-
+  
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {

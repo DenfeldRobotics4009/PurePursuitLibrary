@@ -28,23 +28,38 @@ public class TestPath extends Path {
                     new PathPoint(
                         new Translation2d(0, 0), 
                         new Rotation2d(0), 
-                        0.1, 
+                        0.01, 
                         new InstantCommand()
                     ),
 
                     // Point B
                     new PathPoint(
-                        new Translation2d(-1, 1), 
+                        new Translation2d(-1, 0), 
                         new Rotation2d(0), 
-                        0.1,
+                        0.2,
                         new InstantCommand()
                     ),
 
                     // Point C
                     new PathPoint(
+                        new Translation2d(-1, 1), 
+                        new Rotation2d(0), 
+                        0.2,
+                        new InstantCommand()
+                    ),
+
+                    // Point D
+                    new PathPoint(
                         new Translation2d(0, 1), 
                         new Rotation2d(0), 
-                        // Last point should have a speed of 0, unless you know what you're doing
+                        0.2,
+                        new InstantCommand()
+                    ),
+
+                    // Point E
+                    new PathPoint(
+                        new Translation2d(0, 0), 
+                        new Rotation2d(0), 
                         0,
                         new InstantCommand()
                     )

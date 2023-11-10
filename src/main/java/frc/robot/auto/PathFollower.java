@@ -102,6 +102,7 @@ public class PathFollower {
 
             double lookAheadLineLength = lookAheadPointA.getDistance(lookAheadPointB);
 
+            // If we are not looking past this line
             if (distanceAlongLookaheadPoints < lookAheadLineLength) {
                 // Stop looping, interpolate goto
                 gotoGoal = lookAheadPointA.posMeters.interpolate(

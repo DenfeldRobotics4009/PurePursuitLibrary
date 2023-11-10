@@ -54,6 +54,8 @@ public final class Constants {
 
         public static double MaxRotationsPerSecond = 5676;
 
+        public static double driveRampRateSeconds = 0.2; // Time from 0% to 100% speed
+
         public static double MaxAccelerationMetersPerSecondPerSecond = 1; // TODO Calculate
 
         public static SwerveModuleConstants FrontLeft = new SwerveModuleConstants(

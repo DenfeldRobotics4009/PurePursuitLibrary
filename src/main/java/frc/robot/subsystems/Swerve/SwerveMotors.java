@@ -34,8 +34,8 @@ public class SwerveMotors {
     }
 
     public void configureCANSparkMAXs() {
-        DriveMotor.setOpenLoopRampRate(0.2);
-        TurnMotor.setOpenLoopRampRate(0);
+        DriveMotor.setOpenLoopRampRate(0.2); // TODO: Tune for physical maxima
+        TurnMotor.setOpenLoopRampRate(0.01);
     }
 
     public SwerveMotors(SwerveModuleConstants Constants) {
