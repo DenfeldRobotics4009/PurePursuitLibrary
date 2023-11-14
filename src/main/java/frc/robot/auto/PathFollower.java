@@ -10,8 +10,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
-import frc.robot.RobotContainer;
 
 public class PathFollower {
 
@@ -20,8 +18,6 @@ public class PathFollower {
     public int lastCrossedPointIndex = 0;
 
     double lookAheadMeters; // Calculate-able?
-
-    Timer calculationTimer = new Timer();
 
     public static final boolean debug = true;
 
@@ -39,8 +35,7 @@ public class PathFollower {
     } 
 
     public PathState getPathState(Pose2d robotPosition) {
-        calculationTimer.start();
-        println("Observing line " + lastCrossedPointIndex + " to " + (lastCrossedPointIndex + 1));
+        //println("Observing line " + lastCrossedPointIndex + " to " + (lastCrossedPointIndex + 1));
 
         // TODO split logic blocks into function
 
@@ -51,22 +46,12 @@ public class PathFollower {
 
         // Assume at least 2 are grabbed
         double lengthAB = relevantPoints.get(0).getDistance(relevantPoints.get(1));
-        println("Length of current line = " + lengthAB);
+        //println("Length of current line = " + lengthAB);
 
         // grab perpendicular intersection
         Translation2d perpendicularIntersectionAB = PathPoint.findPerpendicularIntersection(
             relevantPoints.get(0).posMeters, relevantPoints.get(1).posMeters, robotTranslation
         );
-
-        /**
-         * Known bug with this method of finding distance along line AB, there is no
-         * indication whether the robot has PASSED AB or not, thus 1 meter from point B
-         * is recognized the same as 1 meter passed point B. However, this should
-         * never pose a problem, as the perpendicular intersection is clamped to the
-         * boundaries of AB.
-         * 
-         * So theres really no bug at all :)
-         */
 
         // Calculate position along line AB via finding difference between line length, and distance to B
         double distanceMetersAlongAB = lengthAB - relevantPoints.get(1).posMeters.getDistance(perpendicularIntersectionAB);
@@ -89,10 +74,10 @@ public class PathFollower {
         while (true) {
             // Check to make sure points are accessible
             if (lastCrossedPointIndex + pointsLookingAhead + 1 >= path.points.size()) {
-                print("Looking towards end of path at point ");
+                //print("Looking towards end of path at point ");
                 // We are looking to the end of path
                 gotoGoal = path.points.get(path.points.size()-1).posMeters;
-                println(gotoGoal);
+                //println(gotoGoal);
                 break;
             }
             
@@ -109,7 +94,7 @@ public class PathFollower {
                     lookAheadPointB.posMeters, 
                     distanceAlongLookaheadPoints / lookAheadLineLength // Normalized
                 );
-                println(gotoGoal);
+                //println(gotoGoal);
                 break;
             }
 
@@ -119,7 +104,7 @@ public class PathFollower {
             // Continue
         }
 
-        println("Constructing path state");
+        //println("Constructing path state");
         // Construct state
         PathState state = new PathState(
             gotoGoal, 
@@ -144,12 +129,8 @@ public class PathFollower {
             // Schedule associated command
             relevantPoints.get(0).triggeredCommand.schedule();
             lastCrossedPointIndex ++;
-            println("Increment last crossed point index to " + lastCrossedPointIndex);
+            //println("Increment last crossed point index to " + lastCrossedPointIndex);
         }
-
-        calculationTimer.stop();
-        println("Calculated PathState in " + calculationTimer.get() + " seconds");
-        calculationTimer.reset();
 
         return state;
     }
@@ -168,7 +149,7 @@ public class PathFollower {
         // Calculate the perpendicularIntersection of the next line in path, if it exists
         // Check if the line exists first
         if (lastCrossedPointIndex + 2 < path.points.size()) {
-            println("Next line found");
+            //println("Next line found");
             // if the line exists, grab points
             PathPoint pointB = path.points.get(lastCrossedPointIndex + 1);
             PathPoint pointC = path.points.get(lastCrossedPointIndex + 2);
@@ -177,7 +158,7 @@ public class PathFollower {
                 pointB.posMeters, pointC.posMeters, robotTranslation
             );
 
-            println("Found perpendicular intersection at " + perpendicularIntersectionBC);
+            //println("Found perpendicular intersection at " + perpendicularIntersectionBC);
             
             // Find distance from lines
             double distanceToAB = positionAlongLine.getDistance(robotTranslation);
@@ -185,11 +166,11 @@ public class PathFollower {
 
             // Compare distances to each intersection
             if (distanceToAB > distanceToBC) {
-                println("Distance to line AB is greater than distance to BC");
+                //println("Distance to line AB is greater than distance to BC");
                 return true;
             }
         } else {
-            println("Next line not found");
+            //println("Next line not found");
         }
 
         return false;

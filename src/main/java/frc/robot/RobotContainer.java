@@ -4,15 +4,12 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.auto.Autos;
 import frc.robot.commands.Drive;
@@ -47,9 +44,10 @@ public class RobotContainer {
     // Iterate through enum of autos
     for (Autos autoEnum : Autos.values()) {
       // Add all enum objects to autoChooser, with name given by enum type
+      // The last added option will remain as default
       autoChooser.addOption(autoEnum.toString(), autoEnum.getSequence());
     }
-
+    
     SmartDashboard.putData("Autonomous", autoChooser);
 
     // Configure the button bindings

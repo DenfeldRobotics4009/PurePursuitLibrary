@@ -13,7 +13,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants.Swerve;
 
@@ -27,6 +26,7 @@ public class SwerveModule {
     final ShuffleboardTab kSwerveTab;
     final GenericEntry calibrationAngle, xPos, yPos, theta;
 
+    // Units in meters
     private double lastAccumulatedDriveDistance = 0;
 
     private final AHRS navxGyro;
@@ -219,17 +219,8 @@ public class SwerveModule {
         );
 
         // Set turn motor
-        kMotors.PositionTurnController.setTarget(0);
-
-        kMotors.PositionTurnController.setInput(
-            calculateDistanceCorrection(
-                OptimizedState.angle.getDegrees(), 
-                kMotors.TurnEncoder.getAbsolutePosition()
-            )
-        );
-
         kMotors.TurnMotor.set(
-            kMotors.PositionTurnController.calculate(1, -1)
+            SwerveMotors.signedAngleBetween(OptimizedState.angle, kMotors.getRotation2d()).getRadians() * kMotors.turningP
         );
     }
 
@@ -303,11 +294,11 @@ public class SwerveModule {
         // Make sure this error does not exist!
         // Catch velocity error, and reset position with current robot pos
         // Assume a polling rate of 0.2 seconds.
-        if (SwerveMotors.metersToRotations(velocityFromDriveDistance * 0.2) > Swerve.MaxRotationsPerSecond) {
+        if (SwerveMotors.metersToRotations(velocityFromDriveDistance * 0.2) > Swerve.MaxMetersPerSecond) {
             // notify on driver station
-            DriverStation.reportError(
+            System.out.println(
                 "Swerve module " + Instance.name() + " has encountered a drive motor encoder failure. " +
-                "Attempting recalibration from sibling modules", false
+                "Attempting recalibration from sibling modules"
             );
             // If this is ran, the swerve module needs to be reset
             // Calculate position from all swerve module instances.

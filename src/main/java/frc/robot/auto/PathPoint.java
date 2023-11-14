@@ -100,14 +100,14 @@ public class PathPoint {
         // Check for edge cases, deltaX being 0 or deltaY being 0
 
         if (deltaY == 0) {
-            PathFollower.println("Calculating perpendicular intersection from horizontal line");
+            //PathFollower.println("Calculating perpendicular intersection from horizontal line");
 
             intersection = new Translation2d(
                 nonSpecifiedClamp(PointA.getX(), PointB.getX(), Source.getX()), PointA.getY()
             );
 
         } else if (deltaX == 0) {
-            PathFollower.println("Calculating perpendicular intersection from vertical line");
+            //PathFollower.println("Calculating perpendicular intersection from vertical line");
 
             intersection = new Translation2d(
                 PointA.getX(), nonSpecifiedClamp(PointA.getY(), PointB.getY(), Source.getY())
@@ -115,7 +115,7 @@ public class PathPoint {
 
         } else {
 
-            PathFollower.println("Calculating perpendicular intersection from sloped line");
+            //PathFollower.println("Calculating perpendicular intersection from sloped line");
 
             double Slope = deltaY / deltaX;
 
@@ -132,7 +132,7 @@ public class PathPoint {
             );
         }
         
-        PathFollower.println("Found perpendicular intersection at " + intersection);
+        //PathFollower.println("Found perpendicular intersection at " + intersection);
         return intersection;
     }
 

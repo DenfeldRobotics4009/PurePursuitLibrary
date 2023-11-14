@@ -15,7 +15,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static int NEOMaxRPM = 5676;
 
     public static final class Swerve {
 
@@ -55,8 +54,9 @@ public final class Constants {
         public static double MaxRotationsPerSecond = 5676;
 
         public static double driveRampRateSeconds = 0.2; // Time from 0% to 100% speed
+        public static double steerRampRateSeconds = 0.1; 
 
-        public static double MaxAccelerationMetersPerSecondPerSecond = 1; // TODO Calculate
+        public static double MaxAccelerationMetersPerSecondPerSecond = MaxMetersPerSecond / driveRampRateSeconds;
 
         public static SwerveModuleConstants FrontLeft = new SwerveModuleConstants(
             21, 31, 1, new Rotation2d(Math.toRadians(48)), "FrontLeft"

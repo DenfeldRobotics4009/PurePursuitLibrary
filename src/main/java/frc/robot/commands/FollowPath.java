@@ -5,7 +5,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -14,6 +13,7 @@ import frc.robot.auto.PathFollower;
 import frc.robot.auto.PathPoint;
 import frc.robot.auto.PathState;
 import frc.robot.subsystems.SwerveDrive;
+import frc.robot.subsystems.swerve.SwerveMotors;
 
 public class FollowPath extends CommandBase {
 
@@ -31,7 +31,7 @@ public class FollowPath extends CommandBase {
     path = Path;
 
     // Construct pathFollower from provided path
-    m_pathFollower = new PathFollower(path, 0.5);
+    m_pathFollower = new PathFollower(path, 0.15);
   }
 
   // Called when the command is initially scheduled.
@@ -55,19 +55,12 @@ public class FollowPath extends CommandBase {
 
     PathFollower.println("Current pos is " + robotPose.getTranslation());
     PathFollower.println("Goal pos is " + state.goalPose.getTranslation());
-    
-    PathFollower.println("State speed is " + state.speedMetersPerSecond + " m/s");
-
     // The target relative to the robots current position
     Translation2d deltaLocation = state.goalPose.getTranslation().minus(robotPose.getTranslation());
-    PathFollower.println("Distance from goal position is " + deltaLocation + " meters");
     // Scale to goal speed. Speed input is in meters per second, while drive accepts normal values.
     Translation2d axisSpeeds = new Translation2d(state.speedMetersPerSecond, deltaLocation.getAngle());
     
     PathFollower.println("Traveling to goal position at " + axisSpeeds + " m/s");
-
-    PathFollower.println("Rotation Goal = " + state.goalPose.getRotation());
-
     // Construct chassis speeds from state values
     // Convert field oriented to robot oriented
     ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -75,8 +68,12 @@ public class FollowPath extends CommandBase {
       new ChassisSpeeds(
         axisSpeeds.getX(),
         axisSpeeds.getY(),
-        // TODO ROTATE
-        robotPose.getRotation().minus(state.goalPose.getRotation()).getRadians()
+        // Rotate by the angle between
+        SwerveMotors.signedAngleBetween(
+          // Angle from current to goal
+          state.goalPose.getRotation(),
+          SwerveDrive.navxGyro.getRotation2d()
+        ).getRadians() // Units in radians
       ), 
       SwerveDrive.navxGyro.getRotation2d()
     );
@@ -108,7 +105,7 @@ public class FollowPath extends CommandBase {
     return (
       // If we have passed the second to last point
       m_pathFollower.lastCrossedPointIndex >= (path.points.size() - 2) && 
-      distanceToLastPointMeters < 0.05
+      distanceToLastPointMeters < 0.01
     );
   }
 }
