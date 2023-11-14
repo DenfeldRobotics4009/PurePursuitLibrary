@@ -7,7 +7,10 @@ package frc.robot.commands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.RobotContainer;
+import frc.robot.Constants.Swerve;
 import frc.robot.auto.Path;
 import frc.robot.auto.PathFollower;
 import frc.robot.auto.PathPoint;
@@ -31,7 +34,7 @@ public class FollowPath extends CommandBase {
     path = Path;
 
     // Construct pathFollower from provided path
-    m_pathFollower = new PathFollower(path, 0.15);
+    m_pathFollower = new PathFollower(path, 0.1);
   }
 
   // Called when the command is initially scheduled.
@@ -57,6 +60,9 @@ public class FollowPath extends CommandBase {
     PathFollower.println("Goal pos is " + state.goalPose.getTranslation());
     // The target relative to the robots current position
     Translation2d deltaLocation = state.goalPose.getTranslation().minus(robotPose.getTranslation());
+
+    SmartDashboard.putNumber("Lookahead", m_pathFollower.lookAheadMeters);
+
     // Scale to goal speed. Speed input is in meters per second, while drive accepts normal values.
     Translation2d axisSpeeds = new Translation2d(state.speedMetersPerSecond, deltaLocation.getAngle());
     

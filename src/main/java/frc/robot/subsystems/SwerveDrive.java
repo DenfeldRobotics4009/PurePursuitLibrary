@@ -21,7 +21,6 @@ import frc.robot.subsystems.swerve.SwerveModuleInstance;
 public class SwerveDrive extends SubsystemBase {
 
   final ShuffleboardTab SwerveTab = Shuffleboard.getTab("Swerve");
-  GenericEntry gyroAngle;
 
   // Construct swerve modules
   final SwerveModule
@@ -33,6 +32,13 @@ public class SwerveDrive extends SubsystemBase {
   SwerveDriveKinematics kinematics;
 
   public static AHRS navxGyro = new AHRS();
+
+  // Entries for motion graphing
+  final ShuffleboardTab swerveProfileTab = Shuffleboard.getTab("Swerve Position");
+  GenericEntry 
+    xPositionEntry = swerveProfileTab.add("xPosition", 0).getEntry(), 
+    yPositionEntry = swerveProfileTab.add("yPosition", 0).getEntry(),
+    rotationEntry = swerveProfileTab.add("Rotation", 0).getEntry();
 
   /**
    * Object to track the robots position via inverse kinematics
@@ -62,12 +68,10 @@ public class SwerveDrive extends SubsystemBase {
 
     navxGyro.calibrate();
   
-    gyroAngle = SwerveTab.add("Gyro Angle", 0).getEntry();
   }
 
   @Override
   public void periodic() {
-    gyroAngle.setDouble(navxGyro.getRotation2d().getDegrees());
 
     // Update swerve module calibration from shuffleboard
     SwerveModule.forEach(
@@ -77,6 +81,11 @@ public class SwerveDrive extends SubsystemBase {
     );
 
     inverseKinematics.Update();
+
+    // Displaying position values
+    xPositionEntry.setDouble(inverseKinematics.getPosition().getX());
+    yPositionEntry.setDouble(inverseKinematics.getPosition().getY());
+    rotationEntry.setDouble(navxGyro.getRotation2d().getDegrees());
   }
 
   /**

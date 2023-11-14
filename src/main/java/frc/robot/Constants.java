@@ -49,14 +49,20 @@ public final class Constants {
 
         public static double wheelDiameterMeters = 0.10308;
         public static double swerveGearRatio = 1 / 6.2; // Rotations of motor per rotations of wheel
+        public static double swerveSteerGearRatio = 150 / 7; // Rotations of motor per rotations of wheel
         public static double rotationsToMeters = (Math.PI * wheelDiameterMeters * swerveGearRatio); 
 
         public static double MaxRotationsPerSecond = 5676;
 
         public static double driveRampRateSeconds = 0.2; // Time from 0% to 100% speed
-        public static double steerRampRateSeconds = 0.1; 
+        public static double steerRampRateSeconds = 0.2; 
 
-        public static double MaxAccelerationMetersPerSecondPerSecond = MaxMetersPerSecond / driveRampRateSeconds;
+        public static double turningkP = 0.3; 
+
+        public static double MaxSteerRPM = swerveSteerGearRatio * 5676; // scalar for tuning
+
+        public static double MaxAccelerationMeters = MaxMetersPerSecond / driveRampRateSeconds;
+        public static double MaxSteerAccelerationRad = (MaxSteerRPM * 2 * Math.PI) / steerRampRateSeconds;
 
         public static SwerveModuleConstants FrontLeft = new SwerveModuleConstants(
             21, 31, 1, new Rotation2d(Math.toRadians(48)), "FrontLeft"

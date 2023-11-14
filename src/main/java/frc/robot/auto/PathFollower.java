@@ -10,6 +10,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import frc.robot.RobotContainer;
+import frc.robot.Constants.Swerve;
 
 public class PathFollower {
 
@@ -17,7 +19,7 @@ public class PathFollower {
     
     public int lastCrossedPointIndex = 0;
 
-    double lookAheadMeters; // Calculate-able?
+    public double lookAheadMeters; // Calculate-able?
 
     public static final boolean debug = true;
 
@@ -65,6 +67,7 @@ public class PathFollower {
         double lookAheadDistanceMetersAlongPoints = distanceMetersAlongAB + lookAheadMeters;
 
         Translation2d gotoGoal;
+        double predictedSpeed = 0;
 
         // double lookedLineLength = 0;
         int pointsLookingAhead = 0;
@@ -77,6 +80,7 @@ public class PathFollower {
                 //print("Looking towards end of path at point ");
                 // We are looking to the end of path
                 gotoGoal = path.points.get(path.points.size()-1).posMeters;
+                predictedSpeed = path.points.get(path.points.size()-1).speedMetersPerSecond;
                 //println(gotoGoal);
                 break;
             }
@@ -94,6 +98,13 @@ public class PathFollower {
                     lookAheadPointB.posMeters, 
                     distanceAlongLookaheadPoints / lookAheadLineLength // Normalized
                 );
+
+                predictedSpeed = PathPoint.getAtLinearInterpolation(
+                    relevantPoints.get(0).speedMetersPerSecond, 
+                    relevantPoints.get(1).speedMetersPerSecond, 
+                    distanceAlongLookaheadPoints / lookAheadLineLength
+                );
+
                 //println(gotoGoal);
                 break;
             }
@@ -103,6 +114,13 @@ public class PathFollower {
             pointsLookingAhead ++;
             // Continue
         }
+
+        // Set lookahead distance based upon predicted speed
+        lookAheadMeters = RobotContainer.Clamp(
+            // Arbriturary scalar
+            1200 * Math.sqrt(predictedSpeed / Swerve.MaxSteerAccelerationRad),
+            1, 0.05
+        );
 
         //println("Constructing path state");
         // Construct state

@@ -28,7 +28,7 @@ public class TestPath extends Path {
                     new PathPoint(
                         new Translation2d(0, 0), 
                         new Rotation2d(0), 
-                        0.1, 
+                        0.15, 
                         new InstantCommand()
                     ),
 
@@ -36,7 +36,7 @@ public class TestPath extends Path {
                     new PathPoint(
                         new Translation2d(-1, 0), 
                         new Rotation2d(0), 
-                        0.1,
+                        0.5,
                         new InstantCommand()
                     ),
 
@@ -44,7 +44,7 @@ public class TestPath extends Path {
                     new PathPoint(
                         new Translation2d(-1, 0.8), 
                         new Rotation2d(0), 
-                        0.1,
+                        0.2,
                         new InstantCommand()
                     ),
 
@@ -52,7 +52,7 @@ public class TestPath extends Path {
                     new PathPoint(
                         new Translation2d(0, 0.8), 
                         new Rotation2d(0), 
-                        0.1,
+                        0.15,
                         new InstantCommand()
                     ),
 

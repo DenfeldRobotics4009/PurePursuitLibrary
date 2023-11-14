@@ -67,7 +67,7 @@ public class Path {
             double distanceBetween = 
                 point.distanceAlongPath - previousPoint.distanceAlongPath;
 
-            double validSpeed = distanceBetween * Swerve.MaxAccelerationMetersPerSecondPerSecond;
+            double validSpeed = distanceBetween * Swerve.MaxAccelerationMeters;
 
             // handle next point from current point
             if (

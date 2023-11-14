@@ -12,8 +12,6 @@ public class SwerveMotors {
     CANSparkMax DriveMotor, TurnMotor;
     CANCoder TurnEncoder;
     final String Name;
-
-    public final double turningP = 0.6;
     
     public static double rotationsToMeters(double rotations) {
         return rotations * Swerve.rotationsToMeters;

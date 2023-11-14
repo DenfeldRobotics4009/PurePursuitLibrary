@@ -220,7 +220,7 @@ public class SwerveModule {
 
         // Set turn motor
         kMotors.TurnMotor.set(
-            SwerveMotors.signedAngleBetween(OptimizedState.angle, kMotors.getRotation2d()).getRadians() * kMotors.turningP
+            SwerveMotors.signedAngleBetween(OptimizedState.angle, kMotors.getRotation2d()).getRadians() * Swerve.turningkP
         );
     }
 
