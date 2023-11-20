@@ -54,8 +54,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    SwerveDrive.navxGyro.reset();
-    SwerveDrive.inverseKinematics.setPosition(new Pose2d());
+  
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */

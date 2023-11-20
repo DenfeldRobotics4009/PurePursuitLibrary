@@ -217,9 +217,7 @@ public class PathFollower {
      * @param x
      */
     public static void print(Object x) {
-        if (debug) {
-            System.out.print(" > " + x);
-        }
+        if (debug) {System.out.print(x);}
     }
 
     /**

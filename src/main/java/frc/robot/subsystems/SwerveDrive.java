@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commands.CalibrateDrive;
+import frc.robot.commands.CalibrateGyro;
 import frc.robot.odometry.sources.SwerveDriveInverseKinematics;
 import frc.robot.subsystems.swerve.SwerveModule;
 import frc.robot.subsystems.swerve.SwerveModuleInstance;
@@ -69,8 +70,9 @@ public class SwerveDrive extends SubsystemBase {
 
     navxGyro.calibrate();
 
-    // Add calibrate command to shuffleboard
-    swerveTab.add("Calibrate", new CalibrateDrive(instance));
+    // Add calibrate commands to shuffleboard
+    swerveTab.add("Calibrate Modules", new CalibrateDrive(this));
+    swerveTab.add("Calibrate Gyro", new CalibrateGyro());
   }
 
   @Override

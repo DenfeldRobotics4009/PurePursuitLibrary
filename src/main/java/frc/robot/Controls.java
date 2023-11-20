@@ -12,8 +12,6 @@ public class Controls {
     public Controls(Joystick Drive, Joystick Steer) {
         drive = Drive;
         steer = Steer;
-
-        GotoZero = new JoystickButton(drive, 2);
     }
 
 

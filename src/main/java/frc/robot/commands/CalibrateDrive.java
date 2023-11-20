@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.swerve.SwerveModule;
@@ -29,6 +30,9 @@ public class CalibrateDrive extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    // Reset position
+    SwerveDrive.inverseKinematics.setPosition(new Pose2d());
+
     for (SwerveModule swerveModule : SwerveModule.getInstances()) {
       // Set the genericEntry calibration angle to the modules current angle
       swerveModule.calibrationAngle.setDouble(

@@ -1,0 +1,34 @@
+[
+  {
+    "name": "/Shuffleboard/Swerve/FrontLeft Calibration Angle",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Shuffleboard/Swerve/FrontRight Calibration Angle",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Shuffleboard/Swerve/BackLeft Calibration Angle",
+    "type": "double",
+    "value": 990.078125,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Shuffleboard/Swerve/BackRight Calibration Angle",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  }
+]
