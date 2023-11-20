@@ -59,7 +59,7 @@ public class SwerveModule {
     public void setFieldRelativePosition(Translation2d Position) {AccumulatedRelativePositionMeters = Position;}
 
     /**
-     * @return Robot relative position of swerve module
+     * @return Robot relative position of swerve module/
      */
     public Translation2d getRobotRelativePosition() {return instance.getPosition();}
 

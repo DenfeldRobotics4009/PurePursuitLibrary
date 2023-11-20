@@ -32,6 +32,9 @@ public class CalibrateDrive extends CommandBase {
     for (SwerveModule swerveModule : SwerveModule.getInstances()) {
       // Set the genericEntry calibration angle to the modules current angle
       swerveModule.calibrationAngle.setDouble(
+        // Add the current adjusted rotation2d to the last calibration
+        // angle to properly offset
+        swerveModule.calibrationAngle.getDouble(0) + 
         swerveModule.motors.getRotation2d().getDegrees()
       );
     }
