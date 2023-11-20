@@ -18,6 +18,7 @@ public class CalibrateGyro extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    System.out.println("Calibrating Gyro...");
     SwerveDrive.navxGyro.reset();
   }
 
@@ -28,6 +29,6 @@ public class CalibrateGyro extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }

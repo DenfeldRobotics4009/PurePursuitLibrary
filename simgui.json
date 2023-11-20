@@ -1,5 +1,12 @@
 {
   "HALProvider": {
+    "Other Devices": {
+      "navX-Sensor[0]": {
+        "header": {
+          "open": true
+        }
+      }
+    },
     "RoboRIO": {
       "3.3V Rail": {
         "open": true
@@ -10,6 +17,8 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/Shuffleboard/Swerve/Calibrate": "Command",
+      "/Shuffleboard/Swerve/Calibrate Gyro": "Command",
+      "/Shuffleboard/Swerve/Calibrate Modules": "Command",
       "/SmartDashboard/Autonomous": "String Chooser"
     },
     "windows": {
@@ -18,7 +27,12 @@
           "visible": true
         }
       },
-      "/Shuffleboard/Swerve/Calibrate": {
+      "/Shuffleboard/Swerve/Calibrate Gyro": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/Shuffleboard/Swerve/Calibrate Modules": {
         "window": {
           "visible": true
         }
@@ -58,9 +72,6 @@
         "open": true
       },
       "SmartDashboard": {
-        "Autonomous": {
-          "open": true
-        },
         "open": true
       }
     }
