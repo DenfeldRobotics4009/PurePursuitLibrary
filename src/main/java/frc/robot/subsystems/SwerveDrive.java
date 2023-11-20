@@ -14,44 +14,45 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.commands.CalibrateDrive;
 import frc.robot.odometry.sources.SwerveDriveInverseKinematics;
 import frc.robot.subsystems.swerve.SwerveModule;
 import frc.robot.subsystems.swerve.SwerveModuleInstance;
 
 public class SwerveDrive extends SubsystemBase {
 
-  final ShuffleboardTab SwerveTab = Shuffleboard.getTab("Swerve");
+  final ShuffleboardTab swerveTab = Shuffleboard.getTab("Swerve");
 
   // Construct swerve modules
   final SwerveModule
-    FrontLeftModule = SwerveModule.getInstance(SwerveModuleInstance.FRONT_LEFT, SwerveTab, navxGyro),
-    FrontRightModule = SwerveModule.getInstance(SwerveModuleInstance.FRONT_RIGHT, SwerveTab, navxGyro),
-    BackLeftModule = SwerveModule.getInstance(SwerveModuleInstance.BACK_LEFT, SwerveTab, navxGyro),
-    BackRightModule = SwerveModule.getInstance(SwerveModuleInstance.BACK_RIGHT, SwerveTab, navxGyro);
+    // Pass swerve tab into modules to allow each of them to display relevant data, whatever that may be
+    FrontLeftModule = SwerveModule.getInstance(SwerveModuleInstance.FRONT_LEFT, swerveTab, navxGyro),
+    FrontRightModule = SwerveModule.getInstance(SwerveModuleInstance.FRONT_RIGHT, swerveTab, navxGyro),
+    BackLeftModule = SwerveModule.getInstance(SwerveModuleInstance.BACK_LEFT, swerveTab, navxGyro),
+    BackRightModule = SwerveModule.getInstance(SwerveModuleInstance.BACK_RIGHT, swerveTab, navxGyro);
 
   SwerveDriveKinematics kinematics;
 
   public static AHRS navxGyro = new AHRS();
 
   // Entries for motion graphing
-  final ShuffleboardTab swerveProfileTab = Shuffleboard.getTab("Swerve Position");
   GenericEntry 
-    xPositionEntry = swerveProfileTab.add("xPosition", 0).getEntry(), 
-    yPositionEntry = swerveProfileTab.add("yPosition", 0).getEntry(),
-    rotationEntry = swerveProfileTab.add("Rotation", 0).getEntry();
+    xPositionEntry = swerveTab.add("xPosition", 0).getEntry(), 
+    yPositionEntry = swerveTab.add("yPosition", 0).getEntry(),
+    rotationEntry = swerveTab.add("Rotation", 0).getEntry();
 
   /**
    * Object to track the robots position via inverse kinematics
    */
   public static SwerveDriveInverseKinematics inverseKinematics;
 
-  static SwerveDrive Instance;
+  static SwerveDrive instance;
 
   public static SwerveDrive GetInstance() {
-    if (Instance == null) {
-      Instance = new SwerveDrive();
+    if (instance == null) {
+      instance = new SwerveDrive();
     }
-    return Instance;
+    return instance;
   }
 
   /** Creates a new SwerveDrive. */
@@ -64,10 +65,12 @@ public class SwerveDrive extends SubsystemBase {
       SwerveModule.getRobotRelativePositions()
     );
 
-    inverseKinematics = SwerveDriveInverseKinematics.getInstance(navxGyro, SwerveTab);
+    inverseKinematics = SwerveDriveInverseKinematics.getInstance(navxGyro, swerveTab);
 
     navxGyro.calibrate();
-  
+
+    // Add calibrate command to shuffleboard
+    swerveTab.add("Calibrate", new CalibrateDrive(instance));
   }
 
   @Override

@@ -24,7 +24,7 @@ public class SwerveModule {
     public final SwerveMotors motors;
 
     final ShuffleboardTab swerveTab;
-    public final GenericEntry calibrationAngle, xPos, yPos, theta;
+    public final GenericEntry calibrationAngle;
 
     // Units in meters
     private double lastAccumulatedDriveDistance = 0;
@@ -185,11 +185,8 @@ public class SwerveModule {
         this.navxGyro = NAVXGyro;
 
         calibrationAngle = SwerveTab.addPersistent(
-            motors.Name +  " Calibration Angle", 0).getEntry();
-
-        xPos =  SwerveTab.add(motors.Name + " PosX", 0)    .getEntry();
-        yPos =  SwerveTab.add(motors.Name + " PosY", 0)    .getEntry();
-        theta = SwerveTab.add(motors.Name + " theta", 0)   .getEntry();
+            motors.Name +  " Calibration Angle", 0
+        ).getEntry();
     }
 
     public void updateCalibration() {
@@ -286,10 +283,6 @@ public class SwerveModule {
         // error.
         double velocityFromDriveDistance = lastAccumulatedDriveDistance - lastAccumulatedDriveDistance_h;
         // For an accurate velocity reading, kMotors.DriveMotor.getEncoder().getVelocity()
-        // Update shuffleboard entries.
-        xPos.setDouble(AccumulatedRelativePositionMeters.getX());
-        yPos.setDouble(AccumulatedRelativePositionMeters.getY());
-        theta.setDouble(motors.getRotation2d().plus(navxGyro.getRotation2d()).getDegrees());
 
         // Make sure this error does not exist!
         // Catch velocity error, and reset position with current robot pos
