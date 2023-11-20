@@ -19,12 +19,12 @@ import frc.robot.Constants.Swerve;
 
 public class SwerveModule {
 
-    final SwerveModuleInstance Instance;
+    final SwerveModuleInstance instance;
 
-    final SwerveMotors kMotors;
+    public final SwerveMotors motors;
 
-    final ShuffleboardTab kSwerveTab;
-    final GenericEntry calibrationAngle, xPos, yPos, theta;
+    final ShuffleboardTab swerveTab;
+    public final GenericEntry calibrationAngle, xPos, yPos, theta;
 
     // Units in meters
     private double lastAccumulatedDriveDistance = 0;
@@ -61,7 +61,7 @@ public class SwerveModule {
     /**
      * @return Robot relative position of swerve module
      */
-    public Translation2d getRobotRelativePosition() {return Instance.getPosition();}
+    public Translation2d getRobotRelativePosition() {return instance.getPosition();}
 
     /**
      * Multiton instances
@@ -177,23 +177,23 @@ public class SwerveModule {
         ShuffleboardTab SwerveTab,
         AHRS NAVXGyro
     ) {
-        this.kSwerveTab = SwerveTab;
+        this.swerveTab = SwerveTab;
 
-        this.kMotors = ModulePosition.getMotors();
-        this.Instance = ModulePosition;
+        this.motors = ModulePosition.getMotors();
+        this.instance = ModulePosition;
 
         this.navxGyro = NAVXGyro;
 
         calibrationAngle = SwerveTab.addPersistent(
-            kMotors.Name +  " Calibration Angle", 0).getEntry();
+            motors.Name +  " Calibration Angle", 0).getEntry();
 
-        xPos =  SwerveTab.add(kMotors.Name + " PosX", 0)    .getEntry();
-        yPos =  SwerveTab.add(kMotors.Name + " PosY", 0)    .getEntry();
-        theta = SwerveTab.add(kMotors.Name + " theta", 0)   .getEntry();
+        xPos =  SwerveTab.add(motors.Name + " PosX", 0)    .getEntry();
+        yPos =  SwerveTab.add(motors.Name + " PosY", 0)    .getEntry();
+        theta = SwerveTab.add(motors.Name + " theta", 0)   .getEntry();
     }
 
     public void updateCalibration() {
-        kMotors.configureCANCoder(
+        motors.configureCANCoder(
             new Rotation2d(Math.toRadians(calibrationAngle.getDouble(0)))
         );
     }
@@ -208,19 +208,19 @@ public class SwerveModule {
             State, 
             // Assume reading is degrees
             new Rotation2d(
-                Math.toRadians(kMotors.TurnEncoder.getAbsolutePosition())
+                Math.toRadians(motors.TurnEncoder.getAbsolutePosition())
             )
         );
 
         // Set drive motor
 
-        kMotors.DriveMotor.set(
+        motors.DriveMotor.set(
             OptimizedState.speedMetersPerSecond
         );
 
         // Set turn motor
-        kMotors.TurnMotor.set(
-            SwerveMotors.signedAngleBetween(OptimizedState.angle, kMotors.getRotation2d()).getRadians() * Swerve.turningkP
+        motors.TurnMotor.set(
+            SwerveMotors.signedAngleBetween(OptimizedState.angle, motors.getRotation2d()).getRadians() * Swerve.turningkP
         );
     }
 
@@ -280,7 +280,7 @@ public class SwerveModule {
     public Translation2d updateFieldRelativePosition() {
         // Handoff previous value and update
         double lastAccumulatedDriveDistance_h = lastAccumulatedDriveDistance;
-        lastAccumulatedDriveDistance = kMotors.getDriveDistanceMeters();
+        lastAccumulatedDriveDistance = motors.getDriveDistanceMeters();
         // This velocity is not for an accurate velocity reading, rather to catch a large
         // jump in drive distance. Grabbing velocity from drive motor will not catch this
         // error.
@@ -289,7 +289,7 @@ public class SwerveModule {
         // Update shuffleboard entries.
         xPos.setDouble(AccumulatedRelativePositionMeters.getX());
         yPos.setDouble(AccumulatedRelativePositionMeters.getY());
-        theta.setDouble(kMotors.getRotation2d().plus(navxGyro.getRotation2d()).getDegrees());
+        theta.setDouble(motors.getRotation2d().plus(navxGyro.getRotation2d()).getDegrees());
 
         // Make sure this error does not exist!
         // Catch velocity error, and reset position with current robot pos
@@ -297,7 +297,7 @@ public class SwerveModule {
         if (SwerveMotors.metersToRotations(velocityFromDriveDistance * 0.2) > Swerve.MaxMetersPerSecond) {
             // notify on driver station
             System.out.println(
-                "Swerve module " + Instance.name() + " has encountered a drive motor encoder failure. " +
+                "Swerve module " + instance.name() + " has encountered a drive motor encoder failure. " +
                 "Attempting recalibration from sibling modules"
             );
             // If this is ran, the swerve module needs to be reset
@@ -305,7 +305,7 @@ public class SwerveModule {
             Translation2d posSum = new Translation2d();
             for (SwerveModule swerveModule : getInstances()) {
                 // Average from all other 3
-                if (swerveModule.Instance != Instance) {
+                if (swerveModule.instance != instance) {
 
                     posSum = posSum.plus(
                         swerveModule.getAssumedRobotFieldRelativePosition()
@@ -322,7 +322,7 @@ public class SwerveModule {
         Translation2d movementVectorMeters = new Translation2d(
             velocityFromDriveDistance, // Delta of drive distance
             // Sum is bounded by -pi to pi
-            kMotors.getRotation2d().plus(navxGyro.getRotation2d())
+            motors.getRotation2d().plus(navxGyro.getRotation2d())
         );
         // Update single module tracking
         // Add last vector and current vector
@@ -335,6 +335,6 @@ public class SwerveModule {
      * @param Position Field relative position of robot.
      */
     public void setFieldRelativePositionFromRobotPosition(Pose2d Position) {
-        AccumulatedRelativePositionMeters = Position.getTranslation().plus(Instance.getPosition());
+        AccumulatedRelativePositionMeters = Position.getTranslation().plus(instance.getPosition());
     }
 }

@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.PathFollowing;
 import frc.robot.Constants.Swerve;
 
 public class PathFollower {
@@ -38,17 +39,20 @@ public class PathFollower {
 
     public PathState getPathState(Pose2d robotPosition) {
         //println("Observing line " + lastCrossedPointIndex + " to " + (lastCrossedPointIndex + 1));
-
-        // TODO split logic blocks into function
-
         Translation2d robotTranslation = robotPosition.getTranslation();
 
         // Store 2 points
         ArrayList<PathPoint> relevantPoints = packageRelevantPoints();
 
+        // Set lookahead based upon speed of next point
+        lookAheadMeters = RobotContainer.Clamp(
+            PathFollowing.lookAheadScalar * relevantPoints.get(1).speedMetersPerSecond,
+            1, 0.1
+        );
+
         // Assume at least 2 are grabbed
         double lengthAB = relevantPoints.get(0).getDistance(relevantPoints.get(1));
-        //println("Length of current line = " + lengthAB);
+        // println("Length of current line = " + lengthAB);
 
         // grab perpendicular intersection
         Translation2d perpendicularIntersectionAB = PathPoint.findPerpendicularIntersection(
@@ -67,9 +71,7 @@ public class PathFollower {
         double lookAheadDistanceMetersAlongPoints = distanceMetersAlongAB + lookAheadMeters;
 
         Translation2d gotoGoal;
-        double predictedSpeed = 0;
 
-        // double lookedLineLength = 0;
         int pointsLookingAhead = 0;
         double distanceAlongLookaheadPoints = lookAheadDistanceMetersAlongPoints;
 
@@ -80,7 +82,6 @@ public class PathFollower {
                 //print("Looking towards end of path at point ");
                 // We are looking to the end of path
                 gotoGoal = path.points.get(path.points.size()-1).posMeters;
-                predictedSpeed = path.points.get(path.points.size()-1).speedMetersPerSecond;
                 //println(gotoGoal);
                 break;
             }
@@ -99,12 +100,6 @@ public class PathFollower {
                     distanceAlongLookaheadPoints / lookAheadLineLength // Normalized
                 );
 
-                predictedSpeed = PathPoint.getAtLinearInterpolation(
-                    relevantPoints.get(0).speedMetersPerSecond, 
-                    relevantPoints.get(1).speedMetersPerSecond, 
-                    distanceAlongLookaheadPoints / lookAheadLineLength
-                );
-
                 //println(gotoGoal);
                 break;
             }
@@ -114,13 +109,6 @@ public class PathFollower {
             pointsLookingAhead ++;
             // Continue
         }
-
-        // Set lookahead distance based upon predicted speed
-        lookAheadMeters = RobotContainer.Clamp(
-            // Arbriturary scalar
-            1200 * Math.sqrt(predictedSpeed / Swerve.MaxSteerAccelerationRad),
-            1, 0.05
-        );
 
         //println("Constructing path state");
         // Construct state

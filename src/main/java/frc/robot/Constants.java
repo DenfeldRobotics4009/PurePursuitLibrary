@@ -16,6 +16,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
  */
 public final class Constants {
 
+    public static final class PathFollowing {
+        public static double lookAheadScalar = 1.3; // lookAhead = lookAheadScalar * Speed
+    }
+
     public static final class Swerve {
 
         public static class SwerveModuleConstants {
@@ -59,7 +63,7 @@ public final class Constants {
 
         public static double turningkP = 0.3; 
 
-        public static double MaxSteerRPM = swerveSteerGearRatio * 5676; // scalar for tuning
+        public static double MaxSteerRPM = swerveSteerGearRatio * 5676;
 
         public static double MaxAccelerationMeters = MaxMetersPerSecond / driveRampRateSeconds;
         public static double MaxSteerAccelerationRad = (MaxSteerRPM * 2 * Math.PI) / steerRampRateSeconds;
