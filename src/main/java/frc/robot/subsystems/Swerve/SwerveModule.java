@@ -244,31 +244,6 @@ public class SwerveModule {
     }
 
     /**
-     * This function calculates the difference between the target and
-     * position on a circle, allowing a PID controller to travel over 
-     * the point where 0 degrees and 360 degrees meet.
-     * @param target PID goal
-     * @param pos PID input
-     * @return target relative to pos on a circle
-     */
-    public static double calculateDistanceCorrection(
-        double targetDegrees, 
-        double positionDegrees
-    ) {
-        if (Math.abs(targetDegrees + (360) - positionDegrees) 
-            < Math.abs(targetDegrees - positionDegrees)
-        ) {
-            return targetDegrees + (360) - positionDegrees;
-        } else if (Math.abs(targetDegrees - (360) - positionDegrees) 
-            < Math.abs(targetDegrees - positionDegrees)
-        ) {
-            return targetDegrees - (360) - positionDegrees;
-        } else {
-            return targetDegrees - positionDegrees;
-        }
-    }
-
-    /**
      * Updates and constructs the field position of this swerve module.
      * This should be ran periodically, and as frequently as possible.
      * 
