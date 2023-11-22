@@ -5,6 +5,10 @@
 package frc.robot;
 
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.NetworkTableType;
+import edu.wpi.first.networktables.NetworkTableValue;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -15,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.auto.Autos;
 import frc.robot.commands.Drive;
+import frc.robot.commands.RecordDrive;
 import frc.robot.subsystems.SwerveDrive;
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -46,7 +51,10 @@ public class RobotContainer {
       .withPosition(10,0).withSize(10, 4).withWidget("Graph").getEntry(),
     lastCrossedPointEntry = autoTab.add("Last Crossed Point Index", 0)
       .withPosition(20, 2).withSize(5, 1).getEntry();
-    
+
+  // Record NetWorkTable
+  static NetworkTable macroTable = NetworkTableInstance.getDefault().getTable("DriveRecording");
+  public static final GenericEntry recordingEntry = autoTab.add("Recording", false).getEntry();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -65,6 +73,9 @@ public class RobotContainer {
     }
     
     autoTab.add("Autonomous", autoChooser).withPosition(20, 0).withSize(5, 2);
+
+    // Auto recording command toggle button
+    autoTab.add("Toggle Recording", new RecordDrive(macroTable, recordingEntry));
 
     // Configure the button bindings
     configureButtonBindings();

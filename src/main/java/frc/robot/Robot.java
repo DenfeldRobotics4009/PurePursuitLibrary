@@ -89,7 +89,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     SwerveDrive.inverseKinematics.setPosition(new Pose2d());
-    SwerveDrive.navxGyro.reset();
+    //SwerveDrive.navxGyro.reset();
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove

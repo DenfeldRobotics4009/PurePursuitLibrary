@@ -42,10 +42,7 @@ public class FollowPath extends CommandBase {
     m_pathFollower = new PathFollower(path, 0.1);
 
     PathFollower.println("--- Following path of points: ---");
-    for (PathPoint point : path.points) {
-      PathFollower.print(point.posMeters);
-      PathFollower.println(" ");
-    }
+    for (PathPoint point : path.points) {PathFollower.println(point.posMeters);}
     PathFollower.println("--- --- --- -- --- -- --- --- ---");
 
     System.out.println("Scheduling path command: " + m_pathFollower.getFirstPoint().triggeredCommand);
