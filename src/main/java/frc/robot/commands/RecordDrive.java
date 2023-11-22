@@ -19,7 +19,7 @@ public class RecordDrive extends CommandBase {
   final SwerveDrive m_drive = SwerveDrive.GetInstance();
 
   // Entries to send to outside program
-  final NetworkTableEntry pXMeters, pYMeters, thetaRad, vMeters, enabled;
+  final NetworkTableEntry pXMeters, pYMeters, thetaRad, vMeters, active, sent;
 
   GenericEntry recordingBoolEntry;
 
@@ -35,7 +35,11 @@ public class RecordDrive extends CommandBase {
     pYMeters = table.getEntry("pYMeters");
     thetaRad = table.getEntry("thetaRad");
     vMeters = table.getEntry("vMeters");
-    enabled = table.getEntry("enabled");
+    active = table.getEntry("active");
+
+    // Will be periodically set to true,
+    // when recording is active
+    sent = table.getEntry("sent");
 
     dEntries = new NetworkTableEntry[] {
       pXMeters, pYMeters, thetaRad, vMeters
@@ -50,7 +54,7 @@ public class RecordDrive extends CommandBase {
     // Cancel the command if its already running
     System.out.println("recordDrive obj: " + instance);
     if (instance != null) {
-      enabled.setBoolean(false);
+      active.setBoolean(false);
 
       // Set all packets to 0
       for (NetworkTableEntry doubleEntry : dEntries) {
@@ -66,7 +70,7 @@ public class RecordDrive extends CommandBase {
     } else {
       // If not, add to the instance
       instance = this;
-      enabled.setBoolean(true);
+      active.setBoolean(true);
       recordingBoolEntry.setBoolean(true);
     } 
   }
@@ -85,6 +89,9 @@ public class RecordDrive extends CommandBase {
     pYMeters.setDouble(position.getY());
     thetaRad.setDouble(position.getRotation().getRadians());
     vMeters.setDouble(speed);
+
+    // Acknowledge sent packet
+    sent.setBoolean(true);
   }
 
   // Called once the command ends or is interrupted.
