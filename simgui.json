@@ -16,9 +16,17 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
+      "/Shuffleboard/Autonomous/Autonomous": "String Chooser",
       "/Shuffleboard/Swerve/Calibrate": "Command",
       "/Shuffleboard/Swerve/Calibrate Gyro": "Command",
       "/Shuffleboard/Swerve/Calibrate Modules": "Command",
+      "/Shuffleboard/Swerve/Calibrate Position": "Command",
+      "/Shuffleboard/Swerve/CalibrateDrive": "Command",
+      "/Shuffleboard/Swerve/CalibrateGyro": "Command",
+      "/Shuffleboard/Swerve/Field": "Field2d",
+      "/Shuffleboard/Swerve/Robot Position": "Field2d",
       "/SmartDashboard/Autonomous": "String Chooser"
     },
     "windows": {
@@ -37,6 +45,11 @@
           "visible": true
         }
       },
+      "/Shuffleboard/Swerve/Robot Position": {
+        "window": {
+          "visible": true
+        }
+      },
       "/SmartDashboard/Autonomous": {
         "window": {
           "visible": true
@@ -49,11 +62,16 @@
       "Shuffleboard": {
         "Swerve": {
           "open": true
-        },
-        "open": true
+        }
       }
     },
     "retained": {
+      "Shuffleboard": {
+        "Autonomous": {
+          "open": true
+        },
+        "open": true
+      },
       "SmartDashboard": {
         "Autonomous": {
           "open": true
@@ -62,6 +80,9 @@
       }
     },
     "transitory": {
+      "FMSInfo": {
+        "open": true
+      },
       "LiveWindow": {
         "open": true
       },

@@ -4,11 +4,13 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.auto.Autos;
@@ -32,6 +34,20 @@ public class RobotContainer {
 
   SendableChooser<SequentialCommandGroup> autoChooser = new SendableChooser<>();
 
+  // Tab to display autonous data
+  public static final ShuffleboardTab autoTab = Shuffleboard.getTab("Autonomous");
+  // Entries for auto data
+  public static final GenericEntry 
+    lookAheadEntry = autoTab.add("Look Ahead", 0)
+      .withPosition(0, 4).withSize(20, 4).withWidget("Graph").getEntry(), 
+    speedEntry = autoTab.add("State Speed", 0)
+      .withPosition(0,0).withSize(10, 4).withWidget("Graph").getEntry(),
+    distanceFromGoalEntry = autoTab.add("Distance to Goal", 0)
+      .withPosition(10,0).withSize(10, 4).withWidget("Graph").getEntry(),
+    lastCrossedPointEntry = autoTab.add("Last Crossed Point Index", 0)
+      .withPosition(20, 2).withSize(5, 1).getEntry();
+    
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -48,7 +64,7 @@ public class RobotContainer {
       autoChooser.addOption(autoEnum.toString(), autoEnum.getSequence());
     }
     
-    SmartDashboard.putData("Autonomous", autoChooser);
+    autoTab.add("Autonomous", autoChooser).withPosition(20, 0).withSize(5, 2);
 
     // Configure the button bindings
     configureButtonBindings();

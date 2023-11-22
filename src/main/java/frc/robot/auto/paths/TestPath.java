@@ -9,9 +9,9 @@ import java.util.Arrays;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.auto.Path;
 import frc.robot.auto.PathPoint;
+import frc.robot.commands.DummyCommand;
 
 /**
  * Constructs a TestPath instance
@@ -24,47 +24,80 @@ public class TestPath extends Path {
             new ArrayList<PathPoint>( // Create arraylist from list
                 Arrays.asList( // Generate list from content
 
-                    // Point A
                     new PathPoint(
                         new Translation2d(0, 0), 
                         new Rotation2d(0), 
-                        0.15, 
-                        new InstantCommand()
+                        0.4, 
+                        new DummyCommand("Past point 1")
                     ),
 
-                    // Point B
                     new PathPoint(
-                        new Translation2d(-1, 0), 
+                        new Translation2d(1.6576, 0), 
                         new Rotation2d(0), 
-                        0.5,
-                        new InstantCommand()
+                        0.4,
+                        new DummyCommand("Past point 2")
                     ),
 
-                    // Point C
                     new PathPoint(
-                        new Translation2d(-1, 0.8), 
+                        new Translation2d(3.6576, 0), 
                         new Rotation2d(0), 
-                        0.2,
-                        new InstantCommand()
+                        0.4,
+                        new DummyCommand("Past point 3")
                     ),
 
-                    // Point D
                     new PathPoint(
-                        new Translation2d(0, 0.8), 
+                        new Translation2d(3.6576, 1), 
                         new Rotation2d(0), 
-                        0.15,
-                        new InstantCommand()
+                        1.5,
+                        new DummyCommand("Past point 4")
                     ),
 
-                    // Point E
+                    new PathPoint(
+                        new Translation2d(3.6576, 2), 
+                        new Rotation2d(0), 
+                        0.8,
+                        new DummyCommand("Past point 5")
+                    ),
+
+                    new PathPoint(
+                        new Translation2d(3.6576, 4.1656), 
+                        new Rotation2d(0), 
+                        0.4,
+                        new DummyCommand("Past point 6")
+                    ),
+
+                    new PathPoint(
+                        new Translation2d(1, 4.1656), 
+                        new Rotation2d(0), 
+                        0.4,
+                        new DummyCommand("Past point 7")
+                    ),
+
+                    new PathPoint(
+                        new Translation2d(0, 4.1656), 
+                        new Rotation2d(0), 
+                        0.4,
+                        new DummyCommand("Past point 8")
+                    ),
+
+                    new PathPoint(
+                        new Translation2d(0, 2), 
+                        new Rotation2d(0), 
+                        1,
+                        new DummyCommand("Past point 9")
+                    ),
+
                     new PathPoint(
                         new Translation2d(0, 0), 
                         new Rotation2d(0), 
                         0,
-                        new InstantCommand()
+                        new DummyCommand("Past point 10")
                     )
                 )  
-            )
+            ),
+
+            // Last point tolerance
+            0.02
         );
     }
 

@@ -17,7 +17,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public final class Constants {
 
     public static final class PathFollowing {
-        public static double lookAheadScalar = 1.3; // lookAhead = lookAheadScalar * Speed
+        public static double lookAheadScalar = 1.5; // lookAhead = lookAheadScalar * Speed
     }
 
     public static final class Swerve {
@@ -69,14 +69,14 @@ public final class Constants {
         public static double MaxSteerAccelerationRad = (MaxSteerRPM * 2 * Math.PI) / steerRampRateSeconds;
 
         public static SwerveModuleConstants FrontLeft = new SwerveModuleConstants(
-            21, 31, 1, new Rotation2d(Math.toRadians(48)), "FrontLeft"
+            21, 31, 1, new Rotation2d(Math.toRadians(49.5)), "FrontLeft"
         );
 
         public static SwerveModuleConstants FrontRight = new SwerveModuleConstants(
             23, 33, 2, new Rotation2d(Math.toRadians(200)), "FrontRight"
         );
        public static SwerveModuleConstants BackLeft = new SwerveModuleConstants(
-          22, 32, 3, new Rotation2d(Math.toRadians(4)), "BackLeft"
+          22, 32, 3, new Rotation2d(Math.toRadians(2)), "BackLeft"
         );
 
         public static SwerveModuleConstants BackRight = new SwerveModuleConstants(

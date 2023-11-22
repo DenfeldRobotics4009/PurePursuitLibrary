@@ -9,8 +9,8 @@ import frc.robot.Constants.Swerve;
 import frc.robot.Constants.Swerve.SwerveModuleConstants;
 
 public class SwerveMotors {
-    CANSparkMax DriveMotor, TurnMotor;
-    CANCoder TurnEncoder;
+    CANSparkMax DriveMotor, SteerMotor;
+    public CANCoder SteerEncoder;
     final String Name;
     
     public static double rotationsToMeters(double rotations) {
@@ -37,21 +37,21 @@ public class SwerveMotors {
 
     // Configures default CANCoder settings for swerve
     public void configureCANCoder(Rotation2d CANCoderOffset) {
-        TurnEncoder.configMagnetOffset(CANCoderOffset.getDegrees());
+        SteerEncoder.configMagnetOffset(CANCoderOffset.getDegrees());
 
         // CCW Standard
-        TurnEncoder.configSensorDirection(false); 
+        SteerEncoder.configSensorDirection(false); 
     }
 
     public void configureCANSparkMAXs() {
         DriveMotor.setOpenLoopRampRate(Swerve.driveRampRateSeconds); // TODO: Tune for physical maxima
-        TurnMotor.setOpenLoopRampRate(Swerve.steerRampRateSeconds);
+        SteerMotor.setOpenLoopRampRate(Swerve.steerRampRateSeconds);
     }
 
     public SwerveMotors(SwerveModuleConstants Constants) {
         this.DriveMotor = new CANSparkMax(Constants.DriveMotorID, MotorType.kBrushless);
-        this.TurnMotor = new CANSparkMax(Constants.SteerMotorID, MotorType.kBrushless);
-        this.TurnEncoder = new CANCoder(Constants.CANCoderID);
+        this.SteerMotor = new CANSparkMax(Constants.SteerMotorID, MotorType.kBrushless);
+        this.SteerEncoder = new CANCoder(Constants.CANCoderID);
         this.Name = Constants.Name;
 
         configureCANCoder(Constants.DefaultOffset);
@@ -66,8 +66,8 @@ public class SwerveMotors {
         String Name
     ) {
         this.DriveMotor = DriveMotor;
-        this.TurnMotor = TurnMotor;
-        this.TurnEncoder = TurnEncoder;
+        this.SteerMotor = TurnMotor;
+        this.SteerEncoder = TurnEncoder;
         this.Name = Name;
 
         configureCANCoder(CANCoderOffset);
@@ -82,8 +82,8 @@ public class SwerveMotors {
         String Name
     ) {
         this.DriveMotor = new CANSparkMax(DriveMotorId, MotorType.kBrushless);
-        this.TurnMotor = new CANSparkMax(TurnMotorId, MotorType.kBrushless);
-        this.TurnEncoder = new CANCoder(CANCoderId);
+        this.SteerMotor = new CANSparkMax(TurnMotorId, MotorType.kBrushless);
+        this.SteerEncoder = new CANCoder(CANCoderId);
         this.Name = Name;
 
         configureCANCoder(CANCoderOffset);
@@ -96,7 +96,7 @@ public class SwerveMotors {
     public Rotation2d getRotation2d() {
         return new Rotation2d(
             Math.toRadians(
-                TurnEncoder.getAbsolutePosition()
+                SteerEncoder.getAbsolutePosition()
             )
         );
     }

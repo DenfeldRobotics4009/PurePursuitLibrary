@@ -10,9 +10,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import frc.robot.RobotContainer;
-import frc.robot.Constants.PathFollowing;
-import frc.robot.Constants.Swerve;
 
 public class PathFollower {
 
@@ -43,12 +40,6 @@ public class PathFollower {
 
         // Store 2 points
         ArrayList<PathPoint> relevantPoints = packageRelevantPoints();
-
-        // Set lookahead based upon speed of next point
-        lookAheadMeters = RobotContainer.Clamp(
-            PathFollowing.lookAheadScalar * relevantPoints.get(1).speedMetersPerSecond,
-            1, 0.1
-        );
 
         // Assume at least 2 are grabbed
         double lengthAB = relevantPoints.get(0).getDistance(relevantPoints.get(1));
@@ -133,7 +124,8 @@ public class PathFollower {
         // Check to increment index
         if (compareWithNextLine(perpendicularIntersectionAB, robotTranslation)) {
             // Schedule associated command
-            relevantPoints.get(0).triggeredCommand.schedule();
+            System.out.println("Scheduling path command: " + relevantPoints.get(1).triggeredCommand);
+            relevantPoints.get(1).triggeredCommand.schedule();
             lastCrossedPointIndex ++;
             //println("Increment last crossed point index to " + lastCrossedPointIndex);
         }
@@ -143,6 +135,10 @@ public class PathFollower {
 
     public PathPoint getLastPoint() {
         return path.points.get(path.points.size() - 1);
+    }
+
+    public PathPoint getFirstPoint() {
+        return path.points.get(0);
     }
 
     /**

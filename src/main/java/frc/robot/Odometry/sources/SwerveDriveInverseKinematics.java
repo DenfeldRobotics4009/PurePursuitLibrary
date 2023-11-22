@@ -3,8 +3,6 @@ package frc.robot.odometry.sources;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.libraries.geometry.Quadrilateral;
 import frc.robot.subsystems.swerve.SwerveModule;
 import frc.robot.subsystems.swerve.SwerveModuleInstance;
@@ -23,22 +21,14 @@ public class SwerveDriveInverseKinematics extends OdometrySource {
      * for further reading on the field coordinate system standard.
      */
 
-    // Shuffleboard display
-    final ShuffleboardTab swerveTab;
-    final GenericEntry xPosition, yPosition;
-
     final AHRS navxGyro;
 
     Pose2d currentPose;
 
     private static SwerveDriveInverseKinematics Instance;
 
-    public static SwerveDriveInverseKinematics getInstance(
-        AHRS navxGyro, ShuffleboardTab Tab
-    ) {
-        if (Instance == null) {
-            Instance = new SwerveDriveInverseKinematics(navxGyro, Tab);
-        }
+    public static SwerveDriveInverseKinematics getInstance(AHRS navxGyro) {
+        if (Instance == null) {Instance = new SwerveDriveInverseKinematics(navxGyro);}
 
         return Instance;
     }
@@ -47,15 +37,9 @@ public class SwerveDriveInverseKinematics extends OdometrySource {
      * @param SwerveModules 4 Swerve modules to calculate position from
      */
     private SwerveDriveInverseKinematics(
-        AHRS navxGyro,
-        ShuffleboardTab Tab
+        AHRS navxGyro
     ) {
         this.navxGyro = navxGyro;
-        this.swerveTab = Tab;
-
-        xPosition = Tab.add("XPosition", 0).getEntry();
-
-        yPosition = Tab.add("YPosition", 0).getEntry();
     }
  
     /**
@@ -80,10 +64,6 @@ public class SwerveDriveInverseKinematics extends OdometrySource {
             ), 
             navxGyro.getRotation2d()
         );
-
-        xPosition.setDouble(currentPose.getX());
-
-        yPosition.setDouble(currentPose.getY());
     }
 
     @Override

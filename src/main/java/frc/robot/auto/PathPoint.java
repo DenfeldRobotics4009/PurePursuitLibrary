@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class PathPoint {
 
     public final Translation2d posMeters;
-    double distanceAlongPath; // Handled by path constructor
     Rotation2d orientation; // Implemented by path constructor
 
     double speedMetersPerSecond; // Corrected by path constructor
@@ -43,10 +42,6 @@ public class PathPoint {
         // May be overridden
         speedMetersPerSecond = SpeedMetersPerSecond;
         orientation = Orientation;
-    }
-
-    public void defineDistanceAlongPath(double distanceAlongPath) {
-        this.distanceAlongPath = distanceAlongPath;
     }
 
     /**

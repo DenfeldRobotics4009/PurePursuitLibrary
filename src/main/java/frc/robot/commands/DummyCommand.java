@@ -4,24 +4,17 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.SwerveDrive;
 
-public class CalibrateDrive extends CommandBase {
+public class DummyCommand extends CommandBase {
 
-  SwerveDrive m_Drive;
-  Pose2d position;
+  String printMessage;
 
   /**
-   * Calibrates the swerve module steer directions when executed
-   * The current position of the swerve wheels will become the new 0
-   * @param Drivetrain
+   * A dummy command to print a supplied message
    */
-  public CalibrateDrive(SwerveDrive Drivetrain, Pose2d Position) {
-    m_Drive = Drivetrain;
-    addRequirements(Drivetrain);
-    position = Position;
+  public DummyCommand(String printMessage) {
+    this.printMessage = printMessage;
   }
 
   // Called when the command is initially scheduled.
@@ -31,9 +24,7 @@ public class CalibrateDrive extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println("Calibrating Drivetrain to " + position);
-    // Reset position
-    SwerveDrive.inverseKinematics.setPosition(position);
+    System.out.println(printMessage);
   }
 
   // Called once the command ends or is interrupted.
@@ -43,6 +34,6 @@ public class CalibrateDrive extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return true; // Run once
+    return true;
   }
 }

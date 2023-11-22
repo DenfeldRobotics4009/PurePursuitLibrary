@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.Swerve;
 
 
@@ -23,13 +24,111 @@ public class SwerveModule {
 
     public final SwerveMotors motors;
 
-    final ShuffleboardTab swerveTab;
     public final GenericEntry calibrationAngle;
 
     // Units in meters
     private double lastAccumulatedDriveDistance = 0;
 
     private final AHRS navxGyro;
+
+    /**
+     * TODO Move to top of class
+     * 
+     * Construct a single swerve module
+     * @param Motors Group of motors and encoder to use
+     * 
+     * Private constructor for multiton
+     */
+    private SwerveModule(
+        SwerveModuleInstance ModulePosition, 
+        GenericEntry CalibrationAngleEntry,
+        AHRS NAVXGyro
+    ) {
+        this.motors = ModulePosition.getMotors();
+        this.instance = ModulePosition;
+
+        this.navxGyro = NAVXGyro;
+
+        calibrationAngle = CalibrationAngleEntry;
+    }
+
+    /**
+     * Constructs or returns a pre-existing swerve module
+     * within the boundaries of the SwerveModulePosition enum.
+     * 
+     * @param ModulePosition SwerveModuleInstance enum item
+     * @param Motors Group of motors and encoder to match with module.
+     * @param Position Position of module (in meters) relative to
+     * the center of the robot.
+     * @param SwerveTab ShuffleboardTab instance to store data on.
+     * @param NAVXGyro AHRS NAVX gyro for position tracking.
+     * 
+     * @return Constructed, or already present, swerve module instance.
+     */
+    public static SwerveModule getInstance(
+
+        SwerveModuleInstance ModulePosition,
+        // Params for initialization, allow
+        // no default construction
+        GenericEntry CalibrationAngleEntry,
+        AHRS NAVXGyro
+    ) {
+        SwerveModule swerveModule;
+
+        if (!Instances.containsKey(ModulePosition)) {
+            // Construct new module if not present
+            swerveModule = new SwerveModule(ModulePosition, CalibrationAngleEntry, NAVXGyro);
+
+            // Insert into hash map
+            Instances.put(ModulePosition, swerveModule);
+        } else {
+            // Module already constructed, return module
+            // Parameters will be ignored
+            swerveModule = Instances.get(ModulePosition);
+        }
+
+        return swerveModule;
+    }
+
+    /**
+     * Returns an already constructed swerve module instance.
+     * This will error if the instance has not been initialized.
+     * 
+     * @param ModulePosition SwerveModuleInstance enum item
+     * @return Instance
+     */
+    public static SwerveModule getInstance(SwerveModuleInstance ModulePosition) {
+        return Instances.get(ModulePosition);
+    }
+
+    /**
+     * Converts instance hash map to array and returns constructed array.
+     * Order of array DOES NOT match enum, order should not be attempted 
+     * to predict
+     * 
+     * @return Array of currently initialized SwerveModule instances
+     */
+    public static SwerveModule[] getInstances() {
+        return Instances.values().toArray(new SwerveModule[0]);
+    }
+
+    public void updateCalibration() {
+        motors.configureCANCoder(
+            new Rotation2d(Math.toRadians(calibrationAngle.getDouble(0)))
+        );
+    }
+
+    // /**
+    //  * Sets the current encoder position to zero
+    //  */
+    // public void calibrate() {
+    //     // Set the genericEntry calibration angle to the modules current angle
+    //     calibrationAngle.setDouble(
+    //         // Add the current adjusted rotation2d to the last calibration
+    //         // angle to properly offset
+    //         (motors.SteerEncoder.getAbsolutePosition() - motors.SteerEncoder.configGetMagnetOffset()) % 360
+    //     );
+    // }
 
     /**
      * Initially set by odometry source constructor,
@@ -69,66 +168,6 @@ public class SwerveModule {
     private static final Map<SwerveModuleInstance, SwerveModule> Instances = new HashMap<>();
 
     /**
-     * Constructs or returns a pre-existing swerve module
-     * within the boundaries of the SwerveModulePosition enum.
-     * 
-     * @param ModulePosition SwerveModuleInstance enum item
-     * @param Motors Group of motors and encoder to match with module.
-     * @param Position Position of module (in meters) relative to
-     * the center of the robot.
-     * @param SwerveTab ShuffleboardTab instance to store data on.
-     * @param NAVXGyro AHRS NAVX gyro for position tracking.
-     * 
-     * @return Constructed, or already present, swerve module instance.
-     */
-    public static SwerveModule getInstance(
-
-        SwerveModuleInstance ModulePosition,
-        // Params for initialization, allow
-        // no default construction
-        ShuffleboardTab SwerveTab,
-        AHRS NAVXGyro
-    ) {
-        SwerveModule swerveModule;
-
-        if (!Instances.containsKey(ModulePosition)) {
-            // Construct new module if not present
-            swerveModule = new SwerveModule(ModulePosition, SwerveTab, NAVXGyro);
-
-            // Insert into hash map
-            Instances.put(ModulePosition, swerveModule);
-        } else {
-            // Module already constructed, return module
-            // Parameters will be ignored
-            swerveModule = Instances.get(ModulePosition);
-        }
-
-        return swerveModule;
-    }
-
-    /**
-     * Returns an already constructed swerve module instance.
-     * This will error if the instance has not been initialized.
-     * 
-     * @param ModulePosition SwerveModuleInstance enum item
-     * @return Instance
-     */
-    public static SwerveModule getInstance(SwerveModuleInstance ModulePosition) {
-        return Instances.get(ModulePosition);
-    }
-
-    /**
-     * Converts instance hash map to array and returns constructed array.
-     * Order of array DOES NOT match enum, order should not be attempted 
-     * to predict
-     * 
-     * @return Array of currently initialized SwerveModule instances
-     */
-    public static SwerveModule[] getInstances() {
-        return Instances.values().toArray(new SwerveModule[0]);
-    }
-
-    /**
      * Runs the provided lambda expression for every initialized
      * swerve module. This function is typically unnecessary, though
      * provides a more efficient foreach operation than looping
@@ -165,37 +204,6 @@ public class SwerveModule {
     }
 
     /**
-     * TODO Move to top of class
-     * 
-     * Construct a single swerve module
-     * @param Motors Group of motors and encoder to use
-     * 
-     * Private constructor for multiton
-     */
-    private SwerveModule(
-        SwerveModuleInstance ModulePosition, 
-        ShuffleboardTab SwerveTab,
-        AHRS NAVXGyro
-    ) {
-        this.swerveTab = SwerveTab;
-
-        this.motors = ModulePosition.getMotors();
-        this.instance = ModulePosition;
-
-        this.navxGyro = NAVXGyro;
-
-        calibrationAngle = SwerveTab.addPersistent(
-            motors.Name +  " Calibration Angle", 0
-        ).getEntry();
-    }
-
-    public void updateCalibration() {
-        motors.configureCANCoder(
-            new Rotation2d(Math.toRadians(calibrationAngle.getDouble(0)))
-        );
-    }
-
-    /**
      * Drive the current swerve module using optimization.
      * Inputs are assumed to be on a scale from 0 to 1
      * @param State Un-Optimized state
@@ -205,7 +213,7 @@ public class SwerveModule {
             State, 
             // Assume reading is degrees
             new Rotation2d(
-                Math.toRadians(motors.TurnEncoder.getAbsolutePosition())
+                Math.toRadians(motors.SteerEncoder.getAbsolutePosition())
             )
         );
 
@@ -216,7 +224,7 @@ public class SwerveModule {
         );
 
         // Set turn motor
-        motors.TurnMotor.set(
+        motors.SteerMotor.set(
             SwerveMotors.signedAngleBetween(OptimizedState.angle, motors.getRotation2d()).getRadians() * Swerve.turningkP
         );
     }
@@ -280,6 +288,7 @@ public class SwerveModule {
                     );
                 }
             }
+
             // Return corrected position.
             return AccumulatedRelativePositionMeters = posSum.div(Instances.size() - 1);
             // End function

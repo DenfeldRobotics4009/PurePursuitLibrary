@@ -18,13 +18,70 @@
   {
     "name": "/Shuffleboard/Swerve/BackLeft Calibration Angle",
     "type": "double",
-    "value": 990.078125,
+    "value": -360.0,
     "properties": {
       "persistent": true
     }
   },
   {
     "name": "/Shuffleboard/Swerve/BackRight Calibration Angle",
+    "type": "double",
+    "value": -360.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Shuffleboard/Swerve/xPosition",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true,
+      "retained": true
+    }
+  },
+  {
+    "name": "/Shuffleboard/Swerve/yPosition",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Shuffleboard/Swerve/Rotation",
+    "type": "double",
+    "value": -90.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Shuffleboard/Swerve/FRONT_LEFT Calibration Angle",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Shuffleboard/Swerve/FRONT_RIGHT Calibration Angle",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Shuffleboard/Swerve/BACK_LEFT Calibration Angle",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Shuffleboard/Swerve/BACK_RIGHT Calibration Angle",
     "type": "double",
     "value": 0.0,
     "properties": {
