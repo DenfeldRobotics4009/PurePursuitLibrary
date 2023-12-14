@@ -7,6 +7,7 @@ package frc.robot.auto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.auto.paths.ConeCircle;
+import frc.robot.auto.paths.SpeedTest;
 import frc.robot.auto.paths.TestPath;
 import frc.robot.auto.paths.TestPathB;
 import frc.robot.auto.paths.TestPathBReverse;
@@ -37,7 +38,9 @@ public enum Autos {
 
     TRIAL(new SequentialCommandGroup(new FollowPath(new Trial()))),
 
-    CIRCLECONE(new SequentialCommandGroup(new FollowPath(new ConeCircle())));
+    CIRCLECONE(new SequentialCommandGroup(new FollowPath(new ConeCircle()))),
+    
+    SPEEDTEST(new SequentialCommandGroup(new FollowPath(new SpeedTest())));
 
     final SequentialCommandGroup autoSequence;
 

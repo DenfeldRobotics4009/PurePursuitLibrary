@@ -16,9 +16,9 @@ import frc.robot.commands.DummyCommand;
 /**
  * Constructs a TestPath instance
  */
-public class ConeCircle extends Path {
+public class SpeedTest extends Path {
 
-    public ConeCircle() {
+    public SpeedTest() {
         // Construct path from arrayList of points
         super( // Path constructor
             new ArrayList<PathPoint>( // Create arraylist from list
@@ -31,34 +31,22 @@ public class ConeCircle extends Path {
                         new DummyCommand("Past point 1")
                     ),
                     new PathPoint(
-                        new Translation2d(2.5, 0), 
-                        new Rotation2d(Math.toRadians(135)), 
-                        0.8, 
-                        new DummyCommand("Past point 2")
+                        new Translation2d(1, 0), 
+                        new Rotation2d(Math.toRadians(45)), 
+                        0.6, 
+                        new DummyCommand("Past point 1")
                     ),
                     new PathPoint(
-                        new Translation2d(2.5, 2.5), 
-                        new Rotation2d(Math.toRadians(215)), 
+                        new Translation2d(2, 0), 
+                        new Rotation2d(Math.toRadians(45)), 
                         0.8, 
-                        new DummyCommand("Past point 3")
+                        new DummyCommand("Past point 1")
                     ),
                     new PathPoint(
-                        new Translation2d(0, 2.5), 
-                        new Rotation2d(Math.toRadians(305)), 
-                        0.8, 
-                        new DummyCommand("Past point 4")
-                    ),
-                    new PathPoint(
-                        new Translation2d(0, 0.3), 
-                        new Rotation2d(Math.toRadians(355)), 
-                        0.8, 
-                        new DummyCommand("Past point 5")
-                    ),
-                    new PathPoint(
-                        new Translation2d(0, 0), 
-                        new Rotation2d(Math.toRadians(395)), 
+                        new Translation2d(2.01, 0), 
+                        new Rotation2d(Math.toRadians(45)), 
                         0, 
-                        new DummyCommand("Past point 6")
+                        new DummyCommand("Past point 1")
                     )
                 )  
 
@@ -66,7 +54,7 @@ public class ConeCircle extends Path {
 
             // Last point tolerance
             0.02,
-            "ConeCircle"
+            "SpeedTest"
         );
     }
 

@@ -39,7 +39,7 @@ public class RobotContainer {
 
   SendableChooser<SequentialCommandGroup> autoChooser = new SendableChooser<>();
 
-  // Tab to display autonous data
+  // Tab to display autonomous data
   public static final ShuffleboardTab autoTab = Shuffleboard.getTab("Autonomous");
   // Entries for auto data
   public static final GenericEntry 

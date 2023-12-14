@@ -84,6 +84,12 @@ public class SwerveDriveInverseKinematics extends OdometrySource {
 
     @Override
     public Pose2d getVelocity() {
+        // Average the velocity of each swerve module
+        // Pose2d vSum = 0;
+        // for (SwerveModule swerveModule : SwerveModule.getInstances()) {
+            
+        // }
+
         return null;
     }
 

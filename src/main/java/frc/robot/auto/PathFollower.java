@@ -102,6 +102,7 @@ public class PathFollower {
         }
 
         //println("Constructing path state");
+        double percentAlongAB = distanceAlongLookaheadPoints / lengthAB;
         // Construct state
         PathState state = new PathState(
             gotoGoal, 
@@ -109,15 +110,14 @@ public class PathFollower {
                 PathPoint.getAtLinearInterpolation(
                     relevantPoints.get(0).orientation.getRadians(), 
                     relevantPoints.get(1).orientation.getRadians(), 
-                    distanceMetersAlongAB / lengthAB
+                    percentAlongAB
                 )
             ), 
             
-            // TODO, do properly
             PathPoint.getAtLinearInterpolation(
                 relevantPoints.get(0).speedMetersPerSecond, 
                 relevantPoints.get(1).speedMetersPerSecond, 
-                distanceMetersAlongAB / lengthAB
+                percentAlongAB
             )
         );
 

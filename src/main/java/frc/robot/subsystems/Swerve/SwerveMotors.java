@@ -109,4 +109,13 @@ public class SwerveMotors {
             DriveMotor.getEncoder().getPosition()
         );
     }
+
+    /**
+     * @return Current speed of drive motors
+     */
+    public double getDriveSpeedMeters() {
+        return rotationsToMeters
+            (DriveMotor.getEncoder().getVelocity()
+        );
+    }
 }

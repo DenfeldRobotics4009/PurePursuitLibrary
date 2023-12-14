@@ -97,7 +97,8 @@ public class TestPath extends Path {
             ),
 
             // Last point tolerance
-            0.02
+            0.02,
+            "TestPath"
         );
     }
 

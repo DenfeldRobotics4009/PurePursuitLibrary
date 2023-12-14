@@ -54,7 +54,8 @@ public class TestPathBReverse extends Path {
         ),
         
         // Last point tolerance
-        0.05
+        0.05,
+        "TestPathBReverse"
     );
     }
 }

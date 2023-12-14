@@ -169,6 +169,24 @@ public class SwerveDrive extends SubsystemBase {
     return inverseKinematics.getPosition();
   }
 
+  /**
+   * Grabs velocity from generic entry table,
+   * not from sensor collections
+   * @return A Pose2d with translation values bounded from -1 to 1
+   */
+  public Pose2d getVelocity() {
+    return new Pose2d(
+      new Translation2d(
+        xVelocityEntry.getDouble(0), yVelocityEntry.getDouble(0)
+      ), 
+      new Rotation2d(
+        Math.toRadians(
+          rotationVelocityEntry.getDouble(0)
+        )
+      )
+    );
+  }
+
   public void setPosition(Pose2d position) {
     inverseKinematics.setPosition(position);
   }

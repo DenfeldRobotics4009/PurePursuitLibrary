@@ -41,7 +41,8 @@ public class Trial extends Path {
             ),
 
             // Last point tolerance
-            0.02
+            0.02,
+            "Trial"
         );
     }
 

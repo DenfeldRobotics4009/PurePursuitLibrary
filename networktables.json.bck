@@ -51,7 +51,7 @@
   {
     "name": "/Shuffleboard/Swerve/Rotation",
     "type": "double",
-    "value": -0.0,
+    "value": -81.0,
     "properties": {
       "persistent": true
     }

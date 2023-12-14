@@ -6,9 +6,8 @@ package frc.robot.auto;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableValue;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 /**
  * A point along a Path
@@ -59,12 +58,6 @@ public class PathPoint {
         double Initial, double Final, double PercentBetween
     ) {
         return (Final - Initial) * PercentBetween + Initial;
-    }
-
-    public static double getAtLinearInterpolation(
-        double Initial, double Final, double Length, double DistanceBetween
-    ) {
-        return getAtLinearInterpolation(Initial, Final, DistanceBetween / Length);
     }
 
     /**
@@ -148,6 +141,32 @@ public class PathPoint {
         return new Translation2d(
             nonSpecifiedClamp(cornerA.getX(), cornerB.getX(), Input.getX()),
             nonSpecifiedClamp(cornerA.getY(), cornerB.getY(), Input.getY())
+        );
+    }
+
+    /**
+     * Constructs a new pathPathPoint via
+     * interpolating values from this to
+     * finalPoint.
+     * @param finalPoint Ending point
+     * @param t normalized distance from initial point
+     * @param insertedCommand Command to run when point is passed.
+     * @return new PathPoint
+     */
+    public PathPoint interpolate(PathPoint finalPoint, double t, Command insertedCommand) {
+        return new PathPoint(
+            // Position
+            posMeters.interpolate(finalPoint.posMeters, t), 
+            // Rotation
+            new Rotation2d(
+                getAtLinearInterpolation(
+                    orientation.getRadians(), finalPoint.orientation.getDegrees(), t)
+            ), 
+            // Speed (Unadjusted)
+            getAtLinearInterpolation(
+                speedMetersPerSecond, finalPoint.speedMetersPerSecond, t),
+            // None
+            insertedCommand
         );
     }
 

@@ -9,17 +9,16 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants.Swerve;
 import frc.robot.subsystems.SwerveDrive;
 
 public class RecordDrive extends CommandBase {
-
-  static RecordDrive instance = null;
 
   // For position and velocity grabbing
   final SwerveDrive m_drive = SwerveDrive.GetInstance();
 
   // Entries to send to outside program
-  final NetworkTableEntry pXMeters, pYMeters, thetaRad, vMeters, active, sent;
+  final NetworkTableEntry pXMeters, pYMeters, thetaRad, vMeters, status, sent;
 
   GenericEntry recordingBoolEntry;
 
@@ -35,7 +34,7 @@ public class RecordDrive extends CommandBase {
     pYMeters = table.getEntry("pYMeters");
     thetaRad = table.getEntry("thetaRad");
     vMeters = table.getEntry("vMeters");
-    active = table.getEntry("active");
+    status = table.getEntry("status");
 
     // Will be periodically set to true,
     // when recording is active
@@ -51,37 +50,17 @@ public class RecordDrive extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // Cancel the command if its already running
-    System.out.println("recordDrive obj: " + instance);
-    if (instance != null) {
-      active.setBoolean(false);
+    
+    status.setString("Activating");
+    recordingBoolEntry.setBoolean(true);
 
-      // Set all packets to 0
-      for (NetworkTableEntry doubleEntry : dEntries) {
-        doubleEntry.setDouble(0);
-      }
-
-      recordingBoolEntry.setBoolean(false);
-      // Cancel both currently running
-      // command, and this
-      instance.cancel();
-      instance = null;
-      cancel();
-    } else {
-      // If not, add to the instance
-      instance = this;
-      active.setBoolean(true);
-      recordingBoolEntry.setBoolean(true);
-    } 
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-    // Assume polling rate if 0.2 seconds
     // Extract from drivetrain
-    double speed = position.minus(m_drive.getPosition()).getTranslation().getNorm() / 0.2;
+    double speed = m_drive.getVelocity().getTranslation().getNorm() * Swerve.MaxMetersPerSecond;
     position = m_drive.getPosition();
 
     // Put current values into networkTable
@@ -97,7 +76,16 @@ public class RecordDrive extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    
+
+    status.setString("Deactivating");
+    sent.setBoolean(true);
+
+    // Set all packets to 0
+    for (NetworkTableEntry doubleEntry : dEntries) {
+      doubleEntry.setDouble(0);
+    }
+
+    recordingBoolEntry.setBoolean(false);
   }
 
   // Returns true when the command should end.
@@ -105,9 +93,5 @@ public class RecordDrive extends CommandBase {
   public boolean isFinished() {
     // Loop until cancelled
     return false;
-  }
-
-  public static boolean isRunning() {
-    return instance != null;
   }
 }
