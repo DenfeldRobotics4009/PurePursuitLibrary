@@ -58,37 +58,37 @@ public class SwerveMotors {
         configureCANSparkMAXs();
     }
 
-    public SwerveMotors(
-        CANSparkMax DriveMotor, 
-        CANSparkMax TurnMotor, 
-        CANCoder TurnEncoder, 
-        Rotation2d CANCoderOffset, 
-        String Name
-    ) {
-        this.DriveMotor = DriveMotor;
-        this.SteerMotor = TurnMotor;
-        this.SteerEncoder = TurnEncoder;
-        this.Name = Name;
+    // public SwerveMotors(
+    //     CANSparkMax DriveMotor, 
+    //     CANSparkMax TurnMotor, 
+    //     CANCoder TurnEncoder, 
+    //     Rotation2d CANCoderOffset, 
+    //     String Name
+    // ) {
+    //     this.DriveMotor = DriveMotor;
+    //     this.SteerMotor = TurnMotor;
+    //     this.SteerEncoder = TurnEncoder;
+    //     this.Name = Name;
 
-        configureCANCoder(CANCoderOffset);
-        configureCANSparkMAXs();
-    }
+    //     configureCANCoder(CANCoderOffset);
+    //     configureCANSparkMAXs();
+    // }
 
-    public SwerveMotors(
-        int DriveMotorId, 
-        int TurnMotorId, 
-        int CANCoderId, 
-        Rotation2d CANCoderOffset, 
-        String Name
-    ) {
-        this.DriveMotor = new CANSparkMax(DriveMotorId, MotorType.kBrushless);
-        this.SteerMotor = new CANSparkMax(TurnMotorId, MotorType.kBrushless);
-        this.SteerEncoder = new CANCoder(CANCoderId);
-        this.Name = Name;
+    // public SwerveMotors(
+    //     int DriveMotorId, 
+    //     int TurnMotorId, 
+    //     int CANCoderId, 
+    //     Rotation2d CANCoderOffset, 
+    //     String Name
+    // ) {
+    //     this.DriveMotor = new CANSparkMax(DriveMotorId, MotorType.kBrushless);
+    //     this.SteerMotor = new CANSparkMax(TurnMotorId, MotorType.kBrushless);
+    //     this.SteerEncoder = new CANCoder(CANCoderId);
+    //     this.Name = Name;
 
-        configureCANCoder(CANCoderOffset);
-        configureCANSparkMAXs();
-    }
+    //     configureCANCoder(CANCoderOffset);
+    //     configureCANSparkMAXs();
+    // }
 
     /**
      * @return A Rotation2d of the swerve module direction.

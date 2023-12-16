@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.Swerve;
 import frc.robot.commands.CalibrateDrive;
 import frc.robot.commands.CalibrateGyro;
 import frc.robot.odometry.sources.SwerveDriveInverseKinematics;
@@ -100,6 +101,7 @@ public class SwerveDrive extends SubsystemBase {
 
     inverseKinematics = SwerveDriveInverseKinematics.getInstance(navxGyro);
 
+    navxGyro.setAngleAdjustment(-Swerve.forwardAngle.getDegrees());
     navxGyro.calibrate();
 
     // Add calibrate commands to shuffleboard

@@ -7,6 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Controls;
+import frc.robot.Constants.Swerve;
 import frc.robot.subsystems.SwerveDrive;
 
 public class Drive extends CommandBase {
@@ -31,9 +32,9 @@ public class Drive extends CommandBase {
 
     ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
       new ChassisSpeeds(
-        m_controls.getForward(),
-        m_controls.getLateral(),
-        m_controls.getTurn()
+        m_controls.getForward() * Swerve.MaxMetersPerSecond,
+        m_controls.getLateral() * Swerve.MaxMetersPerSecond,
+        m_controls.getTurn() * Swerve.MaxRadPerSecond
       ), 
       SwerveDrive.navxGyro.getRotation2d()
     );

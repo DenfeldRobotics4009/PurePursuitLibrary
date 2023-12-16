@@ -47,6 +47,12 @@ public class RobotContainer {
       .withPosition(0, 4).withSize(20, 4).withWidget("Graph").getEntry(), 
     speedEntry = autoTab.add("State Speed", 0)
       .withPosition(0,0).withSize(10, 4).withWidget("Graph").getEntry(),
+      
+      /**
+       * If this graph is negative, the robot couldn't speed up fast enough
+       * If this graph is positive, the robot couldn't slow down fast enough
+       * The latter is a problem, the former is not (:
+       */
     distanceFromGoalEntry = autoTab.add("Distance to Goal", 0)
       .withPosition(10,0).withSize(10, 4).withWidget("Graph").getEntry(),
     lastCrossedPointEntry = autoTab.add("Last Crossed Point Index", 0)

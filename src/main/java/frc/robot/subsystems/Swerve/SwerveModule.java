@@ -13,8 +13,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.Swerve;
 
 
@@ -220,7 +218,7 @@ public class SwerveModule {
         // Set drive motor
 
         motors.DriveMotor.set(
-            OptimizedState.speedMetersPerSecond
+            OptimizedState.speedMetersPerSecond / Swerve.MaxMetersPerSecond
         );
 
         // Set turn motor

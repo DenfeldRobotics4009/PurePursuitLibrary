@@ -17,7 +17,7 @@ public enum SwerveModuleInstance {
 
         @Override
         public Translation2d getPosition() {
-            return new Translation2d(-Swerve.TrackWidthMeters/2, Swerve.TrackLengthMeters/2);
+            return new Translation2d(-Swerve.TrackYMeters/2, Swerve.TrackXMeters/2);
         }
 
         @Override
@@ -30,7 +30,7 @@ public enum SwerveModuleInstance {
 
         @Override
         public Translation2d getPosition() {
-            return new Translation2d(Swerve.TrackWidthMeters/2, Swerve.TrackLengthMeters/2);
+            return new Translation2d(Swerve.TrackYMeters/2, Swerve.TrackXMeters/2);
         }
 
         @Override
@@ -43,7 +43,7 @@ public enum SwerveModuleInstance {
 
         @Override
         public Translation2d getPosition() {
-            return new Translation2d(-Swerve.TrackWidthMeters/2, -Swerve.TrackLengthMeters/2);
+            return new Translation2d(-Swerve.TrackYMeters/2, -Swerve.TrackXMeters/2);
         }
 
         @Override
@@ -56,7 +56,7 @@ public enum SwerveModuleInstance {
 
         @Override
         public Translation2d getPosition() {
-            return new Translation2d(Swerve.TrackWidthMeters/2, -Swerve.TrackLengthMeters/2);
+            return new Translation2d(Swerve.TrackYMeters/2, -Swerve.TrackXMeters/2);
         }
 
         @Override

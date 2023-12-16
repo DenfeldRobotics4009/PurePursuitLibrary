@@ -160,7 +160,7 @@ public class PathPoint {
             // Rotation
             new Rotation2d(
                 getAtLinearInterpolation(
-                    orientation.getRadians(), finalPoint.orientation.getDegrees(), t)
+                    orientation.getRadians(), finalPoint.orientation.getRadians(), t)
             ), 
             // Speed (Unadjusted)
             getAtLinearInterpolation(

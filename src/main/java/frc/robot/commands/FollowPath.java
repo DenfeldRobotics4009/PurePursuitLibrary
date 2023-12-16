@@ -64,9 +64,9 @@ public class FollowPath extends CommandBase {
 
     // Clamp state speed so the end of the path can be consistently reached
     // Clamped between [Const Max, 5 cm/s]
-    double clampedSpeed = RobotContainer.Clamp(state.speedMetersPerSecond, Swerve.MaxMetersPerSecond, 0.05);
+    double clampedSpeed = RobotContainer.Clamp(state.speedMetersPerSecond, Swerve.MaxMetersPerSecond, -Swerve.MaxMetersPerSecond);
 
-    RobotContainer.distanceFromGoalEntry.setDouble(deltaLocation.getNorm());
+    RobotContainer.distanceFromGoalEntry.setDouble(deltaLocation.getNorm() - m_pathFollower.lookAheadMeters);
     RobotContainer.speedEntry.setDouble(clampedSpeed);
     RobotContainer.lookAheadEntry.setDouble(m_pathFollower.lookAheadMeters);
 

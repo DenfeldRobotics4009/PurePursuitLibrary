@@ -7,34 +7,34 @@ package frc.robot.auto.paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.auto.Path;
+import frc.robot.Constants.Swerve;
 import frc.robot.auto.PathPoint;
-import frc.robot.commands.DummyCommand;
 
 /**
  * Constructs a TestPath instance
  */
-public class Trial extends Path {
+public class ReverseSpeedTest extends Path {
 
-    public Trial() {
+    public ReverseSpeedTest() {
         // Construct path from arrayList of points
         super( // Path constructor
             new ArrayList<PathPoint>( // Create arraylist from list
                 Arrays.asList( // Generate list from content
 
                     new PathPoint(
-                        new Translation2d(0, 0), 
-                        new Rotation2d(0), 
-                        0.4, 
-                        new DummyCommand("Past point 1")
+                        new Translation2d(1.5, 0), 
+                        Swerve.forwardAngle, 
+                        Swerve.MaxMetersPerSecond, 
+                        new PrintCommand("Past point 0")
                     ),
                     new PathPoint(
-                        new Translation2d(4, 0), 
-                        new Rotation2d(Math.toRadians(-90)), 
+                        new Translation2d(0, 0), 
+                        Swerve.forwardAngle, 
                         0, 
-                        new DummyCommand("You made it (:")
+                        new PrintCommand("Past point 1")
                     )
                 )  
 
@@ -42,7 +42,7 @@ public class Trial extends Path {
 
             // Last point tolerance
             0.02,
-            "Trial"
+            "ReverseSpeedTest"
         );
     }
 

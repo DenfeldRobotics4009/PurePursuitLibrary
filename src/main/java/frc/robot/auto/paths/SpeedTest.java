@@ -7,11 +7,11 @@ package frc.robot.auto.paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.auto.Path;
+import frc.robot.Constants.Swerve;
 import frc.robot.auto.PathPoint;
-import frc.robot.commands.DummyCommand;
 
 /**
  * Constructs a TestPath instance
@@ -26,27 +26,15 @@ public class SpeedTest extends Path {
 
                     new PathPoint(
                         new Translation2d(0, 0), 
-                        new Rotation2d(Math.toRadians(45)), 
-                        0.8, 
-                        new DummyCommand("Past point 1")
+                        Swerve.forwardAngle, 
+                        Swerve.MaxMetersPerSecond, 
+                        new PrintCommand("Past point 0")
                     ),
                     new PathPoint(
-                        new Translation2d(1, 0), 
-                        new Rotation2d(Math.toRadians(45)), 
-                        0.6, 
-                        new DummyCommand("Past point 1")
-                    ),
-                    new PathPoint(
-                        new Translation2d(2, 0), 
-                        new Rotation2d(Math.toRadians(45)), 
-                        0.8, 
-                        new DummyCommand("Past point 1")
-                    ),
-                    new PathPoint(
-                        new Translation2d(2.01, 0), 
-                        new Rotation2d(Math.toRadians(45)), 
+                        new Translation2d(1.5, 0), 
+                        Swerve.forwardAngle, 
                         0, 
-                        new DummyCommand("Past point 1")
+                        new PrintCommand("Past point 1")
                     )
                 )  
 

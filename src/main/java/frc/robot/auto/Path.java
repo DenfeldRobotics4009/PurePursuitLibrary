@@ -84,5 +84,13 @@ public class Path {
                 points.add(i, insertedPoint);
             }
         }
+
+        // Parse through point and print data
+        for (int i = 0; i < points.size(); i++) {
+            System.out.println("Point " + i);
+            System.out.println("- Speed: " + points.get(i).speedMetersPerSecond);
+            System.out.println("- Rotation: " + points.get(i).orientation);
+            System.out.println("- Position: " + points.get(i).posMeters);
+        }
     }
 } 

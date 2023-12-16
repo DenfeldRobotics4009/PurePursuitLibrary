@@ -43,13 +43,14 @@ public final class Constants {
         }
 
         // Meters from wheel center to wheel center
-        public static double TrackWidthMeters = 0.57785;
-        public static double TrackLengthMeters = 0.65405;
+        public static double TrackYMeters = 0.65405;
+        public static double TrackXMeters = 0.57785;
 
-        public static double MaxMetersPerSecond = 3.6576; // TODO not accurate bozo
+        // public static double MaxMetersPerSecond = 3.6576
+        public static double MaxMetersPerSecond = 5.06;
 
         public static double MaxRadPerSecond = MaxMetersPerSecond /
-            Math.hypot(TrackWidthMeters / 2.0, TrackLengthMeters / 2.0);
+            Math.hypot(TrackYMeters / 2.0, TrackXMeters / 2.0);
 
         public static double wheelDiameterMeters = 0.10308;
         public static double swerveGearRatio = 1 / 6.2; // Rotations of motor per rotations of wheel
@@ -65,8 +66,11 @@ public final class Constants {
 
         public static double MaxSteerRPM = swerveSteerGearRatio * 5676;
 
-        public static double MaxAccelerationMeters = MaxMetersPerSecond / driveRampRateSeconds;
+        // TODO test for this, do not calculate
+        public static double MaxAccelerationMeters = 6; // Meters per second per second
         public static double MaxSteerAccelerationRad = (MaxSteerRPM * 2 * Math.PI) / steerRampRateSeconds;
+
+        public static Rotation2d forwardAngle = new Rotation2d(Math.toRadians(90));
 
         public static SwerveModuleConstants FrontLeft = new SwerveModuleConstants(
             21, 31, 1, new Rotation2d(Math.toRadians(49.5)), "FrontLeft"
