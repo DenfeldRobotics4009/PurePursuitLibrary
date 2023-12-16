@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Swerve;
-import frc.robot.auto.DriveSubsystem;
+import frc.robot.auto.algorithm.DriveSubsystem;
 import frc.robot.commands.CalibrateDrive;
 import frc.robot.commands.CalibrateGyro;
 import frc.robot.odometry.sources.SwerveDriveInverseKinematics;
