@@ -9,25 +9,122 @@ import java.util.ArrayList;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.auto.helpers.PathPoint;
+import frc.robot.auto.helpers.PathState;
+import frc.robot.RobotContainer;
+import frc.robot.Constants.PathFollowing;
+import frc.robot.Constants.Swerve;
 
-public class PathFollower {
-
+public class FollowPath extends CommandBase {
+    // Set of processed points
     final Path path;
-    
+    // Current index along the path
     public int lastCrossedPointIndex = 0;
+    // Distance down the path to drive towards
+    public double lookAheadMeters = 0.1; // Initial at 10 cm
 
-    public double lookAheadMeters; // Calculate-able?
+    final DriveSubsystem driveSubsystem;
 
-    public static final boolean debug = true;
+    /** Creates a new FollowPath. */
+    public FollowPath(Path Path, DriveSubsystem driveSubsystem) {
+        // Assume drive control when path following
+        addRequirements(driveSubsystem);
+        this.driveSubsystem = driveSubsystem;
+        path = Path;
+    }
 
-    /**
-     * 
-     * @param FollowedPath
-     */
-    public PathFollower(Path FollowedPath, double lookAheadMeters) {
-        path = FollowedPath;
-        this.lookAheadMeters = lookAheadMeters;
+    // Called when the command is initially scheduled.
+    @Override
+    public void initialize() {
+        System.out.println("--- Following path of points: ---");
+        for (PathPoint point : path.points) {System.out.println(point.posMeters);}
+        System.out.println("--- --- --- -- --- -- --- --- ---");
+
+        System.out.println("Scheduling path command: " + getFirstPoint().triggeredCommand);
+        getFirstPoint().triggeredCommand.schedule();
+    }
+
+    // Called every time the scheduler runs while the command is scheduled.
+    @Override
+    public void execute() {
+
+        Pose2d robotPose = driveSubsystem.getPosition();
+        PathState state = getPathState(robotPose);
+        // The target relative to the robots current position
+        Translation2d deltaLocation = state.goalPose.getTranslation().minus(robotPose.getTranslation());
+
+        // Clamp state speed so the end of the path can be consistently reached
+        // Clamped between [Const Max, 5 cm/s]
+        double clampedSpeed = Clamp(state.speedMetersPerSecond, Swerve.MaxMetersPerSecond, -Swerve.MaxMetersPerSecond);
+
+        RobotContainer.distanceFromGoalEntry.setDouble(deltaLocation.getNorm() - lookAheadMeters);
+        RobotContainer.speedEntry.setDouble(clampedSpeed);
+        RobotContainer.lookAheadEntry.setDouble(lookAheadMeters);
+
+        // Scale to goal speed. Speed input is in meters per second, while drive accepts normal values.
+        Translation2d axisSpeeds = new Translation2d(clampedSpeed, deltaLocation.getAngle());
+
+        // Set lookahead based upon speed of next point
+        setLookAheadDistance(Clamp(
+            PathFollowing.lookAheadScalar * clampedSpeed,
+            1, 0.1
+        ));
+
+        // Construct chassis speeds from state values
+        // Convert field oriented to robot oriented
+        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+            // Field oriented chassisSpeeds
+            new ChassisSpeeds(
+                axisSpeeds.getX(),
+                axisSpeeds.getY(),
+                // Rotate by the angle between
+                signedAngleBetween(
+                    // Angle from current to goal
+                    state.goalPose.getRotation(),
+                    robotPose.getRotation()
+                ).getRadians() // Units in radians
+            ), 
+            // Rotate from current direction
+            robotPose.getRotation()
+        );
+        // Drive
+        driveSubsystem.drive(speeds);
+
+        // Recurse until called to end
+    }
+
+    
+    // Called once the command ends or is interrupted.
+    @Override
+    public void end(boolean interrupted) {
+        System.out.println("End of path reached");
+        // Schedule last command in path.
+
+        RobotContainer.distanceFromGoalEntry.setDouble(0);
+        RobotContainer.speedEntry.setDouble(0);
+        RobotContainer.lookAheadEntry.setDouble(0);
+
+        System.out.println("Scheduling path command: " + getLastPoint().triggeredCommand);
+        getLastPoint().triggeredCommand.schedule();
+    }
+
+    // Returns true when the command should end.
+    @Override
+    public boolean isFinished() {
+
+        // calculate distance to last point
+        double distanceToLastPointMeters = getLastPoint().posMeters.getDistance(
+            driveSubsystem.getPosition().getTranslation()
+        );
+
+        return (
+            // If we have passed the second to last point
+            lastCrossedPointIndex >= (path.points.size() - 2) && 
+            distanceToLastPointMeters < path.lastPointTolerance
+        );
     }
 
     public void setLookAheadDistance(double distanceMeters) {
@@ -209,18 +306,28 @@ public class PathFollower {
     }
 
     /**
-     * Disable-able print function
-     * @param x
+     * 
+     * @param input
+     * @param max return max if input > max
+     * @param min return min is input < min
+     * @return clamped input
      */
-    public static void print(Object x) {
-        if (debug) {System.out.print(x);}
+    public static double Clamp(double input, double max, double min) {
+        if (input > max) {return max;}
+        else if (input < min) {return min;}
+        else {return input;}
     }
 
     /**
-     * Disable-able println function
-     * @param x
+     * 
+     * @param A Rotation2d A
+     * @param B Rotation2d B
+     * @return the angle from A to B
+     * on the interval [pi, -pi), in radians
      */
-    public static void println(Object x) {
-        print(x + "\n");
+    public static Rotation2d signedAngleBetween(Rotation2d A, Rotation2d B) {
+        return new Rotation2d(
+            (B.getRadians() - A.getRadians() + Math.PI) % (Math.PI * 2) - Math.PI
+        );
     }
 }

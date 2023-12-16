@@ -2,12 +2,11 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.auto;
+package frc.robot.auto.helpers;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 /**
  * A point along a Path
@@ -15,9 +14,9 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 public class PathPoint {
 
     public final Translation2d posMeters;
-    Rotation2d orientation; // Implemented by path constructor
+    public Rotation2d orientation; // Implemented by path constructor
 
-    double speedMetersPerSecond; // Corrected by path constructor
+    public double speedMetersPerSecond; // Corrected by path constructor
     //double accelerationDistance; // For deceleration
 
     public final Command triggeredCommand;

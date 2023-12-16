@@ -6,7 +6,7 @@ package frc.robot.auto;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.auto.paths.SpeedTest;
-import frc.robot.commands.FollowPath;
+import frc.robot.subsystems.SwerveDrive;
 
 public enum Autos {
 
@@ -17,7 +17,7 @@ public enum Autos {
 
     SPEEDTEST(
         new SequentialCommandGroup(
-            new FollowPath(new SpeedTest())
+            new FollowPath(new SpeedTest(), SwerveDrive.GetInstance())
         )
     );
 
