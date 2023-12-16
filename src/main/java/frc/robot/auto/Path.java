@@ -5,6 +5,8 @@
 package frc.robot.auto;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.Constants.Swerve;
@@ -14,13 +16,34 @@ public class Path {
     public final ArrayList<PathPoint> points;
 
     public final double lastPointTolerance;
+    
+    /**
+     * Constructs a path from a given set of points,
+     * 0.2 meters is set as the default end point tolerance
+     * @param Points ArrayList<PathPoint>
+     */
+    public Path(PathPoint... Points) {
+        this(new ArrayList<PathPoint>(Arrays.asList(Points)), 0.2);
+    }
+
+    /**
+     * Constructs a path from a given set of points,
+     * 0.2 meters is set as the default end point tolerance
+     * @param lastPointTolerance meters, the path will finish
+     * when the robot is within this distance of the last point.
+     * @param Points ArrayList<PathPoint>
+     */
+    public Path(double lastPointTolerance, PathPoint... Points) {
+        this(new ArrayList<PathPoint>(Arrays.asList(Points)), lastPointTolerance);
+    }
 
     /**
      * Constructs a path from multiple points
-     * @param Points
+     * @param Points ArrayList<PathPoint>
+     * @param lastPointTolerance double in meters
      */
-    public Path(ArrayList<PathPoint> Points, double lastPointTolerance, String displayName) {
-        System.out.println("Processing path " + displayName);
+    public Path(ArrayList<PathPoint> Points, double lastPointTolerance) {
+        System.out.println("Processing path " + this.toString());
 
         this.lastPointTolerance = lastPointTolerance;
         points = Points;
