@@ -14,9 +14,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.PathFollowing;
 import frc.robot.Constants.Swerve;
-import frc.robot.auto.objects.Path;
-import frc.robot.auto.objects.PathPoint;
-import frc.robot.auto.objects.PathState;
 
 public class FollowPath extends CommandBase {
     
