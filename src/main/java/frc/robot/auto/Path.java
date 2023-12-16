@@ -7,6 +7,7 @@ package frc.robot.auto;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.Constants.Swerve;
@@ -43,6 +44,8 @@ public class Path {
      * @param lastPointTolerance double in meters
      */
     public Path(ArrayList<PathPoint> Points, double lastPointTolerance) {
+        System.out.println();
+
         System.out.println("Processing path " + this.toString());
 
         this.lastPointTolerance = lastPointTolerance;
@@ -110,10 +113,11 @@ public class Path {
 
         // Parse through point and print data
         for (int i = 0; i < points.size(); i++) {
-            System.out.println("Point " + i);
-            System.out.println("- Speed: " + points.get(i).speedMetersPerSecond);
-            System.out.println("- Rotation: " + points.get(i).orientation);
-            System.out.println("- Position: " + points.get(i).posMeters);
+            System.out.print("Point " + i);
+            System.out.print(" - " + new Pose2d(points.get(i).posMeters, points.get(i).orientation));
+            System.out.println(" - " + points.get(i).speedMetersPerSecond + " meters/sec");
         }
+
+        System.out.println();
     }
 } 

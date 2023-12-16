@@ -36,6 +36,9 @@ public class RobotContainer {
       new Drive(m_driveTrain, controls)
     );
 
+    // Initialize auto tab
+    AutoShuffleboardTab.getInstance();
+
     // Configure the button bindings
     configureButtonBindings();
   }

@@ -21,9 +21,9 @@ public class AutoShuffleboardTab {
     SendableChooser<SequentialCommandGroup> autoChooser = new SendableChooser<>();
 
     // Tab to display autonomous data
-    public final ShuffleboardTab autoTab = Shuffleboard.getTab("Autonomous");
+    public static final ShuffleboardTab autoTab = Shuffleboard.getTab("Autonomous");
     // Entries for auto data
-    public final GenericEntry 
+    public static final GenericEntry 
         lookAheadEntry = autoTab.add("Look Ahead", 0)
         .withPosition(0, 4).withSize(20, 4).withWidget("Graph").getEntry(), 
         speedEntry = autoTab.add("State Speed", 0)
@@ -43,6 +43,7 @@ public class AutoShuffleboardTab {
      * Constructs auto tab, and initializes autoChooser
      */
     private AutoShuffleboardTab() {
+
         // Iterate through enum of autos
         for (Autos autoEnum : Autos.values()) {
             // Add all enum objects to autoChooser, with name given by enum type

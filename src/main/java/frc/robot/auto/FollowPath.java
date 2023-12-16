@@ -28,8 +28,6 @@ public class FollowPath extends CommandBase {
 
     final DriveSubsystem driveSubsystem;
 
-    final AutoShuffleboardTab autoTab = AutoShuffleboardTab.getInstance();
-
     /**
      * Follows a given path
      * @param Path 
@@ -73,9 +71,9 @@ public class FollowPath extends CommandBase {
         // Clamped between [Const Max, 5 cm/s]
         double clampedSpeed = Clamp(state.speedMetersPerSecond, Swerve.MaxMetersPerSecond, -Swerve.MaxMetersPerSecond);
 
-        autoTab.distanceFromGoalEntry.setDouble(deltaLocation.getNorm() - lookAheadMeters);
-        autoTab.speedEntry.setDouble(clampedSpeed);
-        autoTab.lookAheadEntry.setDouble(lookAheadMeters);
+        AutoShuffleboardTab.distanceFromGoalEntry.setDouble(deltaLocation.getNorm() - lookAheadMeters);
+        AutoShuffleboardTab.speedEntry.setDouble(clampedSpeed);
+        AutoShuffleboardTab.lookAheadEntry.setDouble(lookAheadMeters);
 
         // Scale to goal speed. Speed input is in meters per second, while drive accepts normal values.
         Translation2d axisSpeeds = new Translation2d(clampedSpeed, deltaLocation.getAngle());
@@ -119,9 +117,9 @@ public class FollowPath extends CommandBase {
         System.out.println("End of path reached");
         // Schedule last command in path.
 
-        autoTab.distanceFromGoalEntry.setDouble(0);
-        autoTab.speedEntry.setDouble(0);
-        autoTab.lookAheadEntry.setDouble(0);
+        AutoShuffleboardTab.distanceFromGoalEntry.setDouble(0);
+        AutoShuffleboardTab.speedEntry.setDouble(0);
+        AutoShuffleboardTab.lookAheadEntry.setDouble(0);
 
         System.out.println("Scheduling path command: " + getLastPoint().triggeredCommand);
         getLastPoint().triggeredCommand.schedule();
