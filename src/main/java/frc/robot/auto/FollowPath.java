@@ -12,23 +12,32 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.auto.helpers.PathPoint;
-import frc.robot.auto.helpers.PathState;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.PathFollowing;
 import frc.robot.Constants.Swerve;
+import frc.robot.auto.objects.Path;
+import frc.robot.auto.objects.PathPoint;
+import frc.robot.auto.objects.PathState;
 
 public class FollowPath extends CommandBase {
+    
     // Set of processed points
     final Path path;
+
     // Current index along the path
     public int lastCrossedPointIndex = 0;
+
     // Distance down the path to drive towards
     public double lookAheadMeters = 0.1; // Initial at 10 cm
 
     final DriveSubsystem driveSubsystem;
 
-    /** Creates a new FollowPath. */
+    /**
+     * Follows a given path
+     * @param Path 
+     * @param driveSubsystem generic drive train subsystem, 
+     * implementing the DriveSubsystem interface
+     */
     public FollowPath(Path Path, DriveSubsystem driveSubsystem) {
         // Assume drive control when path following
         addRequirements(driveSubsystem);
@@ -38,6 +47,9 @@ public class FollowPath extends CommandBase {
 
     // Called when the command is initially scheduled.
     @Override
+    /**
+     * Print path data
+     */
     public void initialize() {
         System.out.println("--- Following path of points: ---");
         for (PathPoint point : path.points) {System.out.println(point.posMeters);}
@@ -49,6 +61,9 @@ public class FollowPath extends CommandBase {
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
+    /**
+     * Operates robot functions from given driveTrain
+     */
     public void execute() {
 
         Pose2d robotPose = driveSubsystem.getPosition();
@@ -68,10 +83,10 @@ public class FollowPath extends CommandBase {
         Translation2d axisSpeeds = new Translation2d(clampedSpeed, deltaLocation.getAngle());
 
         // Set lookahead based upon speed of next point
-        setLookAheadDistance(Clamp(
+        lookAheadMeters = Clamp(
             PathFollowing.lookAheadScalar * clampedSpeed,
             1, 0.1
-        ));
+        );
 
         // Construct chassis speeds from state values
         // Convert field oriented to robot oriented
@@ -99,6 +114,9 @@ public class FollowPath extends CommandBase {
     
     // Called once the command ends or is interrupted.
     @Override
+    /**
+     * Triggers final point command
+     */
     public void end(boolean interrupted) {
         System.out.println("End of path reached");
         // Schedule last command in path.
@@ -113,6 +131,10 @@ public class FollowPath extends CommandBase {
 
     // Returns true when the command should end.
     @Override
+    /**
+     * @return true when the robot is within the last point tolerance
+     * and has passed the second to last point.
+     */
     public boolean isFinished() {
 
         // calculate distance to last point
@@ -127,10 +149,11 @@ public class FollowPath extends CommandBase {
         );
     }
 
-    public void setLookAheadDistance(double distanceMeters) {
-        lookAheadMeters = distanceMeters;
-    } 
-
+    /**
+     * @param robotPosition current pose of the robot
+     * @return PathState containing a goal position, rotation
+     * and allowed speed to travel there.
+     */
     public PathState getPathState(Pose2d robotPosition) {
         //println("Observing line " + lastCrossedPointIndex + " to " + (lastCrossedPointIndex + 1));
         Translation2d robotTranslation = robotPosition.getTranslation();
