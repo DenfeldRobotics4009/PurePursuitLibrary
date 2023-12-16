@@ -4,20 +4,12 @@
 
 package frc.robot;
 
-import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.auto.Autos;
+import frc.robot.auto.AutoShuffleboardTab;
 import frc.robot.commands.Drive;
-import frc.robot.commands.RecordDrive;
 import frc.robot.subsystems.SwerveDrive;
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -35,31 +27,6 @@ public class RobotContainer {
 
   private final SwerveDrive m_driveTrain = SwerveDrive.GetInstance();
 
-  SendableChooser<SequentialCommandGroup> autoChooser = new SendableChooser<>();
-
-  // Tab to display autonomous data
-  public static final ShuffleboardTab autoTab = Shuffleboard.getTab("Autonomous");
-  // Entries for auto data
-  public static final GenericEntry 
-    lookAheadEntry = autoTab.add("Look Ahead", 0)
-      .withPosition(0, 4).withSize(20, 4).withWidget("Graph").getEntry(), 
-    speedEntry = autoTab.add("State Speed", 0)
-      .withPosition(0,0).withSize(10, 4).withWidget("Graph").getEntry(),
-      
-      /**
-       * If this graph is negative, the robot couldn't speed up fast enough
-       * If this graph is positive, the robot couldn't slow down fast enough
-       * The latter is a problem, the former is not (:
-       */
-    distanceFromGoalEntry = autoTab.add("Distance to Goal", 0)
-      .withPosition(10,0).withSize(10, 4).withWidget("Graph").getEntry(),
-    lastCrossedPointEntry = autoTab.add("Last Crossed Point Index", 0)
-      .withPosition(20, 2).withSize(5, 1).getEntry();
-
-  // Record NetWorkTable
-  static NetworkTable macroTable = NetworkTableInstance.getDefault().getTable("DriveRecording");
-  public static final GenericEntry recordingEntry = autoTab.add("Recording", false).getEntry();
-
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -68,18 +35,6 @@ public class RobotContainer {
     m_driveTrain.setDefaultCommand(
       new Drive(m_driveTrain, controls)
     );
-
-    // Iterate through enum of autos
-    for (Autos autoEnum : Autos.values()) {
-      // Add all enum objects to autoChooser, with name given by enum type
-      // The last added option will remain as default
-      autoChooser.addOption(autoEnum.toString(), autoEnum.getSequence());
-    }
-    
-    autoTab.add("Autonomous", autoChooser).withPosition(20, 0).withSize(5, 2);
-
-    // Auto recording command toggle button
-    autoTab.add("Toggle Recording", new RecordDrive(macroTable, recordingEntry));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -102,6 +57,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // Schedule chosen command
-    return autoChooser.getSelected();
+    return AutoShuffleboardTab.getInstance().getSelectedAuto();
   }
 }

@@ -12,7 +12,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.RobotContainer;
 import frc.robot.Constants.PathFollowing;
 import frc.robot.Constants.Swerve;
 import frc.robot.auto.objects.Path;
@@ -31,6 +30,8 @@ public class FollowPath extends CommandBase {
     public double lookAheadMeters = 0.1; // Initial at 10 cm
 
     final DriveSubsystem driveSubsystem;
+
+    final AutoShuffleboardTab autoTab = AutoShuffleboardTab.getInstance();
 
     /**
      * Follows a given path
@@ -75,9 +76,9 @@ public class FollowPath extends CommandBase {
         // Clamped between [Const Max, 5 cm/s]
         double clampedSpeed = Clamp(state.speedMetersPerSecond, Swerve.MaxMetersPerSecond, -Swerve.MaxMetersPerSecond);
 
-        RobotContainer.distanceFromGoalEntry.setDouble(deltaLocation.getNorm() - lookAheadMeters);
-        RobotContainer.speedEntry.setDouble(clampedSpeed);
-        RobotContainer.lookAheadEntry.setDouble(lookAheadMeters);
+        autoTab.distanceFromGoalEntry.setDouble(deltaLocation.getNorm() - lookAheadMeters);
+        autoTab.speedEntry.setDouble(clampedSpeed);
+        autoTab.lookAheadEntry.setDouble(lookAheadMeters);
 
         // Scale to goal speed. Speed input is in meters per second, while drive accepts normal values.
         Translation2d axisSpeeds = new Translation2d(clampedSpeed, deltaLocation.getAngle());
@@ -121,9 +122,9 @@ public class FollowPath extends CommandBase {
         System.out.println("End of path reached");
         // Schedule last command in path.
 
-        RobotContainer.distanceFromGoalEntry.setDouble(0);
-        RobotContainer.speedEntry.setDouble(0);
-        RobotContainer.lookAheadEntry.setDouble(0);
+        autoTab.distanceFromGoalEntry.setDouble(0);
+        autoTab.speedEntry.setDouble(0);
+        autoTab.lookAheadEntry.setDouble(0);
 
         System.out.println("Scheduling path command: " + getLastPoint().triggeredCommand);
         getLastPoint().triggeredCommand.schedule();
