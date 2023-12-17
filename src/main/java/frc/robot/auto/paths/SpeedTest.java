@@ -7,8 +7,8 @@ package frc.robot.auto.paths;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.Constants.Swerve;
-import frc.robot.auto.algorithm.pathObjects.Path;
-import frc.robot.auto.algorithm.pathObjects.PathPoint;
+import frc.robot.auto.pathing.pathObjects.Path;
+import frc.robot.auto.pathing.pathObjects.PathPoint;
 
 /**
  * Constructs a TestPath instance

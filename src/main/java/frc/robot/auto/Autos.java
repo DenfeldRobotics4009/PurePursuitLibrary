@@ -5,7 +5,7 @@
 package frc.robot.auto;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.auto.algorithm.FollowPath;
+import frc.robot.auto.pathing.FollowPath;
 import frc.robot.auto.paths.SpeedTest;
 import frc.robot.subsystems.SwerveDrive;
 
