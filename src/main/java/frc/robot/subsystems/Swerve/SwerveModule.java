@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-import com.kauailabs.navx.frc.AHRS;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -26,26 +24,13 @@ public class SwerveModule {
 
     // Units in meters
     private double lastAccumulatedDriveDistance = 0;
-
-    private final AHRS navxGyro;
-
-    /**
-     * TODO Move to top of class
-     * 
-     * Construct a single swerve module
-     * @param Motors Group of motors and encoder to use
-     * 
-     * Private constructor for multiton
-     */
+    
     private SwerveModule(
         SwerveModuleInstance ModulePosition, 
-        GenericEntry CalibrationAngleEntry,
-        AHRS NAVXGyro
+        GenericEntry CalibrationAngleEntry
     ) {
         this.motors = ModulePosition.getMotors();
         this.instance = ModulePosition;
-
-        this.navxGyro = NAVXGyro;
 
         calibrationAngle = CalibrationAngleEntry;
     }
@@ -68,14 +53,13 @@ public class SwerveModule {
         SwerveModuleInstance ModulePosition,
         // Params for initialization, allow
         // no default construction
-        GenericEntry CalibrationAngleEntry,
-        AHRS NAVXGyro
+        GenericEntry CalibrationAngleEntry
     ) {
         SwerveModule swerveModule;
 
         if (!Instances.containsKey(ModulePosition)) {
             // Construct new module if not present
-            swerveModule = new SwerveModule(ModulePosition, CalibrationAngleEntry, NAVXGyro);
+            swerveModule = new SwerveModule(ModulePosition, CalibrationAngleEntry);
 
             // Insert into hash map
             Instances.put(ModulePosition, swerveModule);
@@ -115,18 +99,6 @@ public class SwerveModule {
             new Rotation2d(Math.toRadians(calibrationAngle.getDouble(0)))
         );
     }
-
-    // /**
-    //  * Sets the current encoder position to zero
-    //  */
-    // public void calibrate() {
-    //     // Set the genericEntry calibration angle to the modules current angle
-    //     calibrationAngle.setDouble(
-    //         // Add the current adjusted rotation2d to the last calibration
-    //         // angle to properly offset
-    //         (motors.SteerEncoder.getAbsolutePosition() - motors.SteerEncoder.configGetMagnetOffset()) % 360
-    //     );
-    // }
 
     /**
      * Initially set by odometry source constructor,
@@ -255,7 +227,7 @@ public class SwerveModule {
      * 
      * @return AccumulatedRelativePositionMeters
      */
-    public Translation2d updateFieldRelativePosition() {
+    public Translation2d updateFieldRelativePosition(Rotation2d robotOrientation) {
         // Handoff previous value and update
         double lastAccumulatedDriveDistance_h = lastAccumulatedDriveDistance;
         lastAccumulatedDriveDistance = motors.getDriveDistanceMeters();
@@ -297,7 +269,7 @@ public class SwerveModule {
         Translation2d movementVectorMeters = new Translation2d(
             velocityFromDriveDistance, // Delta of drive distance
             // Sum is bounded by -pi to pi
-            motors.getRotation2d().plus(navxGyro.getRotation2d())
+            motors.getRotation2d().plus(robotOrientation)
         );
         // Update single module tracking
         // Add last vector and current vector

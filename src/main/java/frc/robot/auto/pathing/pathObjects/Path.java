@@ -21,7 +21,8 @@ public class Path {
     /**
      * Constructs a path from a given set of points,
      * 0.2 meters is set as the default end point tolerance
-     * @param Points ArrayList<PathPoint>
+     * @param Points the first point passed into this 
+     * initializer is the first point along the path.
      */
     public Path(PathPoint... Points) {
         this(new ArrayList<PathPoint>(Arrays.asList(Points)), 0.2);
@@ -32,7 +33,8 @@ public class Path {
      * 0.2 meters is set as the default end point tolerance
      * @param lastPointTolerance meters, the path will finish
      * when the robot is within this distance of the last point.
-     * @param Points ArrayList<PathPoint>
+     * @param Points the first point passed into this 
+     * initializer is the first point along the path.
      */
     public Path(double lastPointTolerance, PathPoint... Points) {
         this(new ArrayList<PathPoint>(Arrays.asList(Points)), lastPointTolerance);
@@ -40,7 +42,8 @@ public class Path {
 
     /**
      * Constructs a path from multiple points
-     * @param Points ArrayList<PathPoint>
+     * @param Points ArrayList<PathPoint> the first point passed
+     * into this initializer is the first point along the path.
      * @param lastPointTolerance double in meters
      */
     public Path(ArrayList<PathPoint> Points, double lastPointTolerance) {
@@ -78,6 +81,7 @@ public class Path {
         // Parse backward to correct speed of points
         // Parse from back, end at the first
         for (int i = pointsCopy.size()-1; i > 0; i--) {
+            
             PathPoint point = pointsCopy.get(i);
             PathPoint previousPoint = pointsCopy.get(i-1);
             double deltaS = point.speedMetersPerSecond - previousPoint.speedMetersPerSecond;
@@ -86,6 +90,7 @@ public class Path {
             double deceleration = -(deltaS / deltaD);
             // Pull max deceleration from constants
             if (deceleration > PathingConstants.maxAccelerationMeters) {
+
                 // Clamp speed
                 double previousSpeed = previousPoint.speedMetersPerSecond;
                 // This index will remain unaffected
@@ -95,7 +100,9 @@ public class Path {
                     "Clamped speed from " + previousSpeed + " to " + 
                     previousPoint.speedMetersPerSecond
                 );
+
             } else if (deceleration < PathingConstants.maxAccelerationMeters && deltaS < 0) {
+
                 // Insert new point
                 // Normalized, deltaS / Swerve.MaxAccelerationMeters is negative
                 double percentFromLastPoint =  1 + (deltaS / (PathingConstants.maxAccelerationMeters * deltaD));

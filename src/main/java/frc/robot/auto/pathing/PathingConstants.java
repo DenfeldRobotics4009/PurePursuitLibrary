@@ -52,4 +52,16 @@ public class PathingConstants {
         PathingConstants.maxAccelerationMeters = 
             FollowPath.Clamp(maxAccelerationMeters, 10, 0);
     }
+
+    public static DriveSubsystem driveSubsystem = null; // Will not run unless set
+    /**
+     * Sets the drive train subsystem object that will be used
+     * by the pathing algorithm. If this is not set, a
+     * the code will crash when it attempts to run
+     * @param driveSubsystem Interface which describes a generic
+     * swerve drive subsystem.
+     */
+    public static void setDriveSubsystem(DriveSubsystem driveSubsystem) {
+        PathingConstants.driveSubsystem = driveSubsystem;
+    }
 }

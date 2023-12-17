@@ -27,18 +27,13 @@ public class FollowPath extends CommandBase {
     // Distance down the path to drive towards
     public double lookAheadMeters = 0.1; // Initial at 10 cm
 
-    final DriveSubsystem driveSubsystem;
-
     /**
      * Follows a given path
      * @param Path 
-     * @param driveSubsystem generic drive train subsystem, 
-     * implementing the DriveSubsystem interface
      */
-    public FollowPath(Path Path, DriveSubsystem driveSubsystem) {
+    public FollowPath(Path Path) {
         // Assume drive control when path following
-        addRequirements(driveSubsystem);
-        this.driveSubsystem = driveSubsystem;
+        addRequirements(PathingConstants.driveSubsystem);
         path = Path;
     }
 
@@ -63,7 +58,7 @@ public class FollowPath extends CommandBase {
      */
     public void execute() {
 
-        Pose2d robotPose = driveSubsystem.getPosition();
+        Pose2d robotPose = PathingConstants.driveSubsystem.getPosition();
         PathState state = getPathState(robotPose);
         // The target relative to the robots current position
         Translation2d deltaLocation = state.goalPose.getTranslation().minus(robotPose.getTranslation());
@@ -107,7 +102,7 @@ public class FollowPath extends CommandBase {
             robotPose.getRotation()
         );
         // Drive
-        driveSubsystem.drive(speeds);
+        PathingConstants.driveSubsystem.drive(speeds);
 
         // Recurse until called to end
     }
@@ -140,7 +135,7 @@ public class FollowPath extends CommandBase {
 
         // calculate distance to last point
         double distanceToLastPointMeters = getLastPoint().posMeters.getDistance(
-            driveSubsystem.getPosition().getTranslation()
+            PathingConstants.driveSubsystem.getPosition().getTranslation()
         );
 
         return (

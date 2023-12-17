@@ -51,30 +51,27 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
+    // Reset position and rotation
     SwerveDrive.inverseKinematics.setPosition(new Pose2d());
     SwerveDrive.navxGyro.reset();
-
+    // Cancel auto
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
   }
 
   @Override
-  public void disabledPeriodic() {
-    // Reset position of all components 
-
-    // for (SwerveModule swerveModule : SwerveModule.getInstances()) {
-    //   swerveModule.calibrate();
-    // }
-  }
+  public void disabledPeriodic() {}
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    // Reset position and rotation
     SwerveDrive.inverseKinematics.setPosition(new Pose2d());
     SwerveDrive.navxGyro.reset();
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
+    // Grab auto command from robotContainer
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();

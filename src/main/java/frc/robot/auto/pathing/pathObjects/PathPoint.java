@@ -7,6 +7,7 @@ package frc.robot.auto.pathing.pathObjects;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.auto.pathing.PathingConstants;
 
 /**
  * A point along a Path
@@ -41,7 +42,10 @@ public class PathPoint {
 
         // May be overridden
         speedMetersPerSecond = SpeedMetersPerSecond;
-        orientation = Orientation;
+
+        // Rotate given orientation by the forward angle
+        // this 0 degrees will always mean forward
+        orientation = Orientation.plus(PathingConstants.forwardAngle);
     }
 
     /**

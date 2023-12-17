@@ -6,24 +6,33 @@ package frc.robot.auto;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.auto.pathing.FollowPath;
-import frc.robot.auto.paths.SpeedTest;
-import frc.robot.subsystems.SwerveDrive;
+import frc.robot.auto.paths.ExamplePath;
 
 public enum Autos {
 
-    /**
-     * Define autos here
-     * 
-     */
+    /* ----------------- */
+    /* Define Autos here */
 
-    SPEEDTEST(
+    /**
+     * Drives the robot along the ExamplePath
+     */
+    ExampleAuto(
         new SequentialCommandGroup(
-            new FollowPath(new SpeedTest(), SwerveDrive.GetInstance())
+            new FollowPath(new ExamplePath())
         )
     );
 
-    final SequentialCommandGroup autoSequence;
+    /* ----------------- */
 
+    /**
+     * All autonomous routines above will be automatically inserted into
+     * the autoChooser object labelled "Autonomous" within the tab "Autonomous".
+     */
+    final SequentialCommandGroup autoSequence;
+    /**
+     * Format for creating a new autonomous routine
+     * @param autoSequence SequentialCommandGroup of any number of commands
+     */
     Autos(SequentialCommandGroup autoSequence) {
         this.autoSequence = autoSequence;
     }
