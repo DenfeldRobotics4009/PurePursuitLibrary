@@ -19,9 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Swerve;
 import frc.robot.auto.pathing.DriveSubsystem;
-import frc.robot.commands.CalibrateDrive;
-import frc.robot.commands.CalibrateGyro;
-import frc.robot.odometry.sources.SwerveDriveInverseKinematics;
+import frc.robot.subsystems.swerve.SwerveDriveInverseKinematics;
 import frc.robot.subsystems.swerve.SwerveModule;
 import frc.robot.subsystems.swerve.SwerveModuleInstance;
 
@@ -35,23 +33,19 @@ public class SwerveDrive extends SubsystemBase implements DriveSubsystem {
     // Pass swerve tab into modules to allow each of them to display relevant data, whatever that may be
     FrontLeftModule = SwerveModule.getInstance(
       SwerveModuleInstance.FRONT_LEFT, 
-      createCalibrationWidget(SwerveModuleInstance.FRONT_LEFT, 0, 6, 3, 1),
-      navxGyro
+      createCalibrationWidget(SwerveModuleInstance.FRONT_LEFT, 0, 6, 3, 1)
     ),
     FrontRightModule = SwerveModule.getInstance(
       SwerveModuleInstance.FRONT_RIGHT,
-      createCalibrationWidget(SwerveModuleInstance.FRONT_RIGHT, 0, 7, 3, 1),
-      navxGyro
+      createCalibrationWidget(SwerveModuleInstance.FRONT_RIGHT, 0, 7, 3, 1)
     ),
     BackLeftModule = SwerveModule.getInstance(
       SwerveModuleInstance.BACK_LEFT, 
-      createCalibrationWidget(SwerveModuleInstance.BACK_LEFT, 0, 8, 3, 1),
-      navxGyro
+      createCalibrationWidget(SwerveModuleInstance.BACK_LEFT, 0, 8, 3, 1)
     ),
     BackRightModule = SwerveModule.getInstance(
       SwerveModuleInstance.BACK_RIGHT, 
-      createCalibrationWidget(SwerveModuleInstance.BACK_RIGHT, 0, 9, 3, 1),
-      navxGyro
+      createCalibrationWidget(SwerveModuleInstance.BACK_RIGHT, 0, 9, 3, 1)
     );
 
   SwerveDriveKinematics kinematics;
@@ -102,12 +96,6 @@ public class SwerveDrive extends SubsystemBase implements DriveSubsystem {
 
     navxGyro.setAngleAdjustment(-Swerve.forwardAngle.getDegrees());
     navxGyro.calibrate();
-
-    // Add calibrate commands to shuffleboard
-    swerveTab.add("Calibrate Position", new CalibrateDrive(this, new Pose2d())
-      ).withPosition(3, 5).withSize(4, 1);
-    swerveTab.add("Calibrate Gyro", new CalibrateGyro()
-      ).withPosition(3, 6).withSize(4, 1);
 
     // Construct feild widget
     swerveTab.add("Robot Position", feildWidget

@@ -5,32 +5,50 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 public class Controls {
 
-    final Joystick drive, steer;
+    final Joystick drive = new Joystick(0), steer = new Joystick(1);
 
     public JoystickButton GotoZero;
 
-    public Controls(Joystick Drive, Joystick Steer) {
-        drive = Drive;
-        steer = Steer;
-    }
+    public Controls() {}
 
 
+    /**
+     * Y axis of the drive joystick
+     * @return double
+     */
     public double getForward() {
         return modifyAxis(-drive.getY(), 0.15);
     }
 
+    /**
+     * X axis of the drive joystick
+     * @return double
+     */
     public double getLateral() {
         return modifyAxis(-drive.getX(), 0.15);
     }
 
+    /**
+     * Z axis of the steer joystick
+     * @return double
+     */
     public double getTurn() {
         return modifyAxis(steer.getZ(), 0.15);
     }
 
+    /**
+     * Trigger value of the driver joystick, 
+     * indicating prescision mode
+     * @return boolean
+     */
     public boolean getPrecisionMode() {
         return drive.getTrigger();
     }
 
+    /**
+     * @param id button id
+     * @return JoystickButton on drive joystick
+     */
     public JoystickButton getDriverButton(int id) {
         return new JoystickButton(drive, id);
     }

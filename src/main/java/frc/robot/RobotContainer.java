@@ -5,10 +5,10 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.auto.pathing.AutoShuffleboardTab;
+import frc.robot.auto.pathing.PathingConstants;
 import frc.robot.commands.Drive;
 import frc.robot.subsystems.SwerveDrive;
 /**
@@ -20,24 +20,22 @@ import frc.robot.subsystems.SwerveDrive;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
-  private final Joystick m_jsDriver = new Joystick(0);
-  private final Joystick m_jsDriverSteer = new Joystick(1);
-
-  final Controls controls = new Controls(m_jsDriver, m_jsDriverSteer);
-
-  private final SwerveDrive m_driveTrain = SwerveDrive.GetInstance();
+  final Controls controls = new Controls();
+  final SwerveDrive driveTrain = SwerveDrive.GetInstance();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
 
-    m_driveTrain.setDefaultCommand(
-      new Drive(m_driveTrain, controls)
+    driveTrain.setDefaultCommand(
+      new Drive(driveTrain, controls)
     );
 
     // Initialize auto tab
     AutoShuffleboardTab.getInstance();
+    // Pass drivetrain into pathing algorithm
+    PathingConstants.setDriveSubsystem(driveTrain);
 
     // Configure the button bindings
     configureButtonBindings();
@@ -50,7 +48,7 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-
+    
   }
 
   /**
