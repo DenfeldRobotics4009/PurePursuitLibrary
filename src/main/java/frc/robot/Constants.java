@@ -16,10 +16,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
  */
 public final class Constants {
 
-    public static final class PathFollowing {
-        public static double lookAheadScalar = 1.5; // lookAhead = lookAheadScalar * Speed
-    }
-
     public static final class Swerve {
 
         public static class SwerveModuleConstants {
@@ -48,7 +44,6 @@ public final class Constants {
 
         // public static double MaxMetersPerSecond = 3.6576
         public static double MaxMetersPerSecond = 5.06;
-
         public static double MaxRadPerSecond = MaxMetersPerSecond /
             Math.hypot(TrackYMeters / 2.0, TrackXMeters / 2.0);
 
@@ -62,13 +57,7 @@ public final class Constants {
         public static double driveRampRateSeconds = 0.2; // Time from 0% to 100% speed
         public static double steerRampRateSeconds = 0.2; 
 
-        public static double turningkP = 0.3; 
-
-        public static double MaxSteerRPM = swerveSteerGearRatio * 5676;
-
-        // TODO test for this, do not calculate
-        public static double MaxAccelerationMeters = 6; // Meters per second per second
-        public static double MaxSteerAccelerationRad = (MaxSteerRPM * 2 * Math.PI) / steerRampRateSeconds;
+        public static double steerP = 0.3; 
 
         public static Rotation2d forwardAngle = new Rotation2d(Math.toRadians(90));
 
