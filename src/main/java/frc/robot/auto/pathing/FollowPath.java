@@ -12,8 +12,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants.PathFollowing;
-import frc.robot.Constants.Swerve;
 import frc.robot.auto.pathing.pathObjects.Path;
 import frc.robot.auto.pathing.pathObjects.PathPoint;
 import frc.robot.auto.pathing.pathObjects.PathState;
@@ -72,7 +70,11 @@ public class FollowPath extends CommandBase {
 
         // Clamp state speed so the end of the path can be consistently reached
         // Clamped between [Const Max, 5 cm/s]
-        double clampedSpeed = Clamp(state.speedMetersPerSecond, Swerve.MaxMetersPerSecond, -Swerve.MaxMetersPerSecond);
+        double clampedSpeed = Clamp(
+            state.speedMetersPerSecond, 
+            PathingConstants.maxVelocityMeters, 
+            -PathingConstants.maxVelocityMeters
+        );
 
         AutoShuffleboardTab.distanceFromGoalEntry.setDouble(deltaLocation.getNorm() - lookAheadMeters);
         AutoShuffleboardTab.speedEntry.setDouble(clampedSpeed);
@@ -83,7 +85,7 @@ public class FollowPath extends CommandBase {
 
         // Set lookahead based upon speed of next point
         lookAheadMeters = Clamp(
-            PathFollowing.lookAheadScalar * clampedSpeed,
+            PathingConstants.lookAheadScalar * clampedSpeed,
             1, 0.1
         );
 

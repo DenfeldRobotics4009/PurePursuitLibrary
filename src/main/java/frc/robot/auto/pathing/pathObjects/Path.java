@@ -10,7 +10,7 @@ import java.util.Arrays;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
-import frc.robot.Constants.Swerve;
+import frc.robot.auto.pathing.PathingConstants;
 
 public class Path {
 
@@ -85,20 +85,20 @@ public class Path {
             // in this case, acceleration is negative, deceleration is positive
             double deceleration = -(deltaS / deltaD);
             // Pull max deceleration from constants
-            if (deceleration > Swerve.MaxAccelerationMeters) {
+            if (deceleration > PathingConstants.maxAccelerationMeters) {
                 // Clamp speed
                 double previousSpeed = previousPoint.speedMetersPerSecond;
                 // This index will remain unaffected
                 Points.get(i-1).speedMetersPerSecond = 
-                    point.speedMetersPerSecond + deltaD*Swerve.MaxAccelerationMeters;
+                    point.speedMetersPerSecond + deltaD*PathingConstants.maxAccelerationMeters;
                 System.out.println(
                     "Clamped speed from " + previousSpeed + " to " + 
                     previousPoint.speedMetersPerSecond
                 );
-            } else if (deceleration < Swerve.MaxAccelerationMeters && deltaS < 0) {
+            } else if (deceleration < PathingConstants.maxAccelerationMeters && deltaS < 0) {
                 // Insert new point
                 // Normalized, deltaS / Swerve.MaxAccelerationMeters is negative
-                double percentFromLastPoint =  1 + (deltaS / (Swerve.MaxAccelerationMeters * deltaD));
+                double percentFromLastPoint =  1 + (deltaS / (PathingConstants.maxAccelerationMeters * deltaD));
                 System.out.println(
                     "Inserted new point at index " + i + " at " + percentFromLastPoint*100 + "%");
                 // Interpolate between, and set speed to last speed
