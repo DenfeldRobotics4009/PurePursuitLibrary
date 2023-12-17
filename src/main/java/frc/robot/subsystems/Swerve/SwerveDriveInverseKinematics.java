@@ -46,7 +46,7 @@ public class SwerveDriveInverseKinematics {
 
         Translation2d wheelPosSum = new Translation2d();
         
-        for (SwerveModule swerveModule : SwerveModule.getInstances()) {
+        for (SwerveModule swerveModule : SwerveModule.instances) {
 
             swerveModule.updateFieldRelativePosition(navxGyro.getRotation2d());
 
@@ -55,7 +55,7 @@ public class SwerveDriveInverseKinematics {
 
         currentPose =  new Pose2d (
             wheelPosSum.div(
-                SwerveModule.getInstances().length
+                SwerveModule.instances.size()
             ), 
             navxGyro.getRotation2d()
         );
@@ -66,7 +66,7 @@ public class SwerveDriveInverseKinematics {
     }
 
     public void setPosition(Pose2d Position) {
-        for (SwerveModule swerveModule : SwerveModule.getInstances()) {
+        for (SwerveModule swerveModule : SwerveModule.instances) {
             swerveModule.setFieldRelativePositionFromRobotPosition(Position);
         }
     }

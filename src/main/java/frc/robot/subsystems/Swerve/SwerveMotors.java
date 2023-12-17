@@ -6,12 +6,11 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants.Swerve;
-import frc.robot.Constants.Swerve.SwerveModuleConstants;
 
 public class SwerveMotors {
-    CANSparkMax DriveMotor, SteerMotor;
+    public CANSparkMax DriveMotor, SteerMotor;
     public CANCoder SteerEncoder;
-    final String Name;
+    public final Rotation2d defaultAngleOffset;
     
     public static double rotationsToMeters(double rotations) {
         return rotations * Swerve.rotationsToMeters;
@@ -21,8 +20,21 @@ public class SwerveMotors {
         return meters / Swerve.rotationsToMeters;
     }
 
+    public SwerveMotors(
+        int driveMotorID, 
+        int steerMotorID, 
+        int CANCoderID, 
+        Rotation2d defaultAngleOffset
+    ) {
+        this.DriveMotor = new CANSparkMax(driveMotorID, MotorType.kBrushless);
+        this.SteerMotor = new CANSparkMax(steerMotorID, MotorType.kBrushless);
+        this.SteerEncoder = new CANCoder(CANCoderID);
+
+        this.defaultAngleOffset = defaultAngleOffset;
+        configureCANCoder(defaultAngleOffset);
+    }
+
     /**
-     * 
      * @param A Rotation2d A
      * @param B Rotation2d B
      * @return the angle from A to B
@@ -41,21 +53,6 @@ public class SwerveMotors {
 
         // CCW Standard
         SteerEncoder.configSensorDirection(false); 
-    }
-
-    public void configureCANSparkMAXs() {
-        DriveMotor.setOpenLoopRampRate(Swerve.driveRampRateSeconds); // TODO: Tune for physical maxima
-        SteerMotor.setOpenLoopRampRate(Swerve.steerRampRateSeconds);
-    }
-
-    public SwerveMotors(SwerveModuleConstants Constants) {
-        this.DriveMotor = new CANSparkMax(Constants.DriveMotorID, MotorType.kBrushless);
-        this.SteerMotor = new CANSparkMax(Constants.SteerMotorID, MotorType.kBrushless);
-        this.SteerEncoder = new CANCoder(Constants.CANCoderID);
-        this.Name = Constants.Name;
-
-        configureCANCoder(Constants.DefaultOffset);
-        configureCANSparkMAXs();
     }
 
     /**

@@ -87,5 +87,69 @@
     "properties": {
       "persistent": true
     }
+  },
+  {
+    "name": "/Shuffleboard/Swerve Modules/Calibration Angle/frc.robot.Constants$Swerve$FrontLeft Calibration",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Shuffleboard/Swerve Modules/Calibration Angle/frc.robot.Constants$Swerve$FrontRight Calibration",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Shuffleboard/Swerve Modules/Calibration Angle/frc.robot.Constants$Swerve$BackLeft Calibration",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Shuffleboard/Swerve Modules/Calibration Angle/frc.robot.Constants$Swerve$BackRight Calibration",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Shuffleboard/Swerve Modules/Calibration Angle/FrontLeft Calibration",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Shuffleboard/Swerve Modules/Calibration Angle/FrontRight Calibration",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Shuffleboard/Swerve Modules/Calibration Angle/BackLeft Calibration",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Shuffleboard/Swerve Modules/Calibration Angle/BackRight Calibration",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
   }
 ]

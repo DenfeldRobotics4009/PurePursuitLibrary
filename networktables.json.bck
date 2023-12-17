@@ -51,7 +51,7 @@
   {
     "name": "/Shuffleboard/Swerve/Rotation",
     "type": "double",
-    "value": -0.0,
+    "value": 90.0,
     "properties": {
       "persistent": true
     }
@@ -82,6 +82,38 @@
   },
   {
     "name": "/Shuffleboard/Swerve/BACK_RIGHT Calibration Angle",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Shuffleboard/Swerve Modules/Calibration Angle/frc.robot.Constants$Swerve$FrontLeft Calibration",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Shuffleboard/Swerve Modules/Calibration Angle/frc.robot.Constants$Swerve$FrontRight Calibration",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Shuffleboard/Swerve Modules/Calibration Angle/frc.robot.Constants$Swerve$BackLeft Calibration",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Shuffleboard/Swerve Modules/Calibration Angle/frc.robot.Constants$Swerve$BackRight Calibration",
     "type": "double",
     "value": 0.0,
     "properties": {

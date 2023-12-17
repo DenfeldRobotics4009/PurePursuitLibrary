@@ -32,10 +32,10 @@ public class RobotContainer {
       new Drive(driveTrain, controls)
     );
 
-    // Initialize auto tab
-    AutoShuffleboardTab.getInstance();
     // Pass drivetrain into pathing algorithm
     PathingConstants.setDriveSubsystem(driveTrain);
+    // Initialize auto tab
+    AutoShuffleboardTab.getInstance();
 
     // Configure the button bindings
     configureButtonBindings();

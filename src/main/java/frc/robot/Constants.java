@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -18,24 +19,44 @@ public final class Constants {
 
     public static final class Swerve {
 
-        public static class SwerveModuleConstants {
-            public final int DriveMotorID, SteerMotorID, CANCoderID;
-            public final Rotation2d DefaultOffset;
-            public final String Name;
+        public static final class FrontLeft {
+            public static int driveID = 21;
+            public static int steerID = 31;
+            public static int CANCoderID = 1;
+            public static Rotation2d defaultCalibration = 
+                new Rotation2d(Math.toRadians(49.5));
+            public static Translation2d trackPosition =
+                new Translation2d(-Swerve.TrackYMeters/2, Swerve.TrackXMeters/2);
+        }
 
-            public SwerveModuleConstants (
-                int DriveMotorID, 
-                int SteerMotorID, 
-                int CANCoderID, 
-                Rotation2d DefaultOffset,
-                String Name
-            ) {
-                this.DriveMotorID = DriveMotorID;
-                this.SteerMotorID = SteerMotorID;
-                this.CANCoderID = CANCoderID;
-                this.DefaultOffset = DefaultOffset;
-                this.Name = Name;
-            }
+        public static final class FrontRight {
+            public static int driveID = 23;
+            public static int steerID = 33;
+            public static int CANCoderID = 2;
+            public static Rotation2d defaultCalibration = 
+                new Rotation2d(Math.toRadians(200));
+            public static Translation2d trackPosition =
+                new Translation2d(Swerve.TrackYMeters/2, Swerve.TrackXMeters/2);
+        }
+
+        public static final class BackLeft {
+            public static int driveID = 22;
+            public static int steerID = 32;
+            public static int CANCoderID = 3;
+            public static Rotation2d defaultCalibration = 
+                new Rotation2d(Math.toRadians(2));
+            public static Translation2d trackPosition =
+                new Translation2d(-Swerve.TrackYMeters/2, -Swerve.TrackXMeters/2);
+        }
+
+        public static final class BackRight {
+            public static int driveID = 24;
+            public static int steerID = 34;
+            public static int CANCoderID = 0;
+            public static Rotation2d defaultCalibration = 
+                new Rotation2d(Math.toRadians(54));
+            public static Translation2d trackPosition =
+                new Translation2d(Swerve.TrackYMeters/2, -Swerve.TrackXMeters/2);
         }
 
         // Meters from wheel center to wheel center
@@ -54,26 +75,10 @@ public final class Constants {
 
         public static double MaxRotationsPerSecond = 5676;
 
-        public static double driveRampRateSeconds = 0.2; // Time from 0% to 100% speed
+        // Time from 0% to 100% speed
+        public static double driveRampRateSeconds = 0.2;
         public static double steerRampRateSeconds = 0.2; 
 
-        public static double steerP = 0.3; 
-
         public static Rotation2d forwardAngle = new Rotation2d(Math.toRadians(90));
-
-        public static SwerveModuleConstants FrontLeft = new SwerveModuleConstants(
-            21, 31, 1, new Rotation2d(Math.toRadians(49.5)), "FrontLeft"
-        );
-
-        public static SwerveModuleConstants FrontRight = new SwerveModuleConstants(
-            23, 33, 2, new Rotation2d(Math.toRadians(200)), "FrontRight"
-        );
-       public static SwerveModuleConstants BackLeft = new SwerveModuleConstants(
-          22, 32, 3, new Rotation2d(Math.toRadians(2)), "BackLeft"
-        );
-
-        public static SwerveModuleConstants BackRight = new SwerveModuleConstants(
-            24, 34, 0, new Rotation2d(Math.toRadians(54)), "BackRight"
-        );
     }
 }

@@ -17,11 +17,12 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.Constants.Swerve;
 import frc.robot.auto.pathing.DriveSubsystem;
 import frc.robot.subsystems.swerve.SwerveDriveInverseKinematics;
 import frc.robot.subsystems.swerve.SwerveModule;
-import frc.robot.subsystems.swerve.SwerveModuleInstance;
+import frc.robot.subsystems.swerve.SwerveMotors;
 
 public class SwerveDrive extends SubsystemBase implements DriveSubsystem {
 
@@ -30,22 +31,47 @@ public class SwerveDrive extends SubsystemBase implements DriveSubsystem {
 
   // Construct swerve modules
   final SwerveModule
-    // Pass swerve tab into modules to allow each of them to display relevant data, whatever that may be
-    FrontLeftModule = SwerveModule.getInstance(
-      SwerveModuleInstance.FRONT_LEFT, 
-      createCalibrationWidget(SwerveModuleInstance.FRONT_LEFT, 0, 6, 3, 1)
+    // Pass swerve tab into modules to allow each of them to display relevant 
+    // data, whatever that may be
+    FrontLeftModule = new SwerveModule(
+      new SwerveMotors(
+        Swerve.FrontLeft.driveID, 
+        Swerve.FrontLeft.steerID, 
+        Swerve.FrontLeft.CANCoderID, 
+        Swerve.FrontLeft.defaultCalibration
+      ), 
+      Swerve.FrontLeft.trackPosition, 
+      Swerve.FrontLeft.class.getSimpleName()
     ),
-    FrontRightModule = SwerveModule.getInstance(
-      SwerveModuleInstance.FRONT_RIGHT,
-      createCalibrationWidget(SwerveModuleInstance.FRONT_RIGHT, 0, 7, 3, 1)
+    FrontRightModule = new SwerveModule(
+      new SwerveMotors(
+        Swerve.FrontRight.driveID, 
+        Swerve.FrontRight.steerID, 
+        Swerve.FrontRight.CANCoderID, 
+        Swerve.FrontRight.defaultCalibration
+      ), 
+      Swerve.FrontRight.trackPosition, 
+      Swerve.FrontRight.class.getSimpleName()
     ),
-    BackLeftModule = SwerveModule.getInstance(
-      SwerveModuleInstance.BACK_LEFT, 
-      createCalibrationWidget(SwerveModuleInstance.BACK_LEFT, 0, 8, 3, 1)
+    BackLeftModule = new SwerveModule(
+      new SwerveMotors(
+        Swerve.BackLeft.driveID, 
+        Swerve.BackLeft.steerID, 
+        Swerve.BackLeft.CANCoderID, 
+        Swerve.BackLeft.defaultCalibration
+      ), 
+      Swerve.BackLeft.trackPosition, 
+      Swerve.BackLeft.class.getSimpleName()
     ),
-    BackRightModule = SwerveModule.getInstance(
-      SwerveModuleInstance.BACK_RIGHT, 
-      createCalibrationWidget(SwerveModuleInstance.BACK_RIGHT, 0, 9, 3, 1)
+    BackRightModule = new SwerveModule(
+      new SwerveMotors(
+        Swerve.BackRight.driveID, 
+        Swerve.BackRight.steerID, 
+        Swerve.BackRight.CANCoderID, 
+        Swerve.BackRight.defaultCalibration
+      ), 
+      Swerve.BackRight.trackPosition, 
+      Swerve.BackRight.class.getSimpleName()
     );
 
   SwerveDriveKinematics kinematics;
@@ -88,8 +114,8 @@ public class SwerveDrive extends SubsystemBase implements DriveSubsystem {
     // Initialize during constructor to avoid building kinematics
     // object with uninitialized swerve modules.
     kinematics = new SwerveDriveKinematics(
-      // Parse through initialized hash map values
-      SwerveModule.getRobotRelativePositions()
+      // Same order as initialization
+      SwerveModule.getTrackPositions()
     );
 
     inverseKinematics = SwerveDriveInverseKinematics.getInstance(navxGyro);
@@ -102,26 +128,8 @@ public class SwerveDrive extends SubsystemBase implements DriveSubsystem {
       ).withPosition(7, 0).withSize(18, 10);
   }
 
-  /**
-   * Creates calibration angle generic entry, just for clarity 
-   */
-  GenericEntry createCalibrationWidget(
-    SwerveModuleInstance instance, int posX, int posY, int sizeX, int sizeY
-  ) {
-    return swerveTab.add(
-      instance.name() +  " Calibration Angle", 0
-    ).withPosition(posX, posY).withSize(sizeX, sizeY).getEntry();
-  }
-
   @Override
   public void periodic() {
-
-    // Update swerve module calibration from shuffleboard
-    SwerveModule.forEach(
-      (instance, swerveModule) -> {
-        swerveModule.updateCalibration();
-      }
-    );
 
     inverseKinematics.Update();
 
@@ -150,7 +158,7 @@ public class SwerveDrive extends SubsystemBase implements DriveSubsystem {
 
     SwerveModuleState[] states = kinematics.toSwerveModuleStates(Speeds);
     for (int i = 0; i < 4; i++) {
-      SwerveModule.getInstances()[i].drive(states[i]);
+      SwerveModule.instances.get(i).drive(states[i]);
     }
   }
 
