@@ -20,12 +20,12 @@ public class Path {
     
     /**
      * Constructs a path from a given set of points,
-     * 0.2 meters is set as the default end point tolerance
+     * 0.02 meters is set as the default end point tolerance
      * @param Points the first point passed into this 
      * initializer is the first point along the path.
      */
     public Path(PathPoint... Points) {
-        this(new ArrayList<PathPoint>(Arrays.asList(Points)), 0.2);
+        this(new ArrayList<PathPoint>(Arrays.asList(Points)), 0.02);
     }
 
     /**

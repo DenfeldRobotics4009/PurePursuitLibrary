@@ -75,10 +75,6 @@ public final class Constants {
 
         public static double MaxRotationsPerSecond = 5676;
 
-        // Time from 0% to 100% speed
-        public static double driveRampRateSeconds = 0.2;
-        public static double steerRampRateSeconds = 0.2; 
-
         public static Rotation2d forwardAngle = new Rotation2d(Math.toRadians(90));
     }
 }

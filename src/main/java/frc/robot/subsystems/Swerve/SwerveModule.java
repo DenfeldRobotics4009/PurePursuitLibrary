@@ -18,6 +18,8 @@ public class SwerveModule {
     public final Translation2d robotTrackPosition;
     public final String name;
 
+    static double driveRampRate = 0.1;
+    static double steerRampRate = 0.1;
     static double maxMetersPerSecond = 5.05; // Default
     static double steerProportion = 0.3; // Default
 
@@ -58,6 +60,14 @@ public class SwerveModule {
 
     public static void setSteerPIDProportion(double steerProportion) {
         SwerveModule.steerProportion = steerProportion;
+    }
+
+    public static void setDriveRampRateSeconds(double driveRampRate) {
+        SwerveModule.driveRampRate = driveRampRate;
+    }
+
+    public static void setSteerRampRateSeconds(double steerRampRate) {
+        SwerveModule.steerRampRate = steerRampRate;
     }
 
     /**
@@ -105,6 +115,8 @@ public class SwerveModule {
         swerveMotors.configureCANCoder(
             new Rotation2d(Math.toRadians(calibrationEntry.getDouble(0)))
         );
+        this.swerveMotors.DriveMotor.setOpenLoopRampRate(driveRampRate);
+        this.swerveMotors.SteerMotor.setOpenLoopRampRate(steerRampRate);
 
         SwerveModuleState OptimizedState = optimizeState(
             State, 

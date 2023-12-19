@@ -42,10 +42,7 @@ public class PathPoint {
 
         // May be overridden
         speedMetersPerSecond = SpeedMetersPerSecond;
-
-        // Rotate given orientation by the forward angle
-        // this 0 degrees will always mean forward
-        orientation = Orientation.plus(PathingConstants.forwardAngle);
+        orientation = Orientation;
     }
 
     /**

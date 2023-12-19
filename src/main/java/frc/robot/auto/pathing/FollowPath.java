@@ -25,7 +25,7 @@ public class FollowPath extends CommandBase {
     public int lastCrossedPointIndex = 0;
 
     // Distance down the path to drive towards
-    public double lookAheadMeters = 0.1; // Initial at 10 cm
+    public double lookAheadMeters = 0.4;// Initial at 10 cm
 
     /**
      * Follows a given path
@@ -43,6 +43,8 @@ public class FollowPath extends CommandBase {
      * Print path data
      */
     public void initialize() {
+        lastCrossedPointIndex = 0;
+        lookAheadMeters = 0.4;
         System.out.println("--- Following path of points: ---");
         for (PathPoint point : path.points) {System.out.println(point.posMeters);}
         System.out.println("--- --- --- -- --- -- --- --- ---");
@@ -63,12 +65,16 @@ public class FollowPath extends CommandBase {
         // The target relative to the robots current position
         Translation2d deltaLocation = state.goalPose.getTranslation().minus(robotPose.getTranslation());
 
+        System.out.println(" ");
+        System.out.println("Goal pose: " + state.goalPose);
+        System.out.println("Current pose: " + robotPose);
+
         // Clamp state speed so the end of the path can be consistently reached
         // Clamped between [Const Max, 5 cm/s]
         double clampedSpeed = Clamp(
             state.speedMetersPerSecond, 
             PathingConstants.maxVelocityMeters, 
-            -PathingConstants.maxVelocityMeters
+            0.5
         );
 
         AutoShuffleboardTab.distanceFromGoalEntry.setDouble(deltaLocation.getNorm() - lookAheadMeters);
@@ -81,7 +87,7 @@ public class FollowPath extends CommandBase {
         // Set lookahead based upon speed of next point
         lookAheadMeters = Clamp(
             PathingConstants.lookAheadScalar * clampedSpeed,
-            1, 0.1
+            1, 0.2
         );
 
         // Construct chassis speeds from state values
@@ -95,6 +101,7 @@ public class FollowPath extends CommandBase {
                 signedAngleBetween(
                     // Angle from current to goal
                     state.goalPose.getRotation(),
+                    // Rotate back by forward constant
                     robotPose.getRotation()
                 ).getRadians() // Units in radians
             ), 
@@ -174,6 +181,8 @@ public class FollowPath extends CommandBase {
             distanceMetersAlongAB = 0;
         }
 
+        System.out.println("Distance along AB: " + distanceMetersAlongAB);
+
         // Calculate look ahead distance from ab, if its over the length, look to BC
         double lookAheadDistanceMetersAlongPoints = distanceMetersAlongAB + lookAheadMeters;
 
@@ -186,7 +195,7 @@ public class FollowPath extends CommandBase {
         while (true) {
             // Check to make sure points are accessible
             if (lastCrossedPointIndex + pointsLookingAhead + 1 >= path.points.size()) {
-                //print("Looking towards end of path at point ");
+                System.out.println("Looking towards end of path at point ");
                 // We are looking to the end of path
                 gotoGoal = path.points.get(path.points.size()-1).posMeters;
                 //println(gotoGoal);
@@ -228,7 +237,7 @@ public class FollowPath extends CommandBase {
                     relevantPoints.get(1).orientation.getRadians(), 
                     percentAlongAB
                 )
-            ), 
+            ).plus(PathingConstants.forwardAngle), 
             
             PathPoint.getAtLinearInterpolation(
                 relevantPoints.get(0).speedMetersPerSecond, 
