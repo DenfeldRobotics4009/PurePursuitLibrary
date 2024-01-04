@@ -65,9 +65,9 @@ public class FollowPath extends CommandBase {
         // The target relative to the robots current position
         Translation2d deltaLocation = state.goalPose.getTranslation().minus(robotPose.getTranslation());
 
-        System.out.println(" ");
-        System.out.println("Goal pose: " + state.goalPose);
-        System.out.println("Current pose: " + robotPose);
+        // System.out.println(" ");
+        // System.out.println("Goal pose: " + state.goalPose);
+        // System.out.println("Current pose: " + robotPose);
 
         // Clamp state speed so the end of the path can be consistently reached
         // Clamped between [Const Max, 5 cm/s]
@@ -181,7 +181,7 @@ public class FollowPath extends CommandBase {
             distanceMetersAlongAB = 0;
         }
 
-        System.out.println("Distance along AB: " + distanceMetersAlongAB);
+        // System.out.println("Distance along AB: " + distanceMetersAlongAB);
 
         // Calculate look ahead distance from ab, if its over the length, look to BC
         double lookAheadDistanceMetersAlongPoints = distanceMetersAlongAB + lookAheadMeters;
@@ -195,7 +195,7 @@ public class FollowPath extends CommandBase {
         while (true) {
             // Check to make sure points are accessible
             if (lastCrossedPointIndex + pointsLookingAhead + 1 >= path.points.size()) {
-                System.out.println("Looking towards end of path at point ");
+                // System.out.println("Looking towards end of path at point ");
                 // We are looking to the end of path
                 gotoGoal = path.points.get(path.points.size()-1).posMeters;
                 //println(gotoGoal);
