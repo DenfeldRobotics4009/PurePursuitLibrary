@@ -42,7 +42,7 @@ public class PathingConstants {
             FollowPath.Clamp(maxVelocityMeters, 10, 0);
     }
 
-    public static double maxAccelerationMeters = 6;
+    public static double maxAccelerationMeters = 3;
     /**
      * Sets the maximum allowed decceleration along paths
      * This does not limit acceleration, only decelleration.
@@ -51,6 +51,15 @@ public class PathingConstants {
     public static void setMaxAccelerationMeters(double maxAccelerationMeters) {
         PathingConstants.maxAccelerationMeters = 
             FollowPath.Clamp(maxAccelerationMeters, 10, 0);
+    }
+
+    public static double turningProportion = 5;
+    /**
+     * Sets the proportion of the distance from the goal orientation
+     * to use when rotating the robot toward the goal orientation
+     */
+    public static void setTurningProportion(double turningProportion) {
+        PathingConstants.turningProportion = turningProportion;
     }
 
     public static DriveSubsystem driveSubsystem = null; // Will not run unless set

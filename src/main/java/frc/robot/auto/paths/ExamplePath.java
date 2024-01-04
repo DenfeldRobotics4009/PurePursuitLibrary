@@ -31,13 +31,13 @@ public class ExamplePath extends Path {
         super(
             new PathPoint(
                 new Translation2d(0, 0),               // Position (meters)
-                new Rotation2d(Math.toDegrees(0)),     // Rotation (rad)
-                PathingConstants.maxVelocityMeters,    // Speed (m/s)
+                new Rotation2d(Math.toRadians(0)),     // Rotation (rad)
+                2,    // Speed (m/s)
                 new PrintCommand("Past point 0")       // Command 
             ),
             new PathPoint(
                 new Translation2d(1.5, 0),
-                new Rotation2d(Math.toDegrees(0)), 
+                new Rotation2d(Math.toRadians(180)), 
                 0, 
                 new PrintCommand("Past point 1")
             )

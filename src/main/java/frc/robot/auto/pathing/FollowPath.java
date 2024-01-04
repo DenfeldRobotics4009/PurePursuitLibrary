@@ -46,7 +46,7 @@ public class FollowPath extends CommandBase {
         lastCrossedPointIndex = 0;
         lookAheadMeters = 0.4;
         System.out.println("--- Following path of points: ---");
-        for (PathPoint point : path.points) {System.out.println(point.posMeters);}
+        for (PathPoint point : path.points) {System.out.println(point.posMeters + "," + point.orientation);}
         System.out.println("--- --- --- -- --- -- --- --- ---");
 
         System.out.println("Scheduling path command: " + getFirstPoint().triggeredCommand);
@@ -103,7 +103,7 @@ public class FollowPath extends CommandBase {
                     state.goalPose.getRotation(),
                     // Rotate back by forward constant
                     robotPose.getRotation()
-                ).getRadians() // Units in radians
+                ).getRadians() * PathingConstants.turningProportion
             ), 
             // Rotate from current direction
             robotPose.getRotation()
@@ -227,17 +227,16 @@ public class FollowPath extends CommandBase {
         }
 
         //println("Constructing path state");
-        double percentAlongAB = distanceAlongLookaheadPoints / lengthAB;
+        double percentAlongAB = distanceMetersAlongAB / lengthAB;
+
+        Rotation2d interpolatedRotation = relevantPoints.get(0).orientation.interpolate(
+            relevantPoints.get(1).orientation, percentAlongAB);
+
         // Construct state
         PathState state = new PathState(
             gotoGoal, 
-            new Rotation2d(
-                PathPoint.getAtLinearInterpolation(
-                    relevantPoints.get(0).orientation.getRadians(), 
-                    relevantPoints.get(1).orientation.getRadians(), 
-                    percentAlongAB
-                )
-            ).plus(PathingConstants.forwardAngle), 
+
+            interpolatedRotation, 
             
             PathPoint.getAtLinearInterpolation(
                 relevantPoints.get(0).speedMetersPerSecond, 

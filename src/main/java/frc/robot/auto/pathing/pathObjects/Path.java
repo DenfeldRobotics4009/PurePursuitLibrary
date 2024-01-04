@@ -76,6 +76,11 @@ public class Path {
             }
         }
 
+        // Increment rotation of each point by the forward direction angle
+        for (PathPoint pathPoint : Points) {
+            pathPoint.orientation = pathPoint.orientation.plus(PathingConstants.forwardAngle);
+        }
+
         // Parse through a copy, as the original is being edited
         ArrayList<PathPoint> pointsCopy = Points;
         // Parse backward to correct speed of points

@@ -157,14 +157,11 @@ public class PathPoint {
             // Position
             posMeters.interpolate(finalPoint.posMeters, t), 
             // Rotation
-            new Rotation2d(
-                getAtLinearInterpolation(
-                    orientation.getRadians(), finalPoint.orientation.getRadians(), t)
-            ), 
+            orientation.interpolate(finalPoint.orientation, t),
             // Speed (Unadjusted)
             getAtLinearInterpolation(
                 speedMetersPerSecond, finalPoint.speedMetersPerSecond, t),
-            // None
+
             insertedCommand
         );
     }
