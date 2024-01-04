@@ -57,7 +57,8 @@ public class PathingConstants {
     /**
      * Sets the drive train subsystem object that will be used
      * by the pathing algorithm. If this is not set, a
-     * the code will crash when it attempts to run
+     * the code will crash when it attempts to run. This should be
+     * the last constant to be set during initialization. 
      * @param driveSubsystem Interface which describes a generic
      * swerve drive subsystem.
      */

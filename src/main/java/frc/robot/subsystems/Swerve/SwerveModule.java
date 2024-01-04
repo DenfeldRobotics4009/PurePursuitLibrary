@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -18,10 +19,28 @@ public class SwerveModule {
     public final Translation2d robotTrackPosition;
     public final String name;
 
-    static double driveRampRate = 0.1;
-    static double steerRampRate = 0.1;
-    static double maxMetersPerSecond = 5.05; // Default
-    static double steerProportion = 0.3; // Default
+    // The size of a rectangle representing the robot collected from the 
+    // modules furthest from a track position of (0,0)
+    private static Translation2d robotTrack = new Translation2d(-1, -1); // Provided at init
+
+    // Default values are according to the SDS MK4I
+    // - Hardware defined variables --
+    public static double driveRampRate = 0.1;
+    public static double steerRampRate = 0.1;
+    /**
+     * Maximum speed the robot can drive, set by user.
+     */
+    public static double maxMetersPerSecond = 5.05;
+    /**
+     * Maximum speed the robot can rotate, calculated from the
+     * constructed swerve module positions.
+     */
+    public static double maxRadPerSecond = 1;
+    public static double steerProportion = 0.3;
+    public static double wheelDiameterMeters = 0.10308;
+    public static double driveGearRatio = 6.2; // Rotations of motor per 1 rotation of the wheel
+    public static double rotationsToMeters = (Math.PI * wheelDiameterMeters / driveGearRatio); 
+    // -
 
     // Units in meters
     private double lastAccumulatedDriveDistance = 0;
@@ -43,37 +62,152 @@ public class SwerveModule {
 
     public static ArrayList<SwerveModule> instances = new ArrayList<SwerveModule>();
 
+    /**
+     * 
+     * @param swerveMotors
+     * @param robotTrackPosition
+     * @param name
+     */
     public SwerveModule(SwerveMotors swerveMotors, Translation2d robotTrackPosition, String name) {
         instances.add(this);
         this.name = name;
         this.swerveMotors = swerveMotors;
         this.robotTrackPosition = robotTrackPosition;
 
+        Translation2d lastTrack = robotTrack;
+
+        // Set robot track size to largest recorded X and Y components
+        if (abs(robotTrackPosition).times(2).getX() > robotTrack.getX()) {
+            robotTrack = new Translation2d(abs(robotTrackPosition).times(2).getX(), robotTrack.getY());
+        }
+        if (abs(robotTrackPosition).times(2).getY() > robotTrack.getY()) {
+            robotTrack = new Translation2d(robotTrack.getX(), abs(robotTrackPosition).times(2).getY());
+        }
+
+        // Check if these values have been kept equal, otherwise
+        // the swerve track base isn't rectangular, and we should print a warning.
+        if ( lastTrack != robotTrack && (lastTrack.getX() != -1 || lastTrack.getY() != -1) ) {
+            DriverStation.reportWarning(
+                "Swerve modules constructed with a non-rectangular " + 
+                "position, disregard if this is intentional", false);
+        }
+
+        // Set maximum rotation speed
+        maxRadPerSecond = maxMetersPerSecond / Math.hypot(robotTrack.getX() / 2.0, robotTrack.getY() / 2.0);
+
         // Add calibration entry, persistent for safety
         calibrationEntry = calibrationAngleEntryGroup
             .add(name + " Calibration", swerveMotors.defaultAngleOffset.getDegrees()).getEntry();
     }
 
-    public static void setMaxMetersPerSecond(double maxMetersPerSecond) {
-        SwerveModule.maxMetersPerSecond = maxMetersPerSecond;
+    /**
+     * Unsigns the X and Y components of a provided translation
+     */
+    Translation2d abs(Translation2d translation) {
+        return new Translation2d(
+            Math.abs(translation.getX()),
+            Math.abs(translation.getY())
+        );
     }
 
+    /**
+     * Configures the maximum speed of the swerve module in meters per second.
+     * The default value has been calculated from a Swerve Drive Specialties 
+     * MK4I swerve module with a NEO motor attached. For alternate hardware
+     * cases, this should be set manually.
+     * 
+     * This value will effect all swerve modules.
+     * 
+     * @default 5.05 meters per second
+     * 
+     * @param maxMetersPerSecond
+     */
+    public static void setMaxMetersPerSecond(double maxMetersPerSecond) {
+        SwerveModule.maxMetersPerSecond = maxMetersPerSecond;
+        rotationsToMeters = (Math.PI * wheelDiameterMeters / driveGearRatio);
+    }
+
+    /**
+     * Configures the size of the swerve module wheel for rotations to meters
+     * calculation. The default value is the size of a Swerve Drive Specialties
+     * MK4I wheel.
+     * 
+     * @default 0.10308 meters
+     */
+    public static void setWheelDiameterMeters(double wheelDiameterMeters) {
+        SwerveModule.wheelDiameterMeters = wheelDiameterMeters;
+        rotationsToMeters = (Math.PI * wheelDiameterMeters / driveGearRatio);
+    }
+
+    /**
+     * Configues the number of rotations of the motor for every rotation
+     * of the drive wheel. The default value is for a Swerve Drive Specialties
+     * MK4I module.
+     * 
+     * @default 6.2
+     * 
+     * @param driveGearRatio
+     */
+    public static void setDriveGearRatio(double driveGearRatio) {
+        SwerveModule.driveGearRatio = driveGearRatio;
+    }
+
+    /**
+     * Configures the proportion of the error (from the goal angle) to
+     * set the steer motor speed to. IN general, higher values provide
+     * a faster steering motion, while lower provides slower. Faster
+     * steering may create overshoot--leading to a wobble while steering.
+     * 
+     * While the default value may be sufficient, it is worth tuning further
+     * for each specific use case.
+     * 
+     * This value will effect all swerve modules.
+     * 
+     * @default 0.3 (30%)
+     * 
+     * @param steerProportion
+     */
     public static void setSteerPIDProportion(double steerProportion) {
         SwerveModule.steerProportion = steerProportion;
     }
 
+    /**
+     * Configures the rate (in seconds) at which the drive motor will
+     * reach maximum speed (100% power).
+     * 
+     * While the default value may be sufficient, it is worth tuning further
+     * for each specific use case.
+     * 
+     * This will effect all swerve modules.
+     * 
+     * @default 0.1 seconds
+     * 
+     * @param driveRampRate
+     */
     public static void setDriveRampRateSeconds(double driveRampRate) {
         SwerveModule.driveRampRate = driveRampRate;
     }
 
+    /**
+     * Configures the rate (in seconds) at which the steer motor
+     * will reach maximum speed (100% power).
+     * 
+     * While the default value may be sufficient, it is worth tuning further
+     * for each specific use case.
+     * 
+     * This will effect all swerve modules.
+     * 
+     * @default 0.1 seconds
+     * 
+     * @param steerRampRate
+     */
     public static void setSteerRampRateSeconds(double steerRampRate) {
         SwerveModule.steerRampRate = steerRampRate;
     }
 
     /**
      * Gets array of robot track positions of modules in the
-     * order they were initialized in
-     * @return
+     * order they were initialized.
      */
     public static Translation2d[] getTrackPositions() {
         ArrayList<Translation2d> posList = new ArrayList<Translation2d>();
@@ -99,12 +233,6 @@ public class SwerveModule {
     }
 
     /**
-     * 
-     * @param Position
-     */
-    public void setFieldRelativePosition(Translation2d Position) {AccumulatedRelativePositionMeters = Position;}
-
-    /**
      * Drive the current swerve module using optimization.
      * Inputs are assumed to be on a scale from 0 to 1
      * @param State Un-Optimized state
@@ -127,7 +255,6 @@ public class SwerveModule {
         );
 
         // Set drive motor
-
         swerveMotors.DriveMotor.set(
             OptimizedState.speedMetersPerSecond / maxMetersPerSecond
         );

@@ -5,7 +5,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import frc.robot.Constants.Swerve;
 
 public class SwerveMotors {
     public CANSparkMax DriveMotor, SteerMotor;
@@ -13,11 +12,11 @@ public class SwerveMotors {
     public final Rotation2d defaultAngleOffset;
     
     public static double rotationsToMeters(double rotations) {
-        return rotations * Swerve.rotationsToMeters;
+        return rotations * SwerveModule.rotationsToMeters;
     }
     
     public static double metersToRotations(double meters) {
-        return meters / Swerve.rotationsToMeters;
+        return meters / SwerveModule.rotationsToMeters;
     }
 
     public SwerveMotors(

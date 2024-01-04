@@ -63,18 +63,6 @@ public final class Constants {
         public static double TrackYMeters = 0.65405;
         public static double TrackXMeters = 0.57785;
 
-        // public static double MaxMetersPerSecond = 3.6576
-        public static double MaxMetersPerSecond = 5.06;
-        public static double MaxRadPerSecond = MaxMetersPerSecond /
-            Math.hypot(TrackYMeters / 2.0, TrackXMeters / 2.0);
-
-        public static double wheelDiameterMeters = 0.10308;
-        public static double swerveGearRatio = 1 / 6.2; // Rotations of motor per rotations of wheel
-        public static double swerveSteerGearRatio = 150 / 7; // Rotations of motor per rotations of wheel
-        public static double rotationsToMeters = (Math.PI * wheelDiameterMeters * swerveGearRatio); 
-
-        public static double MaxRotationsPerSecond = 5676;
-
         public static Rotation2d forwardAngle = new Rotation2d(Math.toRadians(90));
     }
 }
