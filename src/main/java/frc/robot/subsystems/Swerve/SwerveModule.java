@@ -74,22 +74,22 @@ public class SwerveModule {
         this.swerveMotors = swerveMotors;
         this.robotTrackPosition = robotTrackPosition;
 
-        Translation2d lastTrack = robotTrack;
+        // Check if these values have been kept equal, otherwise
+        // the swerve track base isn't rectangular, and we should print a warning.
+        if ( !abs(robotTrackPosition).times(2).equals(robotTrack) && (robotTrack.getX() != -1 || robotTrack.getY() != -1) ) {
+            DriverStation.reportWarning(
+                "Swerve modules constructed with a non-rectangular position," + 
+                " disregard this warning if this geometry intentional", false);
+        }
 
         // Set robot track size to largest recorded X and Y components
         if (abs(robotTrackPosition).times(2).getX() > robotTrack.getX()) {
             robotTrack = new Translation2d(abs(robotTrackPosition).times(2).getX(), robotTrack.getY());
+            System.out.println("Set Robot track size to " + robotTrack);
         }
         if (abs(robotTrackPosition).times(2).getY() > robotTrack.getY()) {
             robotTrack = new Translation2d(robotTrack.getX(), abs(robotTrackPosition).times(2).getY());
-        }
-
-        // Check if these values have been kept equal, otherwise
-        // the swerve track base isn't rectangular, and we should print a warning.
-        if ( lastTrack != robotTrack && (lastTrack.getX() != -1 || lastTrack.getY() != -1) ) {
-            DriverStation.reportWarning(
-                "Swerve modules constructed with a non-rectangular " + 
-                "position, disregard if this is intentional", false);
+            System.out.println("Set Robot track size to " + robotTrack);
         }
 
         // Set maximum rotation speed
