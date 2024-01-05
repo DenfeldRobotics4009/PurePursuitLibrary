@@ -23,7 +23,7 @@ public interface DriveSubsystem extends Subsystem {
 
     /**
      * @return the current most accurate field
-     * oriented position of the robot.
+     * oriented position of the robot in meters.
      */
     Pose2d getPosition();
 }

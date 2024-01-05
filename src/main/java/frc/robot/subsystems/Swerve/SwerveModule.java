@@ -74,6 +74,10 @@ public class SwerveModule {
         this.swerveMotors = swerveMotors;
         this.robotTrackPosition = robotTrackPosition;
 
+        // Set motor ramp rates
+        swerveMotors.DriveMotor.setOpenLoopRampRate(driveRampRate);
+        swerveMotors.SteerMotor.setOpenLoopRampRate(steerRampRate);
+
         // Check if these values have been kept equal, otherwise
         // the swerve track base isn't rectangular, and we should print a warning.
         if ( !abs(robotTrackPosition).times(2).equals(robotTrack) && (robotTrack.getX() != -1 || robotTrack.getY() != -1) ) {
@@ -176,6 +180,9 @@ public class SwerveModule {
      */
     public static void setDriveRampRateSeconds(double driveRampRate) {
         SwerveModule.driveRampRate = driveRampRate;
+        for (SwerveModule instance : instances) {
+            instance.swerveMotors.DriveMotor.setOpenLoopRampRate(driveRampRate);
+        }
     }
 
     /**
@@ -193,6 +200,9 @@ public class SwerveModule {
      */
     public static void setSteerRampRateSeconds(double steerRampRate) {
         SwerveModule.steerRampRate = steerRampRate;
+        for (SwerveModule instance : instances) {
+            instance.swerveMotors.SteerMotor.setOpenLoopRampRate(driveRampRate);
+        }
     }
 
     /**
@@ -233,8 +243,6 @@ public class SwerveModule {
         swerveMotors.configureCANCoder(
             new Rotation2d(Math.toRadians(calibrationEntry.getDouble(0)))
         );
-        this.swerveMotors.DriveMotor.setOpenLoopRampRate(driveRampRate);
-        this.swerveMotors.SteerMotor.setOpenLoopRampRate(steerRampRate);
 
         SwerveModuleState OptimizedState = optimizeState(
             State, 
