@@ -101,16 +101,6 @@ public class SwerveModule {
     }
 
     /**
-     * Unsigns the X and Y components of a provided translation
-     */
-    Translation2d abs(Translation2d translation) {
-        return new Translation2d(
-            Math.abs(translation.getX()),
-            Math.abs(translation.getY())
-        );
-    }
-
-    /**
      * Configures the maximum speed of the swerve module in meters per second.
      * The default value has been calculated from a Swerve Drive Specialties 
      * MK4I swerve module with a NEO motor attached. For alternate hardware
@@ -348,5 +338,16 @@ public class SwerveModule {
      */
     public void setFieldRelativePositionFromRobotPosition(Pose2d Position) {
         AccumulatedRelativePositionMeters = Position.getTranslation().plus(robotTrackPosition);
+    }
+
+    
+    /**
+     * Unsigns the X and Y components of a provided translation
+     */
+    Translation2d abs(Translation2d translation) {
+        return new Translation2d(
+            Math.abs(translation.getX()),
+            Math.abs(translation.getY())
+        );
     }
 }
