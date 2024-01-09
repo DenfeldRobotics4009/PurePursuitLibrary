@@ -25,14 +25,5 @@
       }
     },
   ],
-  "java.test.defaultConfig": "WPIlibUnitTests",
-  "cSpell.words": [
-    "AHRS",
-    "Brushless",
-    "deadband",
-    "Multiton",
-    "NAVX",
-    "odometry",
-    "pathing"
-  ]
+  "java.test.defaultConfig": "WPIlibUnitTests"
 }

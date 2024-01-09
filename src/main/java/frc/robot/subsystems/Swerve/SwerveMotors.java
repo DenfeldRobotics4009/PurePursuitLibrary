@@ -1,15 +1,15 @@
 package frc.robot.subsystems.swerve;
 
-import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class SwerveMotors {
     public CANSparkMax DriveMotor, SteerMotor;
-    public CANCoder SteerEncoder;
-    public final Rotation2d defaultAngleOffset;
+    public CANcoder SteerEncoder;
+    public Rotation2d defaultAngleOffset;
     
     public static double rotationsToMeters(double rotations) {
         return rotations * SwerveModule.rotationsToMeters;
@@ -27,10 +27,9 @@ public class SwerveMotors {
     ) {
         this.DriveMotor = new CANSparkMax(driveMotorID, MotorType.kBrushless);
         this.SteerMotor = new CANSparkMax(steerMotorID, MotorType.kBrushless);
-        this.SteerEncoder = new CANCoder(CANCoderID);
+        this.SteerEncoder = new CANcoder(CANCoderID);
 
         this.defaultAngleOffset = defaultAngleOffset;
-        configureCANCoder(defaultAngleOffset);
     }
 
     /**
@@ -45,24 +44,13 @@ public class SwerveMotors {
         );
     }
 
-
-    // Configures default CANCoder settings for swerve
-    public void configureCANCoder(Rotation2d CANCoderOffset) {
-        SteerEncoder.configMagnetOffset(CANCoderOffset.getDegrees());
-
-        // CCW Standard
-        SteerEncoder.configSensorDirection(false); 
-    }
-
     /**
      * @return A Rotation2d of the swerve module direction.
      */
     public Rotation2d getRotation2d() {
         return new Rotation2d(
-            Math.toRadians(
-                SteerEncoder.getAbsolutePosition()
-            )
-        );
+            2 * Math.PI * SteerEncoder.getAbsolutePosition().getValueAsDouble()
+        ).plus(defaultAngleOffset);
     }
 
     /**

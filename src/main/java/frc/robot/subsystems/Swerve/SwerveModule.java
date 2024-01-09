@@ -240,17 +240,9 @@ public class SwerveModule {
     public void drive(SwerveModuleState State) {
 
         // Update calibration from entries
-        swerveMotors.configureCANCoder(
-            new Rotation2d(Math.toRadians(calibrationEntry.getDouble(0)))
-        );
+        swerveMotors.defaultAngleOffset = new Rotation2d(Math.toRadians(calibrationEntry.getDouble(0)));
 
-        SwerveModuleState OptimizedState = optimizeState(
-            State, 
-            // Assume reading is degrees
-            new Rotation2d(
-                Math.toRadians(swerveMotors.SteerEncoder.getAbsolutePosition())
-            )
-        );
+        SwerveModuleState OptimizedState = optimizeState(State, swerveMotors.getRotation2d());
 
         // Set drive motor
         swerveMotors.DriveMotor.set(

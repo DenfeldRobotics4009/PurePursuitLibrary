@@ -5,12 +5,12 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Controls;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.swerve.SwerveModule;
 
-public class Drive extends CommandBase {
+public class Drive extends Command {
   SwerveDrive m_drivetrain;
   Controls m_controls;
 

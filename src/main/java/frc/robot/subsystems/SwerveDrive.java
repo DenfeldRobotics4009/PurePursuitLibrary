@@ -121,7 +121,6 @@ public class SwerveDrive extends SubsystemBase implements DriveSubsystem {
     inverseKinematics = SwerveDriveInverseKinematics.getInstance(navxGyro);
 
     navxGyro.setAngleAdjustment(-Swerve.forwardAngle.getDegrees());
-    navxGyro.calibrate();
 
     // Construct feild widget
     swerveTab.add("Robot Position", feildWidget

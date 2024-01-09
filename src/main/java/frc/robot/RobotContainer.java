@@ -4,23 +4,24 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.Swerve;
 import frc.robot.auto.pathing.AutoShuffleboardTab;
 import frc.robot.auto.pathing.PathingConstants;
 import frc.robot.commands.Drive;
 import frc.robot.subsystems.SwerveDrive;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and button mappings) should be declared here.
+ * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
-
+  
   final Controls controls = new Controls();
   final SwerveDrive driveTrain = SwerveDrive.GetInstance();
 
@@ -40,18 +41,20 @@ public class RobotContainer {
     AutoShuffleboardTab.getInstance();
 
     // Configure the button bindings
-    configureButtonBindings();
+    configureBindings();
   }
 
+
   /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+   * Use this method to define your trigger->command mappings. Triggers can be created via the
+   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
+   * predicate, or via the named factories in {@link
+   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
+   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
+   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
+   * joysticks}.
    */
-  private void configureButtonBindings() {
-    
-  }
+  private void configureBindings() {}
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -59,7 +62,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // Schedule chosen command
+    // An example command will be run in autonomous
     return AutoShuffleboardTab.getInstance().getSelectedAuto();
   }
 }
